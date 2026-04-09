@@ -1,0 +1,20 @@
+# Example agent seed configuration.
+# Each agent defines the repos to clone into its sandbox workspace.
+
+repos:
+  - name: my-project
+    source: https://github.com/your-org/your-repo.git
+    ref: main
+
+# Optional: override the default runner image
+# image: custom-runner:latest
+
+# Optional: Claude model selection
+# model: sonnet
+
+# Optional: thinking configuration
+# thinking:
+#   type: adaptive
+
+# Optional: effort level (low, medium, high, max)
+# effort: high

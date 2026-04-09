@@ -1,0 +1,61 @@
+# Local verification environment mimicking the k8s prod deployment.
+#
+# The controller service spawns runner containers via the Docker socket.
+# Runner volume mounts use absolute paths computed inside the controller container,
+# so the data root MUST be identity-mapped (same path on host and in container).
+# This matches the k8s hostPath volume behavior.
+#
+# Quick start:
+#   1. just build-images
+#   2. sudo mkdir -p /data/devbox-agent && sudo chown "$(id -u):$(id -g)" /data/devbox-agent
+#   3. cp config.compose.yaml.example config.compose.yaml   # edit with real values
+#   4. Ensure .env has TELEGRAM_BOT_TOKEN, Claude auth, and GitHub auth
+#   5. just compose-up
+#
+# Override defaults via .env or shell:
+#   DEVBOX_DATA_ROOT    — host path for persistent data (default: /data/devbox-agent)
+#   DEVBOX_COMPOSE_CFG  — path to config file        (default: ./config.compose.yaml)
+#   HOME                — used for default secrets dir mount (${HOME}/.config/devbox-agent)
+#   GITHUB_TOKEN        — direct token for repo seeding (optional)
+#   GITHUB_APP_ID / GITHUB_APP_INSTALLATION_ID(S) / GITHUB_APP_PRIVATE_KEY(_FILE)
+#                      — GitHub App auth for short-lived installation token (optional)
+#   GITHUB_APP_INSTALLATION_IDS format:
+#                      — "org-a=123456,org-b=789012"
+#                      — or JSON: {"org-a":"123456","org-b":"789012"}
+#   GITHUB_APP_INSTALLATION_ID_<OWNER> also supported:
+#                      — e.g. GITHUB_APP_INSTALLATION_ID_MY_ORG=123456
+
+services:
+  controller:
+    image: devbox-controller:latest
+    command: ["--config", "/etc/devbox-agent/config.yaml"]
+    environment:
+      - DEVBOX_DATA_ROOT=${DEVBOX_DATA_ROOT:-/data/devbox-agent}
+      - TELEGRAM_BOT_TOKEN
+      - SLACK_BOT_TOKEN
+      - SLACK_APP_TOKEN
+      - ANTHROPIC_API_KEY
+      - ANTHROPIC_BASE_URL
+      - CLAUDE_CODE_OAUTH_TOKEN
+      - GITHUB_TOKEN
+      - GH_TOKEN
+      - GITHUB_PAT
+      - GITHUB_APP_ID
+      - GITHUB_APP_INSTALLATION_ID
+      - GITHUB_APP_INSTALLATION_IDS
+      # Per-owner installation IDs (add your own):
+      # - GITHUB_APP_INSTALLATION_ID_YOUR_ORG
+      - GITHUB_APP_PRIVATE_KEY
+      - GITHUB_APP_PRIVATE_KEY_FILE=/run/devbox-secrets/github-app.pem
+    volumes:
+      # Data root — identity-mapped so paths the controller process passes to
+      # runner containers via `docker run -v` resolve on the Docker host.
+      # Mirrors k8s hostPath at /data/devbox-agent.
+      - ${DEVBOX_DATA_ROOT:-/data/devbox-agent}:${DEVBOX_DATA_ROOT:-/data/devbox-agent}
+      # Docker socket for spawning runner containers
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Config file (matches k8s ConfigMap mount at /etc/devbox-agent)
+      - ${DEVBOX_COMPOSE_CFG:-./config.compose.yaml}:/etc/devbox-agent/config.yaml:ro
+      # Host secrets directory for GitHub App private key file
+      - ${HOME:-/root}/.config/devbox-agent:/run/devbox-secrets:ro
+    restart: unless-stopped

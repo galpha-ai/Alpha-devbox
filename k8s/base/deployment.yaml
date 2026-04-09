@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devbox-controller
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    spec:
+      serviceAccountName: devbox-controller
+      initContainers:
+        - name: init-dirs
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /data/devbox-agent/store
+              mkdir -p /data/devbox-agent/agents/global
+              mkdir -p /data/devbox-agent/data
+          volumeMounts:
+            - name: data
+              mountPath: /data/devbox-agent
+      containers:
+        - name: devbox-controller
+          image: your-registry/devbox-controller:latest
+          args: ["--config", "/etc/devbox-agent/config.yaml"]
+          ports:
+            - name: http
+              containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /api/devbox/health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/devbox/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          env:
+            - name: DEVBOX_DATA_ROOT
+              value: /data/devbox-agent
+            - name: TELEGRAM_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: devbox-agent-secrets
+                  key: telegram-bot-token
+                  optional: true
+            - name: SLACK_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: devbox-agent-secrets
+                  key: slack-bot-token
+                  optional: true
+            - name: SLACK_APP_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: devbox-agent-secrets
+                  key: slack-app-token
+                  optional: true
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: devbox-agent-secrets
+                  key: anthropic-api-key
+                  optional: true
+            - name: CLAUDE_CODE_OAUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: devbox-agent-secrets
+                  key: claude-code-oauth-token
+                  optional: true
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: devbox-agent-secrets
+                  key: github-token
+                  optional: true
+            - name: GITHUB_APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: devbox-agent-secrets
+                  key: github-app-id
+                  optional: true
+            - name: GITHUB_APP_INSTALLATION_ID
+              valueFrom:
+                secretKeyRef:
+                  name: devbox-agent-secrets
+                  key: github-app-installation-id
+                  optional: true
+            - name: GITHUB_APP_INSTALLATION_IDS
+              valueFrom:
+                secretKeyRef:
+                  name: devbox-agent-secrets
+                  key: github-app-installation-ids
+                  optional: true
+            - name: GITHUB_APP_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: devbox-agent-secrets
+                  key: github-app-private-key
+                  optional: true
+          volumeMounts:
+            - name: data
+              mountPath: /data/devbox-agent
+            - name: config
+              mountPath: /etc/devbox-agent
+              readOnly: true
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 250m
+            limits:
+              memory: 1Gi
+              cpu: "1"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: devbox-data
+        - name: config
+          configMap:
+            name: devbox-agent-config

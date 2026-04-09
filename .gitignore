@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+.npm-cache/
+# Build output
+dist/
+
+# Local data & auth
+store/
+data/
+logs/
+
+# Runtime agent state (agent definitions in agents/ are tracked)
+agents/*/workspace/
+agents/*/logs/
+
+# Secrets
+*.keys.json
+.env
+/config.yaml
+/config.local.yaml
+/config.compose.yaml
+
+# Local environment config (see tools.example.md)
+/tools.md
+
+*.local.*
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Skills system (local per-installation state)
+.devbox/
+
+.envrc

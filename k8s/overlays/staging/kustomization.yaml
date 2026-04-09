@@ -1,0 +1,42 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: devbox-agent-staging
+
+resources:
+  - namespace.yaml
+  - ../../base
+
+# Required secrets (create manually):
+#   kubectl -n devbox-agent-staging create secret generic devbox-agent-secrets \
+#     --from-literal=telegram-bot-token=<token> \
+#     --from-literal=anthropic-api-key=<key>
+
+patches:
+  - target:
+      kind: PersistentVolumeClaim
+      name: devbox-data
+    patch: |
+      - op: add
+        path: /spec/storageClassName
+        value: standard-rwx
+  # ClusterRoleBinding needs explicit namespace for the SA subject
+  - target:
+      kind: ClusterRoleBinding
+      name: devbox-runner
+    patch: |
+      - op: add
+        path: /subjects/0/namespace
+        value: devbox-agent-staging
+
+images:
+  - name: your-registry/devbox-controller
+    newTag: latest
+
+configMapGenerator:
+  - name: devbox-agent-config
+    behavior: replace
+    files:
+      - config.yaml=config.staging.yaml
+    options:
+      disableNameSuffixHash: false

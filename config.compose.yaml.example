@@ -1,0 +1,31 @@
+# Docker Compose configuration.
+# Copy this file to config.compose.yaml and fill in your values:
+#   cp config.compose.yaml.example config.compose.yaml
+
+assistant_name: Devbox
+
+container:
+  runtime: docker
+  image: devbox-runner:latest
+  timeout: 5400000
+  idle_timeout: 300000
+  max_concurrent: 2
+  max_output_size: 10485760
+
+agents:
+  - name: example
+    path: agents/example
+
+channels:
+  # Telegram group
+  # - id: "tg:-100XXXXXXXXXX"
+  #   agents:
+  #     - name: example
+  #       trigger: "@Devbox"
+  #       requires_trigger: true
+
+  # Telegram DM (wildcard)
+  - id: "tg:user:*"
+    agents:
+      - name: example
+        requires_trigger: false

@@ -1,0 +1,14 @@
+# Do not exclude dist/ — needed for controller Docker build
+node_modules/
+.npm-cache/
+store/
+data/
+logs/
+groups/
+*.keys.json
+.env
+.DS_Store
+.idea/
+.vscode/
+.devbox/
+agents-sdk-docs/

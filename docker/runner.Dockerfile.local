@@ -1,0 +1,70 @@
+# syntax=docker/dockerfile:1
+# Local build with Chinese mirror acceleration
+FROM ubuntu:24.04
+
+# Use Aliyun Ubuntu mirror
+RUN sed -i 's|http://archive.ubuntu.com|http://mirrors.aliyun.com|g; s|http://security.ubuntu.com|http://mirrors.aliyun.com|g' /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null || \
+    sed -i 's|http://archive.ubuntu.com|http://mirrors.aliyun.com|g; s|http://security.ubuntu.com|http://mirrors.aliyun.com|g' /etc/apt/sources.list
+
+RUN apt-get update && apt-get install -y \
+    build-essential ca-certificates curl git openssh-client \
+    pkg-config cmake clang libclang-dev libssl-dev \
+    protobuf-compiler tmux jq ripgrep rsync unzip xz-utils \
+    sudo locales \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install GitHub CLI (gh) for PR creation support
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+      -o /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+      > /etc/apt/sources.list.d/github-cli.list \
+    && apt-get update && apt-get install -y gh \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get update && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN userdel -r ubuntu 2>/dev/null || true \
+    && useradd -m -s /bin/bash -u 1000 -G sudo devbox \
+    && echo 'devbox ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers.d/devbox
+
+USER devbox
+WORKDIR /home/devbox
+
+# Rust with USTC mirror
+ENV RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
+ENV RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
+RUN curl --proto '=https' --tlsv1.2 -sSf https://mirrors.ustc.edu.cn/misc/rustup-install.sh | sh -s -- -y --default-toolchain stable
+ENV PATH="/home/devbox/.cargo/bin:/home/devbox/.local/bin:$PATH"
+ENV CARGO_HOME="/home/devbox/.cargo"
+ENV OPENSSL_DIR=/usr
+ENV OPENSSL_INCLUDE_DIR=/usr/include
+ENV OPENSSL_LIB_DIR=/usr/lib/x86_64-linux-gnu
+ENV PROTOC=/usr/bin/protoc
+ENV CC=/usr/bin/clang
+ENV CXX=/usr/bin/clang++
+ENV LIBCLANG_PATH=/usr/lib/llvm-18/lib
+ENV PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig
+
+USER root
+# npm with npmmirror registry
+RUN npm config set registry https://registry.npmmirror.com && \
+    npm install -g @anthropic-ai/claude-code
+WORKDIR /app
+COPY --chown=devbox:devbox container/agent-runner/package*.json ./
+RUN npm ci
+COPY --chown=devbox:devbox container/agent-runner/ ./
+RUN npm run build
+
+COPY --chown=devbox:devbox container/entrypoint.sh /app/entrypoint.sh
+COPY --chown=devbox:devbox container/gh-wrapper.sh /usr/local/bin/gh
+RUN chmod +x /app/entrypoint.sh \
+    && chmod +x /usr/local/bin/gh \
+    && mkdir -p /workspace/group /workspace/global /workspace/bootstrap /workspace/ipc/messages /workspace/ipc/tasks /workspace/ipc/input \
+    && chown -R devbox:devbox /app /workspace
+
+USER devbox
+WORKDIR /workspace/group
+ENTRYPOINT ["/app/entrypoint.sh"]
