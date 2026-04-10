@@ -3,6 +3,7 @@ node_modules/
 .npm-cache/
 # Build output
 dist/
+*.tsbuildinfo
 
 # Local data & auth
 store/
@@ -34,5 +35,8 @@ agents/*/logs/
 
 # Skills system (local per-installation state)
 .devbox/
+.devbox-local/
 
 .envrc
+.omx/
+.gstack/

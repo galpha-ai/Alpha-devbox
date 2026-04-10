@@ -529,6 +529,18 @@ async function processSessionMessages(sessionKey: string): Promise<boolean> {
           `Agent output: ${raw.slice(0, 200)}`,
         );
         if (text) {
+          const timestamp = new Date().toISOString();
+          storeMessage({
+            id: `bot-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+            chat_jid: chatJid,
+            thread_id: scope.threadId,
+            sender: ASSISTANT_NAME,
+            sender_name: ASSISTANT_NAME,
+            content: text,
+            timestamp,
+            is_from_me: true,
+            is_bot_message: true,
+          });
           await channel.sendMessage(chatJid, text, {
             threadId: scope.threadId,
           });

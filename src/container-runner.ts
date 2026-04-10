@@ -131,6 +131,7 @@ function workspaceGitHubOwners(repos: SeedManifestRepo[]): string[] {
 // UID/GID of the devbox user inside runner containers.
 const RUNNER_UID = 1000;
 const RUNNER_GID = 1000;
+const CONTAINER_HOME = '/workspace/.home';
 
 // ---------------------------------------------------------------------------
 // Owned file helpers — create files/dirs as uid 1000 (devbox) even when the
@@ -399,6 +400,7 @@ function buildVolumeMounts(
     containerPath: '/workspace',
     readonly: false,
   });
+  mkdirOwned(path.join(sessionWorkspaceDir, '.home'));
 
   // Global instructions are shared and read-only.
   const globalDir = path.join(AGENTS_DIR, 'global');
@@ -464,7 +466,7 @@ function buildVolumeMounts(
   logger.info({ agent: agent.name }, `[bvm ${bvmE()}] skills done`);
   mounts.push({
     hostPath: sessionClaudeDir,
-    containerPath: '/home/devbox/.claude',
+    containerPath: `${CONTAINER_HOME}/.claude`,
     readonly: false,
   });
 
@@ -1039,10 +1041,8 @@ export async function runContainerAgent(
   const runtimeEnv: Record<string, string> = {
     TZ: TIMEZONE,
     DEVBOX_RUN_DIR: runFiles.containerRunDir,
+    HOME: CONTAINER_HOME,
   };
-  if (runtimeUser) {
-    runtimeEnv.HOME = '/home/devbox';
-  }
 
   // Forward model/API configuration from controller env to runner pods.
   for (const key of [

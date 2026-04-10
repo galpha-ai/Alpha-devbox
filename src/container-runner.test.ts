@@ -277,6 +277,8 @@ describe('container-runner timeout behavior (file protocol)', () => {
     expect(result.status).toBe('success');
     expect(spawnConfig).toBeDefined();
     expect(spawnConfig?.env.DEVBOX_RUN_DIR).toMatch(/^\/ipc\/runs\//);
+    expect(spawnConfig?.env.HOME).toBe('/workspace/.home');
+    expect(spawnConfig?.user).toMatch(/^\d+:\d+$/);
     expect(spawnConfig?.mounts).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -289,6 +291,10 @@ describe('container-runner timeout behavior (file protocol)', () => {
         }),
         expect.objectContaining({
           containerPath: '/ipc',
+          readonly: false,
+        }),
+        expect.objectContaining({
+          containerPath: '/workspace/.home/.claude',
           readonly: false,
         }),
       ]),

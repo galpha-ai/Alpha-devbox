@@ -1,0 +1,6 @@
+repos:
+  - name: alpha-devbox
+    source: https://github.com/galpha-ai/Alpha-devbox.git
+    ref: main
+
+model: claude-opus-4-6

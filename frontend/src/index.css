@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 4%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 72 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 8%;
+    --secondary-foreground: 0 0% 70%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 50%;
+    --accent: 72 100% 50%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 72 100% 50%;
+    --radius: 0.75rem;
+
+    --lime: 72 100% 50%;
+    --lime-dim: 72 60% 40%;
+    --surface-secondary: 0 0% 3%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  }
+  .font-sans {
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  .text-lime {
+    color: hsl(var(--lime));
+  }
+  .text-lime-dim {
+    color: hsl(var(--lime-dim));
+  }
+  .bg-lime {
+    background-color: hsl(var(--lime));
+  }
+  .border-lime {
+    border-color: hsl(var(--lime));
+  }
+  .bg-surface-secondary {
+    background-color: hsl(var(--surface-secondary));
+  }
+  .lime-gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(72 100% 50%), hsl(72 80% 70%), hsl(72 100% 50%));
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .glass-card-hover:hover {
+    border-color: rgba(193, 255, 0, 0.2);
+    box-shadow: 0 0 40px rgba(193, 255, 0, 0.03);
+  }
+  .section-label {
+    @apply text-xs font-sans font-medium tracking-[0.3em] uppercase text-muted-foreground;
+  }
+}
+
+@layer utilities {
+  .page-backdrop {
+    background:
+      radial-gradient(circle at top, rgba(193, 255, 0, 0.08), transparent 28%),
+      linear-gradient(180deg, #050701 0%, #000000 55%, #020301 100%);
+  }
+
+  .reveal-section {
+    opacity: 0;
+    transform: translateY(36px);
+    transition:
+      opacity 0.7s ease,
+      transform 0.7s ease;
+  }
+
+  .reveal-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-section,
+    .reveal-section.is-visible {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+}

@@ -41,6 +41,7 @@ The **runner** is a Node.js process inside a container that stays alive across m
 - `agent-folder.ts`: Path validation and resolution. Prevents directory traversal and validates agent name format (`^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$`).
 - `channels/telegram.ts`: Telegram adapter using grammy. Handles group and DM detection, `@mention` normalization, non-text message placeholders, and the `Channel` interface.
 - `channels/web.ts`: Web adapter using HTTP + WebSocket. Exposes REST API for conversation CRUD and message history, plus a single-connection-per-user WebSocket for streaming agent output and status. Auth is delegated to the upstream Envoy proxy (`X-User-Id` header). Implements the `Channel` interface.
+- `../frontend/`: Minimal browser frontend for the web channel. Uses a client-generated UUID sent as `X-User-Id`, talks to the existing `/api/devbox/*` endpoints, and currently uses REST + polling as the browser-safe MVP path.
 
 ### Runner (`container/`)
 

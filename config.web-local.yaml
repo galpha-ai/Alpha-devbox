@@ -1,0 +1,24 @@
+assistant_name: Devbox
+data_root: .devbox-local
+
+container:
+  runtime: docker
+  image: devbox-runner:latest
+  timeout: 5400000
+  idle_timeout: 300000
+  max_concurrent: 2
+  max_output_size: 10485760
+
+web:
+  enabled: true
+  port: 8092
+
+agents:
+  - name: localqa
+    path: agents/localqa
+
+channels:
+  - id: "web:*"
+    agents:
+      - name: localqa
+        requires_trigger: false

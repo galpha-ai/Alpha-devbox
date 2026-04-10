@@ -7,6 +7,9 @@ SEED_MANIFEST="${SESSION_DIR}/seed-manifest.json"
 RUN_DIR="${DEVBOX_RUN_DIR:?DEVBOX_RUN_DIR is required}"
 INPUT_JSON="${RUN_DIR}/input.json"
 GH_TOKENS_FILE="/tmp/.gh-tokens.json"
+export HOME="${HOME:-${WORKSPACE_ROOT}/.home}"
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
+export GIT_CONFIG_GLOBAL="${GIT_CONFIG_GLOBAL:-${HOME}/.gitconfig}"
 GIT_AUTH_TOKEN=""
 GIT_AUTH_TOKENS_JSON=""
 
@@ -96,6 +99,7 @@ rewrite_github_source_with_token() {
 # All bind-mounted directories (session, workspace, ipc/*) are pre-created on
 # the host by container-runner.ts before the container starts. No mkdir needed
 # here.
+mkdir -p "${HOME}" "${XDG_CONFIG_HOME}/git"
 
 # Seed local workspace once per session workspace so subsequent turns reuse
 # build artifacts.
