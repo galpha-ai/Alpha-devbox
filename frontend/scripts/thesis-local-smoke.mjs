@@ -2,17 +2,11 @@ import process from "node:process";
 import { chromium } from "playwright";
 
 const baseUrl = process.env.DEVBOX_E2E_URL || "http://127.0.0.1:5175/";
-const simplePrompt = "Reply in one short sentence: hello from devbox.";
-const chartPrompt = `Reply with one short sentence and then exactly this markdown table:
+const repoPrompt = "Using the seeded crypto-quant repo, what file is the primary edit target for the starter strategy? Reply in one short sentence and include the exact repo-relative path.";
+const chartPrompt = `Reply with one short sentence and then exactly this markdown table:\n\n| Month | Revenue | Cost |\n| --- | ---: | ---: |\n| Jan | 10 | 4 |\n| Feb | 12 | 5 |\n| Mar | 14 | 6 |`;
 
-| Month | Revenue | Cost |
-| --- | ---: | ---: |
-| Jan | 10 | 4 |
-| Feb | 12 | 5 |
-| Mar | 14 | 6 |`;
-
-  const browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage({ viewport: { width: 1440, height: 1100 } });
+const browser = await chromium.launch({ headless: true });
+const page = await browser.newPage({ viewport: { width: 1440, height: 1100 } });
 
 try {
   await page.goto(baseUrl, { waitUntil: "networkidle", timeout: 30_000 });
@@ -26,9 +20,9 @@ try {
   const modeBadge = page.getByText(/live|polling/i).first();
   await modeBadge.waitFor({ state: "visible", timeout: 15_000 });
 
-  await sendPrompt(page, simplePrompt);
-  await waitForText(page, simplePrompt, 15_000);
-  await waitForAssistantResponse(page, /hello from devbox|devbox/i, 180_000);
+  await sendPrompt(page, repoPrompt);
+  await waitForText(page, repoPrompt, 15_000);
+  await waitForAssistantResponse(page, /crates\/poly-strat-starter\/src\/strategy\.rs|src\/strategy\.rs/i, 180_000);
 
   await sendPrompt(page, chartPrompt);
   await page.getByText("Jan").waitFor({ state: "visible", timeout: 180_000 });

@@ -24,6 +24,26 @@ if ! docker info >/dev/null 2>&1; then
   exit 1
 fi
 
+if [[ -z "${DEVBOX_GIT_AUTH_TOKEN:-}" && -z "${GITHUB_TOKEN:-}" && -z "${GH_TOKEN:-}" ]]; then
+  GH_BIN="$(command -v gh 2>/dev/null || true)"
+  if [[ -z "$GH_BIN" ]]; then
+    for candidate in /opt/homebrew/bin/gh /usr/local/bin/gh; do
+      if [[ -x "$candidate" ]]; then
+        GH_BIN="$candidate"
+        break
+      fi
+    done
+  fi
+
+  if [[ -n "$GH_BIN" ]]; then
+    if DEVBOX_GIT_AUTH_TOKEN="$("$GH_BIN" auth token 2>/dev/null)"; then
+      export DEVBOX_GIT_AUTH_TOKEN
+      export GH_TOKEN="${GH_TOKEN:-$DEVBOX_GIT_AUTH_TOKEN}"
+      echo "Using gh auth token for private repo seeding."
+    fi
+  fi
+fi
+
 DATA_ROOT="${DEVBOX_DATA_ROOT:-$ROOT/.devbox-local}"
 export DEVBOX_DATA_ROOT="$DATA_ROOT"
 BACKEND_URL="${DEVBOX_WEB_URL:-http://127.0.0.1:18092}"
@@ -65,7 +85,7 @@ kill_listener_on_port "$FRONTEND_PORT"
 
 pkill -f 'tsx src/index.ts --config config.web-local.yaml' >/dev/null 2>&1 || true
 pkill -f 'frontend run dev -- --host 127.0.0.1 --port 5175' >/dev/null 2>&1 || true
-docker ps -aq --filter 'name=^devbox-localqa-' | xargs -r docker rm -f >/dev/null 2>&1 || true
+docker ps -aq --filter 'name=^devbox-' | xargs -r docker rm -f >/dev/null 2>&1 || true
 
 echo "Starting backend on $BACKEND_URL ..."
 npm run dev:server &

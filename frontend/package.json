@@ -16,7 +16,6 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@ai-sdk/react": "^3.0.151",
     "@hookform/resolvers": "^3.10.0",
     "@privy-io/react-auth": "^3.19.0",
     "@radix-ui/react-accordion": "^1.2.11",

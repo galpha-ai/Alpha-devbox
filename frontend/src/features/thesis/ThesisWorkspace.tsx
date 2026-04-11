@@ -1,4 +1,3 @@
-import { useChat } from "@ai-sdk/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Loader2,
@@ -12,12 +11,10 @@ import {
   X,
 } from "lucide-react";
 
-import { createThesisChatTransport } from "./chatTransport";
 import { ArtifactRenderer } from "./ArtifactRenderer";
 import {
-  buildChatMessageFingerprint,
   buildConversationSnapshot,
-  collapseAdjacentDuplicateChatMessages,
+  buildLatestAssistantTurn,
   getChatMessageText,
   toThesisChatMessages,
   type ThesisArtifact,
@@ -27,12 +24,16 @@ import { StarterPromptGrid } from "./StarterPromptGrid";
 import type { ThesisPanelStatus } from "./ThesisResultPanel";
 import {
   ThesisTransportError,
+  type ThesisQueuedResponse,
   type ThesisTransportClient,
 } from "./transport";
 import { MarkdownChartRenderer } from "./MarkdownChartRenderer";
-import type { DevboxWsClient } from "./wsTransport";
 
 const MOBILE_BREAKPOINT_PX = 1024;
+const INITIAL_POLL_INTERVAL_MS = import.meta.env.MODE === "test" ? 10 : 2500;
+const ACTIVE_POLL_INTERVAL_MS = import.meta.env.MODE === "test" ? 10 : 2500;
+const POLL_TIMEOUT_MS = import.meta.env.MODE === "test" ? 500 : 600_000;
+const REQUIRED_STABLE_POLLS = 1;
 
 const proseClasses = `prose prose-invert prose-sm max-w-none 
   prose-headings:text-foreground prose-headings:font-display
@@ -43,7 +44,6 @@ const proseClasses = `prose prose-invert prose-sm max-w-none
 
 interface ThesisWorkspaceProps {
   transportClient: ThesisTransportClient;
-  wsClient?: DevboxWsClient;
   onLogout: () => void | Promise<void>;
   onSessionExpired: () => void;
   sessionActionLabel?: string | null;
@@ -64,7 +64,6 @@ interface ConversationState {
 
 export function ThesisWorkspace({
   transportClient,
-  wsClient,
   onLogout,
   onSessionExpired,
   sessionActionLabel = null,
@@ -81,32 +80,12 @@ export function ThesisWorkspace({
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [shellError, setShellError] = useState<string | null>(null);
   const activeConversationIdRef = useRef(activeConversationId);
-  const setMessagesRef = useRef<((messages: ThesisChatMessage[]) => void) | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     activeConversationIdRef.current = activeConversationId;
   }, [activeConversationId]);
-
-  const [wsConnected, setWsConnected] = useState(false);
-
-  useEffect(() => {
-    if (!wsClient) return;
-
-    wsClient.connect();
-    const checkInterval = setInterval(() => {
-      setWsConnected(wsClient.isConnected());
-    }, 1000);
-
-    const initialCheck = setTimeout(() => setWsConnected(wsClient.isConnected()), 100);
-
-    return () => {
-      clearInterval(checkInterval);
-      clearTimeout(initialCheck);
-      wsClient.disconnect();
-    };
-  }, [wsClient]);
 
   const activeConversation = useMemo(
     () => conversations.find((conversation) => conversation.conversationId === activeConversationId) ?? null,
@@ -123,6 +102,35 @@ export function ThesisWorkspace({
       ),
     );
   }, []);
+
+  const replaceConversationFromSnapshot = useCallback((
+    conversationId: string,
+    fallbackTitle: string,
+    snapshot: ReturnType<typeof buildConversationSnapshot>,
+  ) => {
+    updateConversation(conversationId, (current) => {
+      const nextMessages = snapshot.messages.length > 0
+        ? toThesisChatMessages(snapshot.messages)
+        : current.messages;
+      const nextStatus = snapshot.messages.length > 0
+        ? resolveHydratedStatus(snapshot)
+        : current.status;
+      const preserveError = nextStatus === "processing";
+
+      return {
+        ...current,
+        title: deriveConversationTitle(trimTitle(fallbackTitle || current.title), snapshot.messages, conversationId),
+        messages: nextMessages,
+        latestArtifact: snapshot.latestArtifact,
+        latestArtifactMessageId: snapshot.latestArtifactMessageId,
+        latestArtifactTimestamp: snapshot.latestArtifactTimestamp,
+        status: nextStatus,
+        errorCode: preserveError ? current.errorCode ?? null : null,
+        errorMessage: preserveError ? current.errorMessage ?? null : null,
+        hydrated: true,
+      };
+    });
+  }, [updateConversation]);
 
   const applyConversationError = useCallback((conversationId: string, error: unknown) => {
     const normalized = normalizeWorkspaceError(error);
@@ -143,100 +151,73 @@ export function ThesisWorkspace({
     try {
       const { messages } = await transportClient.getMessages(conversationId, undefined, 100);
       const snapshot = buildConversationSnapshot(messages);
+      const currentConversation = conversations.find((conversation) => conversation.conversationId === conversationId);
 
-      updateConversation(conversationId, (current) => ({
-        ...current,
-        title: deriveConversationTitle(current.title, snapshot.messages, conversationId),
-        messages: toThesisChatMessages(snapshot.messages),
-        latestArtifact: snapshot.latestArtifact,
-        latestArtifactMessageId: snapshot.latestArtifactMessageId,
-        latestArtifactTimestamp: snapshot.latestArtifactTimestamp,
-        status: resolveHydratedStatus(snapshot),
-        errorCode: null,
-        errorMessage: null,
-        hydrated: true,
-      }));
+      replaceConversationFromSnapshot(
+        conversationId,
+        currentConversation?.title || `Chat ${conversationId.slice(0, 8)}`,
+        snapshot,
+      );
     } catch (error) {
       applyConversationError(conversationId, error);
     }
-  }, [applyConversationError, transportClient, updateConversation]);
+  }, [applyConversationError, conversations, replaceConversationFromSnapshot, transportClient]);
 
-  const chatTransport = useMemo(() => createThesisChatTransport({
-    transportClient,
-    wsClient,
-    getConversationId: () => activeConversationIdRef.current,
-    onConversationCreated: ({ conversationId, title, messages }) => {
-      setConversations((current) => {
-        if (current.some((conversation) => conversation.conversationId === conversationId)) {
-          return current;
-        }
+  const pollConversationUntilSettled = useCallback(async ({
+    conversationId,
+    fallbackTitle,
+    queuedResponse,
+  }: {
+    conversationId: string;
+    fallbackTitle: string;
+    queuedResponse?: ThesisQueuedResponse;
+  }) => {
+    let unchangedPolls = 0;
+    let previousFingerprint = "";
+    const startedAt = Date.now();
 
-        return [createConversationState(conversationId, trimTitle(title), messages), ...current];
-      });
-      setActiveConversationId(conversationId);
-    },
-    onConversationQueued: ({ conversationId, queuedResponse }) => {
-      if (!queuedResponse.code) {
+    while (Date.now() - startedAt < POLL_TIMEOUT_MS) {
+      const response = await transportClient.getMessages(conversationId, undefined, 100);
+      const snapshot = buildConversationSnapshot(response.messages ?? []);
+      const latestTurn = buildLatestAssistantTurn(snapshot.messages);
+      const hasStableReply = Boolean(snapshot.latestArtifact || latestTurn.transcript || latestTurn.artifactOnly);
+
+      replaceConversationFromSnapshot(conversationId, fallbackTitle, snapshot);
+
+      if (!hasStableReply) {
+        await sleep(latestTurn.messages.length === 0 ? INITIAL_POLL_INTERVAL_MS : ACTIVE_POLL_INTERVAL_MS);
+        continue;
+      }
+
+      if (latestTurn.fingerprint === previousFingerprint) {
+        unchangedPolls += 1;
+      } else {
+        previousFingerprint = latestTurn.fingerprint;
+        unchangedPolls = 1;
+      }
+
+      if (snapshot.latestArtifact || unchangedPolls >= REQUIRED_STABLE_POLLS) {
         return;
       }
 
-      updateConversation(conversationId, (current) => ({
-        ...current,
-        status: "processing",
-        errorCode: queuedResponse.code ?? null,
-        errorMessage: queuedResponse.message ?? null,
-      }));
-    },
-    onConversationSettled: ({ conversationId, title, snapshot }) => {
-      const nextMessages = toThesisChatMessages(snapshot.messages);
+      await sleep(ACTIVE_POLL_INTERVAL_MS);
+    }
 
-      updateConversation(conversationId, (current) => ({
-        ...current,
-        title: deriveConversationTitle(trimTitle(title || current.title), snapshot.messages, conversationId),
-        messages: nextMessages,
-        latestArtifact: snapshot.latestArtifact,
-        latestArtifactMessageId: snapshot.latestArtifactMessageId,
-        latestArtifactTimestamp: snapshot.latestArtifactTimestamp,
-        status: "complete",
-        errorCode: null,
-        errorMessage: null,
-        hydrated: true,
-      }));
+    const finalResponse = await transportClient.getMessages(conversationId, undefined, 100);
+    const finalSnapshot = buildConversationSnapshot(finalResponse.messages ?? []);
+    replaceConversationFromSnapshot(conversationId, fallbackTitle, finalSnapshot);
 
-      if (activeConversationIdRef.current === conversationId) {
-        setMessagesRef.current?.(nextMessages);
-      }
-    },
-  }), [transportClient, wsClient, updateConversation]);
+    const finalTurn = buildLatestAssistantTurn(finalSnapshot.messages);
+    if (finalSnapshot.latestArtifact || finalTurn.transcript || finalTurn.artifactOnly) {
+      return;
+    }
 
-  const {
-    messages: chatMessages,
-    sendMessage,
-    setMessages,
-    status: chatStatus,
-    error: chatError,
-    clearError,
-  } = useChat<ThesisChatMessage>({
-    id: "thesis-workspace",
-    transport: chatTransport,
-  });
-
-  useEffect(() => {
-    setMessagesRef.current = setMessages;
-
-    return () => {
-      setMessagesRef.current = null;
-    };
-  }, [setMessages]);
-
-  const activeConversationFingerprint = useMemo(
-    () => buildChatMessageFingerprint(activeConversation?.messages ?? []),
-    [activeConversation?.messages],
-  );
-  const chatFingerprint = useMemo(
-    () => buildChatMessageFingerprint(chatMessages),
-    [chatMessages],
-  );
+    throw new ThesisTransportError(
+      queuedResponse?.message || "The assistant request timed out before any stable reply was returned.",
+      504,
+      queuedResponse?.code === "concurrency_limit" ? "concurrency_limit" : "timeout",
+    );
+  }, [replaceConversationFromSnapshot, transportClient]);
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -274,13 +255,12 @@ export function ThesisWorkspace({
 
   useEffect(() => {
     endRef.current?.scrollIntoView({
-      behavior: chatStatus === "submitted" || chatStatus === "streaming" ? "auto" : "smooth",
+      behavior: activeConversation?.status === "processing" ? "auto" : "smooth",
     });
   }, [
     activeConversation?.latestArtifactMessageId,
+    activeConversation?.messages,
     activeConversation?.status,
-    chatFingerprint,
-    chatStatus,
   ]);
 
   useEffect(() => {
@@ -327,92 +307,26 @@ export function ThesisWorkspace({
       return;
     }
 
-    if (chatStatus === "submitted" || chatStatus === "streaming") {
-      return;
-    }
-
     const conversation = conversations.find((entry) => entry.conversationId === activeConversationId);
-    if (!conversation) {
+    if (!conversation || conversation.hydrated || conversation.status === "processing") {
       return;
     }
 
-    if (!conversation.hydrated) {
-      void hydrateConversation(activeConversationId);
-      return;
-    }
-
-    if (activeConversationFingerprint !== chatFingerprint) {
-      setMessages(conversation.messages);
-    }
-  }, [
-    activeConversationFingerprint,
-    activeConversationId,
-    chatFingerprint,
-    chatMessages.length,
-    chatStatus,
-    conversations,
-    hydrateConversation,
-    setMessages,
-  ]);
-
-  useEffect(() => {
-    if (!activeConversationId) {
-      return;
-    }
-
-    const nextStatus = mapChatStatus(chatStatus, chatMessages.length);
-
-    updateConversation(activeConversationId, (current) => {
-      const currentFingerprint = buildChatMessageFingerprint(current.messages);
-      const nextMessages = chatStatus === "submitted" || chatStatus === "streaming"
-        ? chatMessages
-        : current.messages;
-      const nextMessagesFingerprint = buildChatMessageFingerprint(nextMessages);
-
-      if (
-        currentFingerprint === nextMessagesFingerprint
-        && current.status === nextStatus
-      ) {
-        return current;
-      }
-
-      return {
-        ...current,
-        messages: nextMessages,
-        status: nextStatus,
-        hydrated: true,
-      };
-    });
-  }, [activeConversationId, chatMessages, chatStatus, updateConversation]);
-
-  useEffect(() => {
-    if (!chatError) {
-      return;
-    }
-
-    const conversationId = activeConversationIdRef.current;
-    if (conversationId) {
-      applyConversationError(conversationId, chatError);
-      return;
-    }
-
-    handleShellError(chatError, onSessionExpired, setShellError);
-  }, [applyConversationError, chatError, onSessionExpired]);
+    void hydrateConversation(activeConversationId);
+  }, [activeConversationId, conversations, hydrateConversation]);
 
   const handleCreateConversation = useCallback(() => {
-    if (chatStatus === "submitted" || chatStatus === "streaming") {
+    if (conversations.some((conversation) => conversation.status === "processing")) {
       return;
     }
 
     setActiveConversationId("");
     setInput("");
     setShellError(null);
-    clearError();
-    setMessages([]);
     if (isMobileViewport) {
       setSidebarOpen(false);
     }
-  }, [chatStatus, clearError, isMobileViewport, setMessages]);
+  }, [conversations, isMobileViewport]);
 
   const handleDeleteConversation = useCallback(async (conversationId: string) => {
     try {
@@ -424,13 +338,12 @@ export function ThesisWorkspace({
       });
 
       if (activeConversationIdRef.current === conversationId) {
-        clearError();
-        setMessages([]);
+        setShellError(null);
       }
     } catch (error) {
       handleShellError(error, onSessionExpired, setShellError);
     }
-  }, [clearError, onSessionExpired, setMessages, transportClient]);
+  }, [onSessionExpired, transportClient]);
 
   const handleSubmit = useCallback(async (
     rawPrompt: string,
@@ -443,62 +356,63 @@ export function ThesisWorkspace({
 
     setInput("");
     setShellError(null);
-    clearError();
 
-    if (activeConversationIdRef.current) {
-      updateConversation(activeConversationIdRef.current, (current) => ({
-        ...current,
-        title: current.title !== "New Chat" ? current.title : trimTitle(suggestedTitle || prompt),
-        status: "processing",
-        errorCode: null,
-        errorMessage: null,
-      }));
-    }
+    const fallbackTitle = trimTitle(suggestedTitle || prompt);
+    const optimisticUserMessage = createOptimisticUserMessage(prompt);
+
+    let conversationId = activeConversationIdRef.current;
 
     try {
-      await sendMessage({
-        text: prompt,
-        metadata: {
-          timestamp: new Date().toISOString(),
-          sender: "user",
-          senderName: "You",
-        },
-      }, {
-        body: {
-          suggestedTitle: suggestedTitle || prompt,
-        },
+      if (!conversationId) {
+        const created = await transportClient.createConversation();
+        conversationId = created.conversationId;
+        const nextConversation = createConversationState(conversationId, fallbackTitle, [optimisticUserMessage]);
+        nextConversation.status = "processing";
+        nextConversation.hydrated = true;
+        setConversations((current) => [nextConversation, ...current]);
+        setActiveConversationId(conversationId);
+      } else {
+        updateConversation(conversationId, (current) => ({
+          ...current,
+          title: current.title !== "New Chat" ? current.title : fallbackTitle,
+          messages: [...current.messages, optimisticUserMessage],
+          status: "processing",
+          hydrated: true,
+          errorCode: null,
+          errorMessage: null,
+        }));
+      }
+
+      const queuedResponse = await transportClient.sendMessage(conversationId, prompt);
+      updateConversation(conversationId, (current) => ({
+        ...current,
+        status: "processing",
+        errorCode: queuedResponse.code ?? null,
+        errorMessage: queuedResponse.message ?? null,
+      }));
+
+      await pollConversationUntilSettled({
+        conversationId,
+        fallbackTitle,
+        queuedResponse,
       });
     } catch (error) {
-      const conversationId = activeConversationIdRef.current;
       if (conversationId) {
         applyConversationError(conversationId, error);
       } else {
         handleShellError(error, onSessionExpired, setShellError);
       }
     }
-  }, [applyConversationError, clearError, onSessionExpired, sendMessage, updateConversation]);
+  }, [applyConversationError, onSessionExpired, pollConversationUntilSettled, transportClient, updateConversation]);
 
   const handleSend = useCallback(() => {
     void handleSubmit(input);
   }, [handleSubmit, input]);
 
-  const activeConversationView = useMemo(() => {
-    const nextStatus = mapChatStatus(chatStatus, chatMessages.length);
-    const preferredMessages = activeConversation ? activeConversation.messages : chatMessages;
-
-    if (activeConversation) {
-      return {
-        ...activeConversation,
-        messages: preferredMessages,
-        status: nextStatus,
-      };
-    }
-
-    return createDraftConversationState({
-      messages: chatMessages,
-      status: nextStatus,
-    });
-  }, [activeConversation, chatMessages, chatStatus]);
+  const activeConversationView = useMemo(
+    () => activeConversation ?? createDraftConversationState(),
+    [activeConversation],
+  );
 
   const handleRetry = useCallback(() => {
     const lastUserMessage = [...activeConversationView.messages]
@@ -519,11 +433,12 @@ export function ThesisWorkspace({
     }
   };
 
-  const isRequestInFlight = chatStatus === "submitted" || chatStatus === "streaming";
+  const isRequestInFlight = conversations.some((conversation) => conversation.status === "processing");
+  const isHydratingConversation = Boolean(activeConversationId && activeConversation?.hydrated === false);
   const canSend = input.trim().length > 0
     && !isRequestInFlight
     && !isBootstrapping
-    && (!activeConversationId || activeConversation?.hydrated !== false);
+    && !isHydratingConversation;
   const isStarterState = activeConversationView.messages.length === 0;
   const contentMaxWidthClass = isStarterState ? "max-w-4xl" : "max-w-[920px]";
 
@@ -592,7 +507,7 @@ export function ThesisWorkspace({
                     disabled={isRequestInFlight}
                     onClick={() => {
                       setActiveConversationId(conversation.conversationId);
-                      clearError();
+                      setShellError(null);
                       if (isMobileViewport) {
                         setSidebarOpen(false);
                       }
@@ -652,8 +567,8 @@ export function ThesisWorkspace({
             <span className="truncate text-sm font-medium text-foreground">{activeConversationView.title || "Devbox"}</span>
           </div>
           <div className="ml-2 flex items-center gap-1.5">
-            <span className={`h-1.5 w-1.5 rounded-full ${wsClient && wsConnected ? "bg-emerald-500" : "bg-muted-foreground/40"}`} />
-            <span className="text-[10px] text-muted-foreground/60">{wsClient && wsConnected ? "live" : "polling"}</span>
+            <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40" />
+            <span className="text-[10px] text-muted-foreground/60">polling</span>
           </div>
         </header>
 
@@ -665,7 +580,7 @@ export function ThesisWorkspace({
               </div>
             )}
 
-            {isBootstrapping ? (
+            {isBootstrapping || isHydratingConversation ? (
               <div className="rounded-2xl border border-border/40 bg-card/35 px-6 py-16 text-center text-sm text-muted-foreground">
                 Restoring conversations...
               </div>
@@ -732,7 +647,7 @@ function ConversationThread({
   conversation: ConversationState;
   onRetry: () => void;
 }) {
-  const visibleMessages = collapseAdjacentDuplicateChatMessages(conversation.messages).filter((message) => {
+  const visibleMessages = conversation.messages.filter((message) => {
     const content = getChatMessageText(message).trim();
     return message.role === "user" || content || message.metadata?.artifactOnly || message.metadata?.artifact;
   });
@@ -887,16 +802,30 @@ function createConversationState(
   };
 }
 
-function createDraftConversationState({
-  messages,
-  status,
-}: {
-  messages: ThesisChatMessage[];
-  status: ThesisPanelStatus;
-}): ConversationState {
+function createDraftConversationState(): ConversationState {
   return {
-    ...createConversationState("", "Devbox", messages),
-    status,
+    ...createConversationState("", "Devbox", []),
+    status: "idle",
+    hydrated: true,
+  };
+}
+
+function createOptimisticUserMessage(content: string): ThesisChatMessage {
+  const timestamp = new Date().toISOString();
+
+  return {
+    id: `local-user-${timestamp}-${Math.random().toString(36).slice(2, 8)}`,
+    role: "user",
+    metadata: {
+      timestamp,
+      sender: "user",
+      senderName: "You",
+    },
+    parts: [{
+      type: "text",
+      text: content,
+      state: "done",
+    }],
   };
 }
 
@@ -928,21 +857,6 @@ function deriveConversationTitle(
 
 function trimTitle(value: string) {
   return value.length > 48 ? `${value.slice(0, 48)}...` : value;
-}
-
-function mapChatStatus(
-  status: "submitted" | "streaming" | "ready" | "error",
-  messageCount: number,
-): ThesisPanelStatus {
-  if (status === "submitted" || status === "streaming") {
-    return "processing";
-  }
-
-  if (status === "error") {
-    return "error";
-  }
-
-  return messageCount > 0 ? "complete" : "idle";
 }
 
 function hasAssistantText(messages: ThesisChatMessage[]) {
@@ -1022,4 +936,8 @@ function mapConversationErrorBody(errorCode?: string | null, errorMessage?: stri
   }
 
   return errorMessage || "No stable assistant reply was returned. Retry the request or simplify the prompt.";
+}
+
+async function sleep(ms: number) {
+  await new Promise((resolve) => globalThis.setTimeout(resolve, ms));
 }

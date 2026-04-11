@@ -14,11 +14,11 @@ web:
   port: 18092
 
 agents:
-  - name: localqa
-    path: agents/localqa
+  - name: quant-agent
+    path: agents/quant-agent
 
 channels:
   - id: "web:*"
     agents:
-      - name: localqa
+      - name: quant-agent
         requires_trigger: false

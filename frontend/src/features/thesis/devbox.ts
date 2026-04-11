@@ -202,64 +202,11 @@ export function toThesisChatMessages(
   }));
 }
 
-export function toConversationMessages(
-  messages: ThesisChatMessage[],
-): ThesisConversationMessage[] {
-  return messages.map((message) => ({
-    id: message.id,
-    role: message.role === "assistant" ? "assistant" : "user",
-    content: getChatMessageText(message),
-    timestamp: message.metadata?.timestamp ?? "",
-    sender: message.metadata?.sender ?? (message.role === "assistant" ? "assistant" : "user"),
-    senderName: message.metadata?.senderName ?? (message.role === "assistant" ? "Assistant" : "You"),
-    artifact: message.metadata?.artifact ?? null,
-    artifactOnly: Boolean(message.metadata?.artifactOnly),
-    requestMode: message.metadata?.requestMode,
-  }));
-}
-
-export function collapseAdjacentDuplicateChatMessages(
-  messages: ThesisChatMessage[],
-): ThesisChatMessage[] {
-  const deduped: ThesisChatMessage[] = [];
-
-  for (const message of messages) {
-    const previous = deduped[deduped.length - 1];
-    if (isDuplicateAssistantChatMessage(previous, message)) {
-      continue;
-    }
-    deduped.push(message);
-  }
-
-  return deduped;
-}
-
 export function getChatMessageText(message: ThesisChatMessage) {
   return message.parts
     .filter((part): part is Extract<typeof part, { type: "text" }> => part.type === "text")
     .map((part) => part.text)
     .join("");
-}
-
-export function buildChatMessageFingerprint(messages: ThesisChatMessage[]) {
-  return messages
-    .map((message) => [
-      message.id,
-      message.role,
-      getChatMessageText(message),
-      message.metadata?.timestamp ?? "",
-      getArtifactFingerprint(message.metadata?.artifact ?? null),
-      message.metadata?.artifactOnly ? "artifact" : "text",
-    ].join(":"))
-    .join("|");
-}
-
-export function getLatestUserChatMessage(messages: ThesisChatMessage[]) {
-  return [...messages].reverse().find((message) => message.role === "user");
-}
-
-export function getLatestUserChatMessageMode(messages: ThesisChatMessage[]) {
-  return getLatestUserChatMessage(messages)?.metadata?.requestMode ?? null;
 }
 
 export function buildLatestAssistantTurn(messages: ThesisConversationMessage[]) {
@@ -305,21 +252,6 @@ function getArtifactFingerprint(artifact: ThesisArtifact | null) {
   }
 
   return `${artifact.type}:${artifact.data.title}`;
-}
-
-function isDuplicateAssistantChatMessage(
-  previous: ThesisChatMessage | undefined,
-  current: ThesisChatMessage,
-) {
-  if (!previous) return false;
-  if (previous.role !== "assistant" || current.role !== "assistant") return false;
-
-  return (
-    getChatMessageText(previous).trim() === getChatMessageText(current).trim()
-    && getArtifactFingerprint(previous.metadata?.artifact ?? null)
-      === getArtifactFingerprint(current.metadata?.artifact ?? null)
-    && Boolean(previous.metadata?.artifactOnly) === Boolean(current.metadata?.artifactOnly)
-  );
 }
 
 function getConversationArtifactFingerprint(artifact: ThesisConversationMessage["artifact"]) {
