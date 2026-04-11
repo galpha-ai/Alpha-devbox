@@ -69,7 +69,8 @@ export function buildConversationSnapshot(
     .reverse()
     .find((message) => !isAssistantMessage(message));
 
-  const messages = orderedMessages.map<ThesisConversationMessage>((message) => {
+  const messages = collapseAdjacentDuplicateAssistantMessages(
+    orderedMessages.map<ThesisConversationMessage>((message) => {
       const role = isAssistantMessage(message) ? "assistant" : "user";
       const artifact = role === "assistant" ? extractLatestSupportedArtifact(message.content) : null;
       const strippedContent = role === "user"
@@ -90,7 +91,8 @@ export function buildConversationSnapshot(
         artifactOnly,
         requestMode: role === "user" ? detectPromptMode(message.content) : undefined,
       };
-    });
+    }),
+  );
   const latestArtifactMessage = [...messages]
     .reverse()
     .find((message) => message.role === "assistant" && message.artifact);
@@ -122,6 +124,40 @@ function compareMessagesAscending(left: DevboxApiMessage, right: DevboxApiMessag
   }
 
   return left.id.localeCompare(right.id);
+}
+
+function collapseAdjacentDuplicateAssistantMessages(
+  messages: ThesisConversationMessage[],
+) {
+  const deduped: ThesisConversationMessage[] = [];
+
+  for (const message of messages) {
+    const previous = deduped[deduped.length - 1];
+    if (isDuplicateAssistantMessage(previous, message)) {
+      continue;
+    }
+    deduped.push(message);
+  }
+
+  return deduped;
+}
+
+function isDuplicateAssistantMessage(
+  previous: ThesisConversationMessage | undefined,
+  current: ThesisConversationMessage,
+) {
+  if (!previous) return false;
+  if (previous.role !== "assistant" || current.role !== "assistant") return false;
+
+  return (
+    normalizeAssistantContent(previous.content) === normalizeAssistantContent(current.content)
+    && getConversationArtifactFingerprint(previous.artifact ?? null) === getConversationArtifactFingerprint(current.artifact ?? null)
+    && Boolean(previous.artifactOnly) === Boolean(current.artifactOnly)
+  );
+}
+
+function normalizeAssistantContent(content: string) {
+  return content.trim();
 }
 
 function isAssistantMessage(message: DevboxApiMessage) {
