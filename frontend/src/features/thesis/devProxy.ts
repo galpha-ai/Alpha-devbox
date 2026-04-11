@@ -2,7 +2,7 @@ import type { IncomingMessage } from "node:http";
 
 import type { ProxyOptions } from "vite";
 
-export const DEFAULT_LOCAL_DEVBOX_PROXY_TARGET = "http://127.0.0.1:8092";
+export const DEFAULT_LOCAL_DEVBOX_PROXY_TARGET = "http://127.0.0.1:18092";
 export const DEFAULT_THESIS_DEV_PROXY_TARGET = DEFAULT_LOCAL_DEVBOX_PROXY_TARGET;
 export const DEFAULT_THESIS_LOCAL_USER_ID = "thesis-demo-user";
 
@@ -67,6 +67,7 @@ export function createThesisDevProxy(targets: ThesisDevProxyTargets): Record<str
       target: devboxTarget,
       changeOrigin: true,
       secure: isSecureTarget(devboxTarget),
+      ws: true,
       configure(proxy) {
         proxy.on("proxyReq", (proxyReq, req) => {
           attachLocalUserId(proxyReq, req, targets.localUserId);

@@ -4,15 +4,34 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-if [[ -f .env ]]; then
-  set -a
-  # shellcheck disable=SC1091
-  source .env
-  set +a
+for env_file in .env .env.local .env.web-local; do
+  if [[ -f "$env_file" ]]; then
+    echo "Loading $env_file"
+    set -a
+    # shellcheck disable=SC1090
+    source "$env_file"
+    set +a
+  fi
+done
+
+if [[ -z "${ANTHROPIC_API_KEY:-}" && -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]]; then
+  echo "Missing Claude credentials. Set ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN in .env/.env.local before running dev:web-local." >&2
+  exit 1
+fi
+
+if ! docker info >/dev/null 2>&1; then
+  echo "Docker is not running. Start Docker first, then re-run npm run dev:web-local." >&2
+  exit 1
 fi
 
 DATA_ROOT="${DEVBOX_DATA_ROOT:-$ROOT/.devbox-local}"
 export DEVBOX_DATA_ROOT="$DATA_ROOT"
+BACKEND_URL="${DEVBOX_WEB_URL:-http://127.0.0.1:18092}"
+FRONTEND_URL="${DEVBOX_FRONTEND_URL:-http://127.0.0.1:5175/}"
+BACKEND_PORT="${BACKEND_URL##*:}"
+BACKEND_PORT="${BACKEND_PORT%%/*}"
+FRONTEND_PORT="${FRONTEND_URL#http://127.0.0.1:}"
+FRONTEND_PORT="${FRONTEND_PORT%%/*}"
 
 if [[ "${DEVBOX_WEB_CLEAN:-1}" == "1" ]]; then
   rm -rf "$DATA_ROOT"
@@ -27,37 +46,65 @@ if [[ ! -d frontend/node_modules ]]; then
   npm --prefix frontend install
 fi
 
-docker image inspect devbox-runner:latest >/dev/null 2>&1 || \
-  docker build -t devbox-runner:latest -f docker/runner.Dockerfile .
+echo "Refreshing devbox-runner:latest ..."
+docker build -t devbox-runner:latest -f docker/runner.Dockerfile .
+
+kill_listener_on_port() {
+  local port="$1"
+  local pids
+  pids="$(lsof -tiTCP:"$port" -sTCP:LISTEN 2>/dev/null || true)"
+  if [[ -n "$pids" ]]; then
+    echo "Stopping existing listener(s) on port $port: $pids"
+    kill $pids >/dev/null 2>&1 || true
+    sleep 1
+  fi
+}
+
+kill_listener_on_port "$BACKEND_PORT"
+kill_listener_on_port "$FRONTEND_PORT"
 
 pkill -f 'tsx src/index.ts --config config.web-local.yaml' >/dev/null 2>&1 || true
 pkill -f 'frontend run dev -- --host 127.0.0.1 --port 5175' >/dev/null 2>&1 || true
+docker ps -aq --filter 'name=^devbox-localqa-' | xargs -r docker rm -f >/dev/null 2>&1 || true
 
-echo "Starting backend on http://localhost:8092 ..."
-npm run dev -- --config config.web-local.yaml &
+echo "Starting backend on $BACKEND_URL ..."
+npm run dev:server &
 BACKEND_PID=$!
+FRONTEND_PID=""
 
 cleanup() {
   kill "$BACKEND_PID" "$FRONTEND_PID" >/dev/null 2>&1 || true
 }
 trap cleanup EXIT INT TERM
 
-for _ in $(seq 1 30); do
-  if curl -fsS http://localhost:8092/api/devbox/health >/dev/null 2>&1; then
-    break
-  fi
-  sleep 1
-done
+wait_for_url() {
+  local url="$1"
+  local label="$2"
 
-echo "Starting frontend on http://127.0.0.1:5175/thesis ..."
-DEVBOX_FRONTEND_PROXY_TARGET=http://localhost:8092 \
+  for _ in $(seq 1 30); do
+    if curl -fsS "$url" >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 1
+  done
+
+  echo "$label did not become ready at $url" >&2
+  return 1
+}
+
+wait_for_url "$BACKEND_URL/api/devbox/health" "Backend"
+
+echo "Starting frontend on $FRONTEND_URL ..."
+VITE_THESIS_DEVBOX_PROXY_TARGET="$BACKEND_URL" \
   npm --prefix frontend run dev -- --host 127.0.0.1 --port 5175 &
 FRONTEND_PID=$!
 
+wait_for_url "$FRONTEND_URL" "Frontend"
+
 echo
 echo "Devbox local web is running:"
-echo "  Frontend: http://127.0.0.1:5175/thesis"
-echo "  Backend:  http://localhost:8092/api/devbox/health"
+echo "  Frontend: $FRONTEND_URL"
+echo "  Backend:  $BACKEND_URL/api/devbox/health"
 echo
 echo "Press Ctrl+C to stop both services."
 

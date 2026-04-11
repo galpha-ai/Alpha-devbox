@@ -11,7 +11,7 @@ container:
 
 web:
   enabled: true
-  port: 8092
+  port: 18092
 
 agents:
   - name: localqa

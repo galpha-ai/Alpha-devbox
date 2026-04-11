@@ -9,6 +9,7 @@
     "dev": "vite --force",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "e2e:local": "node scripts/thesis-local-smoke.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",

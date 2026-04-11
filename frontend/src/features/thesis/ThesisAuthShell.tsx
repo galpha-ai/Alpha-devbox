@@ -73,7 +73,6 @@ function useThesisClients() {
   );
 
   return {
-    authClient,
     transportClient,
   };
 }

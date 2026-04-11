@@ -16,10 +16,10 @@ import {
 } from "./transport";
 import type { DevboxWsClient, DevboxWsMessage } from "./wsTransport";
 
-const INITIAL_POLL_INTERVAL_MS = import.meta.env.MODE === "test" ? 10 : 1500;
-const ACTIVE_POLL_INTERVAL_MS = import.meta.env.MODE === "test" ? 10 : 1000;
+const INITIAL_POLL_INTERVAL_MS = import.meta.env.MODE === "test" ? 10 : 2500;
+const ACTIVE_POLL_INTERVAL_MS = import.meta.env.MODE === "test" ? 10 : 2000;
 const POLL_TIMEOUT_MS = import.meta.env.MODE === "test" ? 500 : 600_000;
-const REQUIRED_STABLE_POLLS = 2;
+const REQUIRED_STABLE_POLLS = 1;
 const ARTIFACT_ONLY_REPLY = "Generated a structured artifact.";
 
 export interface ThesisChatPollConfig {

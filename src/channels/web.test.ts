@@ -160,6 +160,28 @@ describe('WebChannel', () => {
     ws.close();
   });
 
+  it('accepts browser-safe WebSocket auth via query param', async () => {
+    const ws = new WebSocket(
+      `ws://localhost:${port}/api/devbox/ws?userId=user1`,
+    );
+    await new Promise<void>((resolve) => ws.on('open', resolve));
+
+    const messagePromise = new Promise<any>((resolve) => {
+      ws.on('message', (data) => resolve(JSON.parse(data.toString())));
+    });
+
+    await channel.sendMessage('web:user1', 'agent reply', {
+      threadId: 'conv-1',
+    });
+
+    const msg = await messagePromise;
+    expect(msg.type).toBe('output');
+    expect(msg.conversationId).toBe('conv-1');
+    expect(msg.content).toBe('agent reply');
+
+    ws.close();
+  });
+
   it('setTyping sends status message via WebSocket', async () => {
     const ws = new WebSocket(`ws://localhost:${port}/api/devbox/ws`, {
       headers: { 'X-User-Id': 'user1' },

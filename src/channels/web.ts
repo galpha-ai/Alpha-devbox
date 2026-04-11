@@ -40,7 +40,12 @@ export class WebChannel implements Channel {
     this.wss = new WebSocketServer({ noServer: true });
 
     this.server.on('upgrade', (req, socket, head) => {
-      const userId = req.headers['x-user-id'] as string | undefined;
+      const url = new URL(req.url || '/', `http://${req.headers.host}`);
+      const userId =
+        (req.headers['x-user-id'] as string | undefined) ||
+        url.searchParams.get('userId') ||
+        url.searchParams.get('x-user-id') ||
+        undefined;
       if (!userId) {
         socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
         socket.destroy();

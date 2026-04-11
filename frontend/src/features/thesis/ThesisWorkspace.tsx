@@ -650,12 +650,10 @@ export function ThesisWorkspace({
             <MessageSquare className="h-4 w-4 shrink-0 text-primary" />
             <span className="truncate text-sm font-medium text-foreground">{activeConversationView.title || "Devbox"}</span>
           </div>
-          {wsClient ? (
-            <div className="ml-2 flex items-center gap-1.5">
-              <span className={`h-1.5 w-1.5 rounded-full ${wsConnected ? "bg-emerald-500" : "bg-muted-foreground/40"}`} />
-              <span className="text-[10px] text-muted-foreground/60">{wsConnected ? "live" : "polling"}</span>
-            </div>
-          ) : null}
+          <div className="ml-2 flex items-center gap-1.5">
+            <span className={`h-1.5 w-1.5 rounded-full ${wsClient && wsConnected ? "bg-emerald-500" : "bg-muted-foreground/40"}`} />
+            <span className="text-[10px] text-muted-foreground/60">{wsClient && wsConnected ? "live" : "polling"}</span>
+          </div>
         </header>
 
         <div className="flex-1 overflow-y-auto">

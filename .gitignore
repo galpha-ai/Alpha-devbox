@@ -40,3 +40,4 @@ agents/*/logs/
 .envrc
 .omx/
 .gstack/
+*.local

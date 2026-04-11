@@ -44,6 +44,7 @@ export interface DevboxWsClient {
 export interface DevboxWsClientOptions {
   baseUrl: string;
   getAccessToken: () => string | null;
+  getUserId?: () => string | null;
 }
 
 export function createDevboxWebSocket(
@@ -59,9 +60,21 @@ export function createDevboxWebSocket(
     const base = options.baseUrl.replace(/\/+$/, "");
     const wsBase = base.replace(/^http/, "ws");
     const token = options.getAccessToken();
-    return token
-      ? `${wsBase}/ws?token=${encodeURIComponent(token)}`
-      : `${wsBase}/ws`;
+    const userId = options.getUserId?.();
+    const params = new URLSearchParams();
+
+    if (token) {
+      params.set("token", token);
+    }
+
+    if (userId) {
+      params.set("userId", userId);
+    }
+
+    const query = params.toString();
+    return query
+      ? `${wsBase}/api/devbox/ws?${query}`
+      : `${wsBase}/api/devbox/ws`;
   }
 
   function dispatch(message: DevboxWsMessage) {

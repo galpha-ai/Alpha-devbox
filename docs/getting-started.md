@@ -52,82 +52,41 @@ This is the shortest path to a working local deployment.
 git clone https://github.com/galpha-ai/devbox-agent-open.git
 cd devbox-agent-open
 npm install
-npm run build
 ```
 
 Expected result:
 
 - dependencies install successfully
-- `npm run build` completes without errors
+- `npm install` completes without errors
 
-### 2. Point the example agent at a real repo
+### 2. Add local credentials
 
-For the first run, reuse the included `agents/example` agent and edit its repo seed:
-
-```yaml
-# agents/example/seed.yaml
-repos:
-  - name: my-project
-    source: https://github.com/your-org/your-repo.git
-    ref: main
-```
-
-You can create your own agent later. For first deployment, keeping `agents/example` reduces moving parts.
-
-### 3. Create a minimal web-only config
-
-Create `config.yaml` in the repo root:
-
-```yaml
-assistant_name: Devbox
-
-container:
-  runtime: docker
-  image: devbox-runner:latest
-  timeout: 5400000
-  idle_timeout: 300000
-  max_concurrent: 2
-
-web:
-  enabled: true
-  port: 8080
-
-agents:
-  - name: example
-    path: agents/example
-
-channels:
-  - id: 'web:*'
-    agents:
-      - name: example
-        requires_trigger: false
-```
-
-Why this path:
-
-- no Slack setup
-- no Telegram setup
-- quickest way to prove the controller + runner loop works
-
-### 4. Export Claude credentials
-
-Use one of these:
+Copy the example env file and fill one Claude credential:
 
 ```bash
-export ANTHROPIC_API_KEY="sk-ant-..."
+cp .env.example .env.local
 ```
 
-or:
+At minimum set one of:
+
+- `ANTHROPIC_API_KEY`
+- `CLAUDE_CODE_OAUTH_TOKEN`
+
+Optional:
+
+- `ANTHROPIC_BASE_URL` if you use a proxy / compatible endpoint
+- `DEVBOX_DISABLE_SESSION_RESUME=1` for cleaner local smoke runs
+- `DEVBOX_WEB_CLEAN=1` to reset local session data on each run
+
+This local path is already preconfigured for the built-in web frontend and local demo agent. No extra `config.yaml` is required.
+
+### 3. Start the local web stack
 
 ```bash
-export CLAUDE_CODE_OAUTH_TOKEN="..."
+npm run dev
 ```
 
-Expected result:
-
-- the controller starts without credential errors
-
-### 5. Build the runner image
+If you want to prebuild the runner image yourself first, you can also run:
 
 ```bash
 docker build -f docker/runner.Dockerfile -t devbox-runner:latest .
@@ -135,54 +94,39 @@ docker build -f docker/runner.Dockerfile -t devbox-runner:latest .
 
 Expected result:
 
-- Docker builds `devbox-runner:latest` successfully
+- the script refreshes the local `devbox-runner:latest` image before start
+- the backend starts on `http://127.0.0.1:18092`
+- the frontend starts on `http://127.0.0.1:5175/`
+- no Slack or Telegram tokens are required for this path
 
-### 6. Start the controller
-
-```bash
-npm run dev -- --config config.yaml
-```
-
-Expected result:
-
-- the controller starts
-- the web server listens on port `8080`
-- no config validation errors appear on startup
-
-### 7. Verify the deployment
+### 4. Verify the deployment
 
 In a second terminal, check health:
 
 ```bash
-curl http://localhost:8080/health
+curl http://127.0.0.1:18092/api/devbox/health
 ```
 
-Then create a conversation:
+Then open:
 
 ```bash
-curl -X POST http://localhost:8080/api/conversations \
-  -H "Content-Type: application/json" \
-  -H "X-User-Id: test-user" \
-  -d '{"title": "Test"}'
+open http://127.0.0.1:5175/
 ```
 
-Take the returned conversation ID and send a message:
+Optional automated smoke test:
 
 ```bash
-curl -X POST http://localhost:8080/api/conversations/<id>/messages \
-  -H "Content-Type: application/json" \
-  -H "X-User-Id: test-user" \
-  -d '{"content": "Hello, what can you do?"}'
+npm run e2e:web-local
 ```
 
 Expected result:
 
-- health endpoint returns successfully
-- a session is created
-- the controller starts a runner container
-- the agent responds to the message
+- health endpoint returns `{"status":"ok"}`
+- `/` loads the chat UI
+- sending a prompt produces an assistant reply
+- markdown-table replies render charts inline
 
-At this point, the repo is deployed and working locally.
+At this point, the local browser path is working.
 
 ## Path 2: Docker Compose
 
