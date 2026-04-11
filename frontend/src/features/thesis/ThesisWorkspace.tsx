@@ -17,6 +17,7 @@ import { ArtifactRenderer } from "./ArtifactRenderer";
 import {
   buildChatMessageFingerprint,
   buildConversationSnapshot,
+  collapseAdjacentDuplicateChatMessages,
   getChatMessageText,
   toThesisChatMessages,
   type ThesisArtifact,
@@ -731,7 +732,7 @@ function ConversationThread({
   conversation: ConversationState;
   onRetry: () => void;
 }) {
-  const visibleMessages = conversation.messages.filter((message) => {
+  const visibleMessages = collapseAdjacentDuplicateChatMessages(conversation.messages).filter((message) => {
     const content = getChatMessageText(message).trim();
     return message.role === "user" || content || message.metadata?.artifactOnly || message.metadata?.artifact;
   });

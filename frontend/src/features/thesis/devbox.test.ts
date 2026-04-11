@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { buildConversationSnapshot } from "./devbox";
+import {
+  buildConversationSnapshot,
+  collapseAdjacentDuplicateChatMessages,
+  type ThesisChatMessage,
+} from "./devbox";
 
 describe("buildConversationSnapshot", () => {
   it("collapses adjacent duplicate assistant replies", () => {
@@ -40,5 +44,29 @@ describe("buildConversationSnapshot", () => {
     expect(snapshot.messages).toHaveLength(2);
     expect(snapshot.messages[1].content).toBe("same reply");
     expect(snapshot.assistantTranscript).toBe("same reply");
+  });
+
+  it("collapses adjacent duplicate assistant chat messages at render time", () => {
+    const messages: ThesisChatMessage[] = [
+      {
+        id: "u1",
+        role: "user",
+        parts: [{ type: "text", text: "hello", state: "done" }],
+      },
+      {
+        id: "a1",
+        role: "assistant",
+        parts: [{ type: "text", text: "same reply", state: "done" }],
+      },
+      {
+        id: "a2",
+        role: "assistant",
+        parts: [{ type: "text", text: "same reply", state: "done" }],
+      },
+    ];
+
+    const deduped = collapseAdjacentDuplicateChatMessages(messages);
+    expect(deduped).toHaveLength(2);
+    expect(deduped[1].id).toBe("a1");
   });
 });
