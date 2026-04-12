@@ -16,6 +16,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@ai-sdk/react": "^3.0.160",
+    "@galpha-ai/better-markdown": "^1.0.0",
     "@hookform/resolvers": "^3.10.0",
     "@privy-io/react-auth": "^3.19.0",
     "@radix-ui/react-accordion": "^1.2.11",
@@ -47,7 +49,7 @@
     "@radix-ui/react-tooltip": "^1.2.7",
     "@tanstack/react-query": "^5.83.0",
     "@types/three": "^0.183.1",
-    "ai": "^6.0.149",
+    "ai": "^6.0.158",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

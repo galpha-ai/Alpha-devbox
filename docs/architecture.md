@@ -40,8 +40,8 @@ The **runner** is a Node.js process inside a container that stays alive across m
 - `task-scheduler.ts`: Polls SQLite for due scheduled tasks (cron, interval, once), spawns containers to execute them, and logs run history.
 - `agent-folder.ts`: Path validation and resolution. Prevents directory traversal and validates agent name format (`^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$`).
 - `channels/telegram.ts`: Telegram adapter using grammy. Handles group and DM detection, `@mention` normalization, non-text message placeholders, and the `Channel` interface.
-- `channels/web.ts`: Web adapter using HTTP + WebSocket. Exposes REST API for conversation CRUD and message history, plus a single-connection-per-user WebSocket for streaming agent output and status. Auth is delegated to the upstream Envoy proxy (`X-User-Id` header). Implements the `Channel` interface.
-- `../frontend/`: Minimal browser frontend for the web channel. Uses a client-generated UUID sent as `X-User-Id`, talks to the existing `/api/devbox/*` endpoints, and renders conversations from REST-polled backend snapshots (single source of truth in the UI).
+- `channels/web.ts`: Web adapter using plain HTTP. Exposes REST API for conversation CRUD and message history plus an AI SDK-compatible streaming endpoint (`POST /api/devbox/chat`) that maps controller `sendMessage` / `setTyping` callbacks directly into SSE UI message chunks. Auth is delegated to the upstream Envoy proxy (`X-User-Id` header). Implements the `Channel` interface without DB polling or reply-stability heuristics.
+- `../frontend/`: Minimal browser frontend for the web channel. Uses a client-generated UUID sent as `X-User-Id`, keeps conversation CRUD/history on `/api/devbox/*`, and sends chat turns through `@ai-sdk/react` + the AI SDK transport instead of custom frontend polling. After each streamed reply it hydrates once from backend history to recover structured artifact metadata. Markdown/table rendering is delegated to `@galpha-ai/better-markdown`.
 
 ### Runner (`container/`)
 
@@ -104,13 +104,13 @@ DATA_ROOT/                          (configurable, default: cwd or /data/devbox-
 
 When the controller spawns a runner container, it bind-mounts these paths:
 
-| Host path                                              | Container path         | Mode | Purpose                                                                  |
-| ------------------------------------------------------ | ---------------------- | ---- | ------------------------------------------------------------------------ |
-| `data/sessions/{agentName}/{sessionScopeKey}/`         | `/session`             | RO   | Session metadata root (`seed-manifest.json`, session instruction source) |
-| `data/sessions/{agentName}/{sessionScopeKey}/workspace/` | `/workspace`         | RW   | Editable repo checkout root and agent cwd                                |
-| `agents/global/`                                       | `/workspace/global`    | RO   | Shared global instructions                                               |
-| `data/sessions/{agentName}/{sessionScopeKey}/.claude/` | `/home/devbox/.claude` | RW   | Claude Code state (session, skills, memory)                              |
-| `data/sessions/{agentName}/{sessionScopeKey}/ipc/`     | `/ipc`                 | RW   | Bidirectional IPC for one channel/thread scope                           |
+| Host path                                                | Container path         | Mode | Purpose                                                                  |
+| -------------------------------------------------------- | ---------------------- | ---- | ------------------------------------------------------------------------ |
+| `data/sessions/{agentName}/{sessionScopeKey}/`           | `/session`             | RO   | Session metadata root (`seed-manifest.json`, session instruction source) |
+| `data/sessions/{agentName}/{sessionScopeKey}/workspace/` | `/workspace`           | RW   | Editable repo checkout root and agent cwd                                |
+| `agents/global/`                                         | `/workspace/global`    | RO   | Shared global instructions                                               |
+| `data/sessions/{agentName}/{sessionScopeKey}/.claude/`   | `/home/devbox/.claude` | RW   | Claude Code state (session, skills, memory)                              |
+| `data/sessions/{agentName}/{sessionScopeKey}/ipc/`       | `/ipc`                 | RW   | Bidirectional IPC for one channel/thread scope                           |
 
 ## Session Garbage Collection
 
@@ -193,7 +193,7 @@ container:
 
 web:
   enabled: true
-  port: 8080                # HTTP + WebSocket listen port
+  port: 8080 # HTTP listen port
 
 agents:
   - name: main
@@ -209,7 +209,7 @@ channels:
     agents:
       - name: main
         requires_trigger: false
-  - id: 'web:*'              # Web frontend wildcard
+  - id: 'web:*' # Web frontend wildcard
     agents:
       - name: main
         requires_trigger: false

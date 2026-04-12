@@ -1,3 +1,5 @@
+import { DefaultChatTransport, type UIMessage } from "ai";
+
 export interface ThesisConversationSummary {
   conversationId: string;
   agentName?: string;
@@ -9,12 +11,6 @@ export interface ThesisTransportMessageList<TMessage = unknown> {
   messages: TMessage[];
 }
 
-export interface ThesisQueuedResponse {
-  queued: true;
-  code?: string;
-  message?: string;
-}
-
 export interface ThesisTransportClientOptions {
   authFetch: (input: string, init?: RequestInit) => Promise<Response>;
 }
@@ -22,9 +18,9 @@ export interface ThesisTransportClientOptions {
 export type ThesisPromptMode = "chat" | "artifact";
 
 export interface ThesisTransportClient {
+  chatTransport: DefaultChatTransport<UIMessage>;
   createConversation(): Promise<{ conversationId: string }>;
   listConversations(): Promise<{ conversations: ThesisConversationSummary[] }>;
-  sendMessage(conversationId: string, content: string): Promise<ThesisQueuedResponse>;
   getMessages<TMessage = unknown>(
     conversationId: string,
     before?: string,
@@ -77,8 +73,14 @@ export const buildThesisPrompt = buildArtifactPrompt;
 
 export function createThesisTransportClient(options: ThesisTransportClientOptions): ThesisTransportClient {
   const { authFetch } = options;
+  const chatTransport = new DefaultChatTransport<UIMessage>({
+    api: "/api/devbox/chat",
+    fetch: (input, init) => authFetch(resolveTransportInput(input), init),
+  });
 
   return {
+    chatTransport,
+
     async createConversation(): Promise<{ conversationId: string }> {
       return requestJson(authFetch, "/api/devbox/conversations", {
         method: "POST",
@@ -89,13 +91,6 @@ export function createThesisTransportClient(options: ThesisTransportClientOption
     async listConversations(): Promise<{ conversations: ThesisConversationSummary[] }> {
       return requestJson(authFetch, "/api/devbox/conversations", {
         method: "GET",
-      });
-    },
-
-    async sendMessage(conversationId: string, content: string): Promise<ThesisQueuedResponse> {
-      return requestJson(authFetch, `/api/devbox/conversations/${conversationId}/messages`, {
-        method: "POST",
-        body: JSON.stringify({ content }),
       });
     },
 
@@ -149,4 +144,16 @@ async function parseJson<T>(response: Response) {
   } catch {
     return null;
   }
+}
+
+function resolveTransportInput(input: RequestInfo | URL) {
+  if (typeof input === "string") {
+    return input;
+  }
+
+  if (input instanceof URL) {
+    return input.toString();
+  }
+
+  return input.url;
 }

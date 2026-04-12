@@ -87,7 +87,7 @@ container:
 
 ## web Section
 
-Enables the HTTP and WebSocket API for web-based frontends.
+Enables the HTTP API for the web frontend, including the AI SDK-compatible SSE chat endpoint.
 
 ```yaml
 web:
@@ -98,9 +98,9 @@ web:
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | boolean | `false` | Whether to start the web server. |
-| `port` | number | `8080` | HTTP and WebSocket listen port. |
+| `port` | number | `8080` | HTTP listen port. |
 
-When enabled, the web server exposes a REST API for conversation management and a WebSocket endpoint for streaming agent output. Auth is delegated to an upstream proxy via the `X-User-Id` header.
+When enabled, the web server exposes REST conversation endpoints plus an AI SDK-compatible SSE chat stream on `/api/devbox/chat`. Auth is delegated to an upstream proxy via the `X-User-Id` header.
 
 ## agents Section
 

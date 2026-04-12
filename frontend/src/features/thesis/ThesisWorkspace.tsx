@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useChat } from "@ai-sdk/react";
 import {
   Loader2,
   LogOut,
@@ -14,26 +15,25 @@ import {
 import { ArtifactRenderer } from "./ArtifactRenderer";
 import {
   buildConversationSnapshot,
-  buildLatestAssistantTurn,
   getChatMessageText,
   toThesisChatMessages,
   type ThesisArtifact,
   type ThesisChatMessage,
 } from "./devbox";
+import {
+  extractLatestSupportedArtifact,
+  stripWrappedArtifactBlocks,
+} from "./protocol";
 import { StarterPromptGrid } from "./StarterPromptGrid";
 import type { ThesisPanelStatus } from "./ThesisResultPanel";
 import {
   ThesisTransportError,
-  type ThesisQueuedResponse,
   type ThesisTransportClient,
 } from "./transport";
 import { MarkdownChartRenderer } from "./MarkdownChartRenderer";
 
 const MOBILE_BREAKPOINT_PX = 1024;
-const INITIAL_POLL_INTERVAL_MS = import.meta.env.MODE === "test" ? 10 : 2500;
-const ACTIVE_POLL_INTERVAL_MS = import.meta.env.MODE === "test" ? 10 : 2500;
-const POLL_TIMEOUT_MS = import.meta.env.MODE === "test" ? 500 : 600_000;
-const REQUIRED_STABLE_POLLS = 1;
+const CHAT_UPDATE_THROTTLE_MS = 100;
 
 const proseClasses = `prose prose-invert prose-sm max-w-none 
   prose-headings:text-foreground prose-headings:font-display
@@ -53,9 +53,6 @@ interface ConversationState {
   conversationId: string;
   title: string;
   messages: ThesisChatMessage[];
-  latestArtifact: ReturnType<typeof buildConversationSnapshot>["latestArtifact"];
-  latestArtifactMessageId: string | null;
-  latestArtifactTimestamp: string | null;
   status: ThesisPanelStatus;
   errorCode?: string | null;
   errorMessage?: string | null;
@@ -80,6 +77,7 @@ export function ThesisWorkspace({
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [shellError, setShellError] = useState<string | null>(null);
   const activeConversationIdRef = useRef(activeConversationId);
+  const pendingSubmitRef = useRef<{ conversationId: string; prompt: string } | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -121,9 +119,6 @@ export function ThesisWorkspace({
         ...current,
         title: deriveConversationTitle(trimTitle(fallbackTitle || current.title), snapshot.messages, conversationId),
         messages: nextMessages,
-        latestArtifact: snapshot.latestArtifact,
-        latestArtifactMessageId: snapshot.latestArtifactMessageId,
-        latestArtifactTimestamp: snapshot.latestArtifactTimestamp,
         status: nextStatus,
         errorCode: preserveError ? current.errorCode ?? null : null,
         errorMessage: preserveError ? current.errorMessage ?? null : null,
@@ -163,61 +158,77 @@ export function ThesisWorkspace({
     }
   }, [applyConversationError, conversations, replaceConversationFromSnapshot, transportClient]);
 
-  const pollConversationUntilSettled = useCallback(async ({
-    conversationId,
-    fallbackTitle,
-    queuedResponse,
-  }: {
-    conversationId: string;
-    fallbackTitle: string;
-    queuedResponse?: ThesisQueuedResponse;
-  }) => {
-    let unchangedPolls = 0;
-    let previousFingerprint = "";
-    const startedAt = Date.now();
-
-    while (Date.now() - startedAt < POLL_TIMEOUT_MS) {
-      const response = await transportClient.getMessages(conversationId, undefined, 100);
-      const snapshot = buildConversationSnapshot(response.messages ?? []);
-      const latestTurn = buildLatestAssistantTurn(snapshot.messages);
-      const hasStableReply = Boolean(snapshot.latestArtifact || latestTurn.transcript || latestTurn.artifactOnly);
-
-      replaceConversationFromSnapshot(conversationId, fallbackTitle, snapshot);
-
-      if (!hasStableReply) {
-        await sleep(latestTurn.messages.length === 0 ? INITIAL_POLL_INTERVAL_MS : ACTIVE_POLL_INTERVAL_MS);
-        continue;
-      }
-
-      if (latestTurn.fingerprint === previousFingerprint) {
-        unchangedPolls += 1;
-      } else {
-        previousFingerprint = latestTurn.fingerprint;
-        unchangedPolls = 1;
-      }
-
-      if (snapshot.latestArtifact || unchangedPolls >= REQUIRED_STABLE_POLLS) {
+  const {
+    messages: liveMessages,
+    setMessages: setLiveMessages,
+    sendMessage,
+    status: chatStatus,
+    clearError,
+  } = useChat<ThesisChatMessage>({
+    id: activeConversationId || "__draft__",
+    messages: activeConversation?.messages ?? [],
+    transport: transportClient.chatTransport,
+    experimental_throttle: CHAT_UPDATE_THROTTLE_MS,
+    onFinish: ({ isAbort, isDisconnect, isError }) => {
+      const conversationId = activeConversationIdRef.current;
+      if (!conversationId || isAbort || isDisconnect || isError) {
         return;
       }
 
-      await sleep(ACTIVE_POLL_INTERVAL_MS);
-    }
+      void hydrateConversation(conversationId);
+    },
+    onError: (error) => {
+      const conversationId = activeConversationIdRef.current;
+      if (conversationId) {
+        applyConversationError(conversationId, error);
+        return;
+      }
 
-    const finalResponse = await transportClient.getMessages(conversationId, undefined, 100);
-    const finalSnapshot = buildConversationSnapshot(finalResponse.messages ?? []);
-    replaceConversationFromSnapshot(conversationId, fallbackTitle, finalSnapshot);
+      handleShellError(error, onSessionExpired, setShellError);
+    },
+  });
 
-    const finalTurn = buildLatestAssistantTurn(finalSnapshot.messages);
-    if (finalSnapshot.latestArtifact || finalTurn.transcript || finalTurn.artifactOnly) {
+  const activeLiveMessages = useMemo(
+    () => normalizeChatMessages(liveMessages),
+    [liveMessages],
+  );
+
+  useEffect(() => {
+    if (!activeConversationId || !activeConversation?.hydrated) {
       return;
     }
 
-    throw new ThesisTransportError(
-      queuedResponse?.message || "The assistant request timed out before any stable reply was returned.",
-      504,
-      queuedResponse?.code === "concurrency_limit" ? "concurrency_limit" : "timeout",
-    );
-  }, [replaceConversationFromSnapshot, transportClient]);
+    if (chatStatus === "submitted" || chatStatus === "streaming") {
+      return;
+    }
+
+    const hydratedMessages = normalizeChatMessages(activeConversation.messages);
+    if (getChatMessagesFingerprint(hydratedMessages) === getChatMessagesFingerprint(activeLiveMessages)) {
+      return;
+    }
+
+    setLiveMessages(hydratedMessages);
+  }, [
+    activeConversation,
+    activeConversationId,
+    activeLiveMessages,
+    chatStatus,
+    setLiveMessages,
+  ]);
+
+  useEffect(() => {
+    const pending = pendingSubmitRef.current;
+    if (!pending || pending.conversationId !== activeConversationId) {
+      return;
+    }
+
+    pendingSubmitRef.current = null;
+    clearError();
+
+    void sendMessage({ text: pending.prompt }).catch((error) => {
+      applyConversationError(pending.conversationId, error);
+    });
+  }, [activeConversationId, applyConversationError, clearError, sendMessage]);
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -255,12 +266,14 @@ export function ThesisWorkspace({
 
   useEffect(() => {
     endRef.current?.scrollIntoView({
-      behavior: activeConversation?.status === "processing" ? "auto" : "smooth",
+      behavior: chatStatus === "submitted" || chatStatus === "streaming" || activeConversation?.status === "processing"
+        ? "auto"
+        : "smooth",
     });
   }, [
-    activeConversation?.latestArtifactMessageId,
-    activeConversation?.messages,
     activeConversation?.status,
+    activeLiveMessages,
+    chatStatus,
   ]);
 
   useEffect(() => {
@@ -358,44 +371,32 @@ export function ThesisWorkspace({
     setShellError(null);
 
     const fallbackTitle = trimTitle(suggestedTitle || prompt);
-    const optimisticUserMessage = createOptimisticUserMessage(prompt);
-
     let conversationId = activeConversationIdRef.current;
 
     try {
       if (!conversationId) {
         const created = await transportClient.createConversation();
         conversationId = created.conversationId;
-        const nextConversation = createConversationState(conversationId, fallbackTitle, [optimisticUserMessage]);
+        pendingSubmitRef.current = { conversationId, prompt };
+        const nextConversation = createConversationState(conversationId, fallbackTitle);
         nextConversation.status = "processing";
         nextConversation.hydrated = true;
         setConversations((current) => [nextConversation, ...current]);
         setActiveConversationId(conversationId);
-      } else {
-        updateConversation(conversationId, (current) => ({
-          ...current,
-          title: current.title !== "New Chat" ? current.title : fallbackTitle,
-          messages: [...current.messages, optimisticUserMessage],
-          status: "processing",
-          hydrated: true,
-          errorCode: null,
-          errorMessage: null,
-        }));
+        return;
       }
 
-      const queuedResponse = await transportClient.sendMessage(conversationId, prompt);
+      clearError();
       updateConversation(conversationId, (current) => ({
         ...current,
+        title: current.title !== "New Chat" ? current.title : fallbackTitle,
         status: "processing",
-        errorCode: queuedResponse.code ?? null,
-        errorMessage: queuedResponse.message ?? null,
+        hydrated: true,
+        errorCode: null,
+        errorMessage: null,
       }));
 
-      await pollConversationUntilSettled({
-        conversationId,
-        fallbackTitle,
-        queuedResponse,
-      });
+      await sendMessage({ text: prompt });
     } catch (error) {
       if (conversationId) {
         applyConversationError(conversationId, error);
@@ -403,16 +404,27 @@ export function ThesisWorkspace({
         handleShellError(error, onSessionExpired, setShellError);
       }
     }
-  }, [applyConversationError, onSessionExpired, pollConversationUntilSettled, transportClient, updateConversation]);
+  }, [applyConversationError, clearError, onSessionExpired, sendMessage, transportClient, updateConversation]);
 
   const handleSend = useCallback(() => {
     void handleSubmit(input);
   }, [handleSubmit, input]);
 
-  const activeConversationView = useMemo(
-    () => activeConversation ?? createDraftConversationState(),
-    [activeConversation],
-  );
+  const activeConversationView = useMemo(() => {
+    if (!activeConversation) {
+      return createDraftConversationState();
+    }
+
+    return {
+      ...activeConversation,
+      messages: activeLiveMessages,
+      status: chatStatus === "submitted" || chatStatus === "streaming"
+        ? "processing"
+        : chatStatus === "error"
+          ? "error"
+          : activeConversation.status,
+    };
+  }, [activeConversation, activeLiveMessages, chatStatus]);
 
   const handleRetry = useCallback(() => {
     const lastUserMessage = [...activeConversationView.messages]
@@ -433,7 +445,9 @@ export function ThesisWorkspace({
     }
   };
 
-  const isRequestInFlight = conversations.some((conversation) => conversation.status === "processing");
+  const isRequestInFlight = chatStatus === "submitted"
+    || chatStatus === "streaming"
+    || conversations.some((conversation) => conversation.status === "processing");
   const isHydratingConversation = Boolean(activeConversationId && activeConversation?.hydrated === false);
   const canSend = input.trim().length > 0
     && !isRequestInFlight
@@ -568,7 +582,7 @@ export function ThesisWorkspace({
           </div>
           <div className="ml-2 flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40" />
-            <span className="text-[10px] text-muted-foreground/60">polling</span>
+            <span className="text-[10px] text-muted-foreground/60">streaming</span>
           </div>
         </header>
 
@@ -792,9 +806,6 @@ function createConversationState(
     conversationId,
     title,
     messages,
-    latestArtifact: null,
-    latestArtifactMessageId: null,
-    latestArtifactTimestamp: null,
     status: messages.length > 0 ? "complete" : "idle",
     hydrated: messages.length > 0,
     errorCode: null,
@@ -807,25 +818,6 @@ function createDraftConversationState(): ConversationState {
     ...createConversationState("", "Devbox", []),
     status: "idle",
     hydrated: true,
-  };
-}
-
-function createOptimisticUserMessage(content: string): ThesisChatMessage {
-  const timestamp = new Date().toISOString();
-
-  return {
-    id: `local-user-${timestamp}-${Math.random().toString(36).slice(2, 8)}`,
-    role: "user",
-    metadata: {
-      timestamp,
-      sender: "user",
-      senderName: "You",
-    },
-    parts: [{
-      type: "text",
-      text: content,
-      state: "done",
-    }],
   };
 }
 
@@ -938,6 +930,88 @@ function mapConversationErrorBody(errorCode?: string | null, errorMessage?: stri
   return errorMessage || "No stable assistant reply was returned. Retry the request or simplify the prompt.";
 }
 
-async function sleep(ms: number) {
-  await new Promise((resolve) => globalThis.setTimeout(resolve, ms));
+function normalizeChatMessages(messages: ThesisChatMessage[]) {
+  const deduped: ThesisChatMessage[] = [];
+
+  for (const message of messages) {
+    const nextMessage = normalizeChatMessage(message);
+    const previousMessage = deduped[deduped.length - 1];
+
+    if (isDuplicateAssistantChatMessage(previousMessage, nextMessage)) {
+      continue;
+    }
+
+    deduped.push(nextMessage);
+  }
+
+  return deduped;
+}
+
+function normalizeChatMessage(message: ThesisChatMessage): ThesisChatMessage {
+  if (message.role !== "assistant") {
+    return message;
+  }
+
+  const content = getChatMessageText(message);
+  const artifact = extractLatestSupportedArtifact(content);
+  const strippedContent = stripWrappedArtifactBlocks(content);
+
+  return {
+    ...message,
+    role: "assistant",
+    metadata: {
+      ...message.metadata,
+      sender: message.metadata?.sender || "Devbox",
+      senderName: message.metadata?.senderName || "Devbox",
+      timestamp: message.metadata?.timestamp || new Date().toISOString(),
+      artifact,
+      artifactOnly: Boolean(artifact) && !strippedContent.trim(),
+    },
+    parts: strippedContent
+      ? [{
+          type: "text",
+          text: strippedContent,
+          state: "done",
+        }]
+      : [],
+  };
+}
+
+function isDuplicateAssistantChatMessage(
+  previousMessage: ThesisChatMessage | undefined,
+  currentMessage: ThesisChatMessage,
+) {
+  if (!previousMessage) {
+    return false;
+  }
+
+  if (previousMessage.role !== "assistant" || currentMessage.role !== "assistant") {
+    return false;
+  }
+
+  return getChatMessageText(previousMessage).trim() === getChatMessageText(currentMessage).trim()
+    && Boolean(previousMessage.metadata?.artifactOnly) === Boolean(currentMessage.metadata?.artifactOnly)
+    && getArtifactFingerprint(previousMessage.metadata?.artifact ?? null) === getArtifactFingerprint(currentMessage.metadata?.artifact ?? null);
+}
+
+function getChatMessagesFingerprint(messages: ThesisChatMessage[]) {
+  return messages.map((message) => {
+    const artifact = message.metadata?.artifact;
+
+    return [
+      message.role,
+      message.id,
+      getChatMessageText(message).trim(),
+      message.metadata?.artifactOnly ? "artifact-only" : "content",
+      artifact ? `${artifact.type}:${artifact.data.title}` : "",
+    ].join(":");
+  }).join("|");
+}
+
+function getArtifactFingerprint(artifact: ThesisArtifact | null) {
+  if (!artifact) {
+    return "";
+  }
+
+  return `${artifact.type}:${artifact.data.title}`;
 }

@@ -1,6 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import http from 'http';
-import { WebSocket } from 'ws';
 
 vi.mock('../config.js', () => ({
   ASSISTANT_NAME: 'Devbox',
@@ -25,11 +23,14 @@ vi.mock('../db.js', () => ({
 }));
 
 import { WebChannel } from './web.js';
+import { getMessageHistory } from '../db.js';
 import type {
   OnInboundMessage,
   OnChatMetadata,
   RegisteredAgent,
 } from '../types.js';
+
+const mockedGetMessageHistory = vi.mocked(getMessageHistory);
 
 function makeOpts(
   overrides: Partial<{
@@ -64,6 +65,7 @@ describe('WebChannel', () => {
   let port: number;
 
   beforeEach(async () => {
+    mockedGetMessageHistory.mockReset().mockReturnValue([]);
     channel = new WebChannel(0, makeOpts());
     await channel.connect();
     port = channel.getPort();
@@ -138,66 +140,84 @@ describe('WebChannel', () => {
     expect(call[1].chat_jid).toBe('web:user1');
   });
 
-  it('sendMessage delivers to connected WebSocket', async () => {
-    const ws = new WebSocket(`ws://localhost:${port}/api/devbox/ws`, {
-      headers: { 'X-User-Id': 'user1' },
-    });
-    await new Promise<void>((resolve) => ws.on('open', resolve));
-
-    const messagePromise = new Promise<any>((resolve) => {
-      ws.on('message', (data) => resolve(JSON.parse(data.toString())));
-    });
-
-    await channel.sendMessage('web:user1', 'agent reply', {
-      threadId: 'conv-1',
+  it('POST /chat streams an AI SDK SSE reply from channel callbacks', async () => {
+    const onMessage = vi.fn(() => {
+      queueMicrotask(() => {
+        void channel.sendMessage('web:user1', 'hello back', {
+          threadId: 'conv-1',
+        });
+        void channel.setTyping?.('web:user1', 'success', {
+          threadId: 'conv-1',
+        });
+      });
     });
 
-    const msg = await messagePromise;
-    expect(msg.type).toBe('output');
-    expect(msg.conversationId).toBe('conv-1');
-    expect(msg.content).toBe('agent reply');
+    await channel.disconnect();
+    channel = new WebChannel(0, makeOpts({ onMessage }));
+    await channel.connect();
+    port = channel.getPort();
 
-    ws.close();
+    const res = await fetch(`http://localhost:${port}/api/devbox/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-User-Id': 'user1' },
+      body: JSON.stringify({
+        id: 'conv-1',
+        messages: [
+          {
+            id: 'u1',
+            role: 'user',
+            parts: [{ type: 'text', text: 'hello agent' }],
+          },
+        ],
+      }),
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toContain('text/event-stream');
+
+    const body = await res.text();
+    expect(body).toContain('"type":"start"');
+    expect(body).toContain('"type":"text-delta"');
+    expect(body).toContain('hello back');
+    expect(onMessage).toHaveBeenCalledTimes(1);
   });
 
-  it('accepts browser-safe WebSocket auth via query param', async () => {
-    const ws = new WebSocket(
-      `ws://localhost:${port}/api/devbox/ws?userId=user1`,
-    );
-    await new Promise<void>((resolve) => ws.on('open', resolve));
-
-    const messagePromise = new Promise<any>((resolve) => {
-      ws.on('message', (data) => resolve(JSON.parse(data.toString())));
+  it('POST /chat emits an AI SDK error when no reply arrives', async () => {
+    const onMessage = vi.fn(() => {
+      queueMicrotask(() => {
+        void channel.setTyping?.('web:user1', 'error', { threadId: 'conv-2' });
+      });
     });
 
-    await channel.sendMessage('web:user1', 'agent reply', {
-      threadId: 'conv-1',
+    await channel.disconnect();
+    channel = new WebChannel(0, makeOpts({ onMessage }));
+    await channel.connect();
+    port = channel.getPort();
+
+    const res = await fetch(`http://localhost:${port}/api/devbox/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-User-Id': 'user1' },
+      body: JSON.stringify({
+        id: 'conv-2',
+        messages: [
+          {
+            id: 'u2',
+            role: 'user',
+            parts: [{ type: 'text', text: 'hello agent' }],
+          },
+        ],
+      }),
     });
 
-    const msg = await messagePromise;
-    expect(msg.type).toBe('output');
-    expect(msg.conversationId).toBe('conv-1');
-    expect(msg.content).toBe('agent reply');
-
-    ws.close();
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('"type":"error"');
+    expect(body).toContain('The assistant failed before completing the reply.');
   });
 
-  it('setTyping sends status message via WebSocket', async () => {
-    const ws = new WebSocket(`ws://localhost:${port}/api/devbox/ws`, {
-      headers: { 'X-User-Id': 'user1' },
-    });
-    await new Promise<void>((resolve) => ws.on('open', resolve));
-
-    const messagePromise = new Promise<any>((resolve) => {
-      ws.on('message', (data) => resolve(JSON.parse(data.toString())));
-    });
-
-    await channel.setTyping!('web:user1', 'processing', { threadId: 'conv-1' });
-
-    const msg = await messagePromise;
-    expect(msg.type).toBe('status');
-    expect(msg.status).toBe('processing');
-
-    ws.close();
+  it('sendMessage is a no-op without an active AI SDK stream', async () => {
+    await expect(
+      channel.sendMessage('web:user1', 'agent reply', { threadId: 'conv-1' }),
+    ).resolves.toBeUndefined();
   });
 });

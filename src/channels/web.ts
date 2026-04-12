@@ -1,10 +1,16 @@
 import { randomUUID } from 'crypto';
 import http from 'http';
-import { WebSocketServer, WebSocket } from 'ws';
+import {
+  createUIMessageStream,
+  pipeUIMessageStreamToResponse,
+  type UIMessage,
+  type UIMessageStreamWriter,
+} from 'ai';
 
-import { ASSISTANT_NAME, MAX_CONCURRENT_CONTAINERS } from '../config.js';
+import { MAX_CONCURRENT_CONTAINERS } from '../config.js';
 import { getMessageHistory, getSessionsByChannel } from '../db.js';
 import { logger } from '../logger.js';
+import { makeSessionScopeKey } from '../session-scope.js';
 import {
   Channel,
   OnChatMetadata,
@@ -13,6 +19,44 @@ import {
   SendMessageOptions,
   StatusIndicatorOptions,
 } from '../types.js';
+
+const CHAT_STREAM_TIMEOUT_MS = 600_000;
+const CHAT_STREAM_TIMEOUT_MESSAGE =
+  'The assistant did not write back a reply before the timeout window elapsed.';
+const CHAT_STREAM_REPLACED_MESSAGE =
+  'A newer chat request replaced the active response stream.';
+const CHAT_STREAM_ERROR_MESSAGE =
+  'The assistant failed before completing the reply.';
+
+type DeliveryTarget = {
+  agent: RegisteredAgent;
+  sessionKey: string;
+};
+
+type DeliveryResult =
+  | { ok: true; target: DeliveryTarget }
+  | {
+      ok: false;
+      code: 'no_agent';
+      message: string;
+    };
+
+interface PendingChatStream {
+  writer?: UIMessageStreamWriter<UIMessage>;
+  textPartId: string;
+  queuedDeltas: string[];
+  receivedTextCount: number;
+  started: boolean;
+  textStarted: boolean;
+  resolved: boolean;
+  completion:
+    | { status: 'pending' }
+    | { status: 'success' }
+    | { status: 'error'; errorText: string };
+  done: Promise<void>;
+  resolveDone: () => void;
+  timeout: NodeJS.Timeout;
+}
 
 export interface WebChannelOpts {
   onMessage: OnInboundMessage;
@@ -27,52 +71,15 @@ export class WebChannel implements Channel {
   name = 'web';
 
   private server: http.Server;
-  private wss: WebSocketServer;
-  private connections = new Map<string, WebSocket>();
   private port: number;
   private opts: WebChannelOpts;
+  private pendingChatStreams = new Map<string, PendingChatStream>();
 
   constructor(port: number, opts: WebChannelOpts) {
     this.port = port;
     this.opts = opts;
 
     this.server = http.createServer((req, res) => this.handleHttp(req, res));
-    this.wss = new WebSocketServer({ noServer: true });
-
-    this.server.on('upgrade', (req, socket, head) => {
-      const url = new URL(req.url || '/', `http://${req.headers.host}`);
-      const userId =
-        (req.headers['x-user-id'] as string | undefined) ||
-        url.searchParams.get('userId') ||
-        url.searchParams.get('x-user-id') ||
-        undefined;
-      if (!userId) {
-        socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
-        socket.destroy();
-        return;
-      }
-
-      this.wss.handleUpgrade(req, socket, head, (ws) => {
-        this.connections.set(userId, ws);
-        logger.info({ userId }, 'WebSocket connected');
-
-        ws.on('message', (data) => {
-          try {
-            const msg = JSON.parse(data.toString());
-            this.handleWsMessage(userId, msg);
-          } catch (err) {
-            logger.warn({ userId, err }, 'Invalid WebSocket message');
-          }
-        });
-
-        ws.on('close', () => {
-          if (this.connections.get(userId) === ws) {
-            this.connections.delete(userId);
-          }
-          logger.info({ userId }, 'WebSocket disconnected');
-        });
-      });
-    });
   }
 
   async connect(): Promise<void> {
@@ -105,17 +112,17 @@ export class WebChannel implements Channel {
     text: string,
     options?: SendMessageOptions,
   ): Promise<void> {
-    const userId = jid.slice('web:'.length);
-    const ws = this.connections.get(userId);
-    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    const conversationId = options?.threadId ?? null;
+    if (!conversationId) {
+      return;
+    }
 
-    ws.send(
-      JSON.stringify({
-        type: 'output',
-        conversationId: options?.threadId ?? null,
-        content: text,
-      }),
-    );
+    const delivery = this.resolveDeliveryTarget(jid, conversationId);
+    if (!delivery.ok) {
+      return;
+    }
+
+    this.pushPendingChatText(delivery.target.sessionKey, text);
   }
 
   async setTyping(
@@ -123,25 +130,32 @@ export class WebChannel implements Channel {
     status: 'processing' | 'success' | 'error' | 'idle',
     options?: StatusIndicatorOptions,
   ): Promise<void> {
-    const userId = jid.slice('web:'.length);
-    const ws = this.connections.get(userId);
-    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    const conversationId = options?.threadId ?? null;
+    if (!conversationId) {
+      return;
+    }
 
-    ws.send(
-      JSON.stringify({
-        type: 'status',
-        conversationId: options?.threadId ?? null,
-        status,
-      }),
-    );
+    const delivery = this.resolveDeliveryTarget(jid, conversationId);
+    if (!delivery.ok) {
+      return;
+    }
+
+    if (status === 'success') {
+      this.completePendingChatStream(delivery.target.sessionKey, {
+        status: 'success',
+      });
+      return;
+    }
+
+    if (status === 'error') {
+      this.completePendingChatStream(delivery.target.sessionKey, {
+        status: 'error',
+        errorText: CHAT_STREAM_ERROR_MESSAGE,
+      });
+    }
   }
 
   async disconnect(): Promise<void> {
-    for (const ws of this.connections.values()) {
-      ws.close();
-    }
-    this.connections.clear();
-    this.wss.close();
     return new Promise((resolve) => {
       this.server.close(() => resolve());
     });
@@ -197,6 +211,75 @@ export class WebChannel implements Channel {
       return;
     }
 
+    if (path === '/api/devbox/chat' && req.method === 'POST') {
+      this.readBody(req)
+        .then((body) => {
+          const conversationId =
+            typeof body.id === 'string' ? body.id.trim() : '';
+          const content = getLatestUserMessageText(body.messages);
+
+          if (!conversationId) {
+            this.jsonResponse(res, 400, { error: 'id is required' });
+            return;
+          }
+
+          if (!content) {
+            this.jsonResponse(res, 400, {
+              error: 'messages must include a user text prompt',
+            });
+            return;
+          }
+
+          const delivery = this.resolveDeliveryTarget(chatJid, conversationId);
+          if (!delivery.ok) {
+            this.jsonResponse(res, 400, { error: delivery.message });
+            return;
+          }
+
+          const pending = this.registerPendingChatStream(
+            delivery.target.sessionKey,
+          );
+          const stream = createUIMessageStream<UIMessage>({
+            execute: async ({ writer }) => {
+              this.attachPendingChatStreamWriter(pending, writer);
+              await pending.done;
+              this.cleanupPendingChatStream(
+                delivery.target.sessionKey,
+                pending,
+              );
+            },
+          });
+
+          pipeUIMessageStreamToResponse({
+            response: res,
+            stream,
+          });
+
+          try {
+            this.deliverInboundMessage(
+              userId,
+              chatJid,
+              conversationId,
+              content,
+              delivery.target,
+            );
+          } catch (error) {
+            logger.error(
+              { error, chatJid, conversationId },
+              'Failed to enqueue web chat message',
+            );
+            this.completePendingChatStream(delivery.target.sessionKey, {
+              status: 'error',
+              errorText: CHAT_STREAM_ERROR_MESSAGE,
+            });
+          }
+        })
+        .catch(() =>
+          this.jsonResponse(res, 400, { error: 'Invalid request body' }),
+        );
+      return;
+    }
+
     const msgMatch = path.match(
       /^\/api\/devbox\/conversations\/([^/]+)\/messages$/,
     );
@@ -210,7 +293,23 @@ export class WebChannel implements Channel {
               this.jsonResponse(res, 400, { error: 'content is required' });
               return;
             }
-            this.deliverMessage(userId, chatJid, conversationId, body.content);
+
+            const delivery = this.resolveDeliveryTarget(
+              chatJid,
+              conversationId,
+            );
+            if (!delivery.ok) {
+              this.jsonResponse(res, 400, { error: delivery.message });
+              return;
+            }
+
+            this.deliverInboundMessage(
+              userId,
+              chatJid,
+              conversationId,
+              body.content,
+              delivery.target,
+            );
             this.jsonResponse(res, 202, { queued: true });
           })
           .catch(() =>
@@ -234,7 +333,16 @@ export class WebChannel implements Channel {
     const delMatch = path.match(/^\/api\/devbox\/conversations\/([^/]+)$/);
     if (delMatch && req.method === 'DELETE') {
       const conversationId = delMatch[1];
-      this.deliverMessage(userId, chatJid, conversationId, '/done --force');
+      const delivery = this.resolveDeliveryTarget(chatJid, conversationId);
+      if (delivery.ok) {
+        this.deliverInboundMessage(
+          userId,
+          chatJid,
+          conversationId,
+          '/done --force',
+          delivery.target,
+        );
+      }
       this.jsonResponse(res, 200, { deleted: true });
       return;
     }
@@ -242,73 +350,54 @@ export class WebChannel implements Channel {
     this.jsonResponse(res, 404, { error: 'Not found' });
   }
 
-  private handleWsMessage(userId: string, msg: any): void {
-    if (msg.type === 'ping') {
-      const ws = this.connections.get(userId);
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'pong' }));
-      }
-      return;
-    }
-
-    if (msg.type === 'message') {
-      if (!msg.conversationId || !msg.content) {
-        logger.warn(
-          { userId },
-          'Invalid WS message: missing conversationId or content',
-        );
-        return;
-      }
-      const chatJid = `web:${userId}`;
-      this.deliverMessage(userId, chatJid, msg.conversationId, msg.content);
-      return;
-    }
-
-    logger.warn({ userId, type: msg.type }, 'Unknown WebSocket message type');
-  }
-
-  private deliverMessage(
-    userId: string,
+  private resolveDeliveryTarget(
     chatJid: string,
     conversationId: string,
-    content: string,
-  ): void {
-    const activeCount = this.opts.getActiveCount();
-    if (activeCount >= MAX_CONCURRENT_CONTAINERS) {
-      const ws = this.connections.get(userId);
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        const waitingCount = this.opts.getWaitingCount();
-        ws.send(
-          JSON.stringify({
-            type: 'error',
-            conversationId,
-            code: 'concurrency_limit',
-            message: `System busy, your request is queued (${waitingCount} ahead)`,
-          }),
-        );
-      }
+  ): DeliveryResult {
+    if (this.opts.getActiveCount() >= MAX_CONCURRENT_CONTAINERS) {
+      logger.info(
+        {
+          chatJid,
+          conversationId,
+          waitingCount: this.opts.getWaitingCount(),
+        },
+        'Web request queued behind active sessions',
+      );
     }
 
-    // Resolve agent for this user JID (wildcard matching like Telegram DMs)
-    if (!this.resolveAgentForChat(chatJid)) {
+    const agent = this.resolveAgentForChat(chatJid);
+    if (!agent) {
       logger.warn(
         { chatJid },
         'No agent registered for web user, dropping message',
       );
-      const ws = this.connections.get(userId);
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(
-          JSON.stringify({
-            type: 'error',
-            conversationId,
-            code: 'no_agent',
-            message: 'No agent configured for web channel',
-          }),
-        );
-      }
-      return;
+      return {
+        ok: false,
+        code: 'no_agent',
+        message: 'No agent configured for web channel',
+      };
     }
 
+    return {
+      ok: true,
+      target: {
+        agent,
+        sessionKey: makeSessionScopeKey(
+          chatJid,
+          conversationId,
+          agent.agentName,
+        ),
+      },
+    };
+  }
+
+  private deliverInboundMessage(
+    userId: string,
+    chatJid: string,
+    conversationId: string,
+    content: string,
+    target: DeliveryTarget,
+  ): void {
     const timestamp = new Date().toISOString();
     const msgId = `web-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 
@@ -324,6 +413,163 @@ export class WebChannel implements Channel {
       is_from_me: false,
       is_bot_message: false,
     });
+
+    logger.debug(
+      {
+        chatJid,
+        conversationId,
+        sessionKey: target.sessionKey,
+        agentName: target.agent.agentName,
+      },
+      'Queued inbound web message',
+    );
+  }
+
+  private registerPendingChatStream(sessionKey: string): PendingChatStream {
+    const existing = this.pendingChatStreams.get(sessionKey);
+    if (existing) {
+      this.setPendingChatStreamCompletion(existing, {
+        status: 'error',
+        errorText: CHAT_STREAM_REPLACED_MESSAGE,
+      });
+    }
+
+    let resolveDone: () => void = () => {};
+    const pending: PendingChatStream = {
+      textPartId: `text-${randomUUID()}`,
+      queuedDeltas: [],
+      receivedTextCount: 0,
+      started: false,
+      textStarted: false,
+      resolved: false,
+      completion: { status: 'pending' },
+      done: new Promise<void>((resolve) => {
+        resolveDone = resolve;
+      }),
+      resolveDone,
+      timeout: setTimeout(() => {
+        if (pending.receivedTextCount > 0) {
+          this.setPendingChatStreamCompletion(pending, { status: 'success' });
+          return;
+        }
+
+        this.setPendingChatStreamCompletion(pending, {
+          status: 'error',
+          errorText: CHAT_STREAM_TIMEOUT_MESSAGE,
+        });
+      }, CHAT_STREAM_TIMEOUT_MS),
+    };
+
+    this.pendingChatStreams.set(sessionKey, pending);
+    return pending;
+  }
+
+  private attachPendingChatStreamWriter(
+    pending: PendingChatStream,
+    writer: UIMessageStreamWriter<UIMessage>,
+  ): void {
+    pending.writer = writer;
+    this.flushPendingChatStream(pending);
+  }
+
+  private pushPendingChatText(sessionKey: string, text: string): void {
+    const pending = this.pendingChatStreams.get(sessionKey);
+    const nextText = text.trim();
+    if (!pending || !nextText) {
+      return;
+    }
+
+    const delta = pending.receivedTextCount > 0 ? `\n\n${nextText}` : nextText;
+    pending.receivedTextCount += 1;
+    pending.queuedDeltas.push(delta);
+    this.flushPendingChatStream(pending);
+  }
+
+  private completePendingChatStream(
+    sessionKey: string,
+    completion: { status: 'success' } | { status: 'error'; errorText: string },
+  ): void {
+    const pending = this.pendingChatStreams.get(sessionKey);
+    if (!pending) {
+      return;
+    }
+
+    if (completion.status === 'error' && pending.receivedTextCount > 0) {
+      this.setPendingChatStreamCompletion(pending, { status: 'success' });
+      return;
+    }
+
+    this.setPendingChatStreamCompletion(pending, completion);
+  }
+
+  private setPendingChatStreamCompletion(
+    pending: PendingChatStream,
+    completion: { status: 'success' } | { status: 'error'; errorText: string },
+  ): void {
+    if (pending.completion.status !== 'pending') {
+      return;
+    }
+
+    pending.completion = completion;
+    clearTimeout(pending.timeout);
+    this.flushPendingChatStream(pending);
+  }
+
+  private flushPendingChatStream(pending: PendingChatStream): void {
+    const writer = pending.writer;
+    if (!writer) {
+      return;
+    }
+
+    if (!pending.started) {
+      writer.write({ type: 'start' });
+      writer.write({ type: 'start-step' });
+      pending.started = true;
+    }
+
+    if (!pending.textStarted && pending.queuedDeltas.length > 0) {
+      writer.write({ type: 'text-start', id: pending.textPartId });
+      pending.textStarted = true;
+    }
+
+    while (pending.queuedDeltas.length > 0) {
+      writer.write({
+        type: 'text-delta',
+        id: pending.textPartId,
+        delta: pending.queuedDeltas.shift()!,
+      });
+    }
+
+    if (pending.completion.status === 'pending' || pending.resolved) {
+      return;
+    }
+
+    if (pending.textStarted) {
+      writer.write({ type: 'text-end', id: pending.textPartId });
+    }
+
+    if (pending.completion.status === 'error') {
+      writer.write({
+        type: 'error',
+        errorText: pending.completion.errorText,
+      });
+    } else {
+      writer.write({ type: 'finish-step' });
+      writer.write({ type: 'finish' });
+    }
+
+    pending.resolved = true;
+    pending.resolveDone();
+  }
+
+  private cleanupPendingChatStream(
+    sessionKey: string,
+    pending: PendingChatStream,
+  ): void {
+    clearTimeout(pending.timeout);
+    if (this.pendingChatStreams.get(sessionKey) === pending) {
+      this.pendingChatStreams.delete(sessionKey);
+    }
   }
 
   private resolveAgentForChat(chatJid: string): RegisteredAgent | undefined {
@@ -367,4 +613,49 @@ export class WebChannel implements Channel {
       req.on('error', reject);
     });
   }
+}
+
+function getLatestUserMessageText(messages: unknown) {
+  if (!Array.isArray(messages)) {
+    return '';
+  }
+
+  const latestUserMessage = [...messages].reverse().find(
+    (
+      message,
+    ): message is {
+      role: string;
+      content?: unknown;
+      parts?: Array<{ type?: string; text?: string }>;
+    } =>
+      Boolean(message) &&
+      typeof message === 'object' &&
+      'role' in message &&
+      (message as { role?: string }).role === 'user',
+  );
+
+  if (!latestUserMessage) {
+    return '';
+  }
+
+  if (typeof latestUserMessage.content === 'string') {
+    return latestUserMessage.content.trim();
+  }
+
+  if (!Array.isArray(latestUserMessage.parts)) {
+    return '';
+  }
+
+  return latestUserMessage.parts
+    .filter(
+      (
+        part,
+      ): part is {
+        type: 'text';
+        text: string;
+      } => part?.type === 'text' && typeof part.text === 'string',
+    )
+    .map((part) => part.text)
+    .join('')
+    .trim();
 }

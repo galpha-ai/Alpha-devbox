@@ -17,7 +17,7 @@ try {
     await page.waitForTimeout(500);
   }
 
-  const modeBadge = page.getByText(/live|polling/i).first();
+  const modeBadge = page.getByText(/live|stream|polling/i).first();
   await modeBadge.waitFor({ state: "visible", timeout: 15_000 });
 
   await sendPrompt(page, repoPrompt);

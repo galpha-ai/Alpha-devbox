@@ -15,7 +15,7 @@ What is implemented today:
 - **Two-process controller/runner architecture.** A long-lived controller routes messages and manages state; long-lived runner containers execute Claude Code SDK queries inside isolated sandboxes. The two processes communicate exclusively through filesystem-based IPC.
 - **Docker and Kubernetes container runtimes.** Docker for local development, Kubernetes with PVC-backed persistent volumes for production clusters.
 - **Session management with persistent workspaces.** SQLite stores all persistent state (sessions, messages, agents, scheduled tasks). Workspace directories survive container restarts via bind mounts.
-- **Multi-channel support.** Telegram (groups and DMs), Slack, and Web (HTTP REST + WebSocket streaming). Channel adapters implement a common `Channel` interface.
+- **Multi-channel support.** Telegram (groups and DMs), Slack, and Web (HTTP REST + AI SDK-compatible SSE streaming). Channel adapters implement a common `Channel` interface.
 - **Agent-as-Code definitions.** Each agent is a directory containing `CLAUDE.md` (instructions), `seed.yaml` (repos, model, thinking config, secret mounts), and optional skills. Agents are version-controlled templates; runtime state is materialized separately.
 - **Session garbage collection and lifecycle management.** Heartbeat-based GC with configurable TTL. Thread-scoped sessions are reclaimed after 6 hours of inactivity. Channel-scoped sessions are long-lived.
 - **Concurrency control and message queuing.** Global container concurrency cap (`MAX_CONCURRENT_CONTAINERS`). Per-session message queuing with retry and exponential backoff. Follow-up messages are piped to active containers via IPC.
@@ -43,7 +43,7 @@ What is implemented today:
 
 ### Design Considerations
 
-The existing Web channel (`channels/web.ts`) already exposes conversation CRUD and WebSocket streaming. Phase 1 extracts and generalizes this into a standalone API layer that the Web channel, CLI tools, and external integrations all consume. The chat-triggered flow remains the primary interface; the API is an additional entry point into the same session and container machinery.
+The existing Web channel (`channels/web.ts`) already exposes conversation CRUD and AI SDK-compatible SSE chat streaming. Phase 1 extracts and generalizes this into a standalone API layer that the Web channel, CLI tools, and external integrations all consume. The chat-triggered flow remains the primary interface; the API is an additional entry point into the same session and container machinery.
 
 ## Phase 2: Observability and Governance
 

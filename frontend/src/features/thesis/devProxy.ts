@@ -67,7 +67,6 @@ export function createThesisDevProxy(targets: ThesisDevProxyTargets): Record<str
       target: devboxTarget,
       changeOrigin: true,
       secure: isSecureTarget(devboxTarget),
-      ws: true,
       configure(proxy) {
         proxy.on("proxyReq", (proxyReq, req) => {
           attachLocalUserId(proxyReq, req, targets.localUserId);
