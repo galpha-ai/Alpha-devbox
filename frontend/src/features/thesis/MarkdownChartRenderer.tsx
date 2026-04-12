@@ -16,7 +16,9 @@ export function MarkdownChartRenderer({
   const chartHeight = variant === 'compact' ? 240 : 300;
 
   return (
-    <div className={proseClassName}>
+    <div
+      className={`min-w-0 max-w-full overflow-x-auto ${proseClassName ?? ''}`.trim()}
+    >
       <BetterMarkdownRenderer
         markdown={markdown}
         chartHeight={chartHeight}
