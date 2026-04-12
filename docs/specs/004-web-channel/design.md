@@ -6,22 +6,22 @@ Draft
 
 ## Problem
 
-devbox-agent currently only accepts input from Telegram and Slack. There is no HTTP/WebSocket interface for web frontends. To provide conversation capabilities through the existing your-org web platform, a new channel adapter is needed.
+devbox-agent currently only accepts input from Telegram and Slack. There is no HTTP/WebSocket interface for web frontends. To enable browser-based conversations and let teams ship their own web UIs on top of devbox-agent, a new channel adapter is needed.
 
 ## Goals
 
 - Add a `WebChannel` that exposes HTTP REST + WebSocket endpoints
 - Multi-conversation model: each user can have multiple concurrent conversations
-- Deploy behind the existing Envoy proxy, reusing the your-org JWT authentication flow (Envoy validates JWT, injects `X-User-Id`)
+- Allow deployment behind a reverse proxy (Envoy, Caddy, NGINX, etc.) that handles auth and injects `X-User-Id`
 - Notify users when the global concurrency limit is reached (queue position)
-- Deploy to the existing GKE staging cluster alongside current Telegram/Slack channels
+- Run on the same Kubernetes deployment as the existing Telegram/Slack channels
 
 ## Non-Goals
 
 - Per-user fairness or rate limiting (Envoy-level rate limiting is a future addition)
 - Replacing or modifying the runner container model
 - Frontend implementation
-- Envoy configuration changes (separate PR in your-infra-repo)
+- Reverse proxy configuration (deployment-specific, out of scope for this repo)
 
 ---
 

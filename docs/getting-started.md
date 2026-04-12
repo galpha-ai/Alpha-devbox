@@ -49,8 +49,8 @@ This is the shortest path to a working local deployment.
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/galpha-ai/devbox-agent-open.git
-cd devbox-agent-open
+git clone https://github.com/galpha-ai/Alpha-devbox.git
+cd Alpha-devbox
 npm install
 ```
 

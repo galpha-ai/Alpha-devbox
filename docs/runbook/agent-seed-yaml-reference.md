@@ -151,11 +151,11 @@ List of Git repositories to clone into the agent's workspace.
 **Example:**
 ```yaml
 repos:
-  - name: devbox-agent
-    source: https://github.com/your-org/devbox-agent.git
+  - name: my-service
+    source: https://github.com/your-org/my-service.git
     ref: main
   - name: my-library
-    source: https://github.com/org/my-library.git
+    source: https://github.com/your-org/my-library.git
     ref: v1.2.3
 ```
 

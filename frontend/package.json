@@ -1,7 +1,8 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "devbox-thesis-ui",
+  "description": "Local web demo UI for Devbox Agent — a chat workspace for the bundled research-style agent.",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "packageManager": "npm@10.9.2",
   "type": "module",
   "scripts": {

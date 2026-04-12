@@ -363,5 +363,5 @@ Use Slack's official Assistant API with `assistant.threads.setStatus`:
 - [Slack reactions.add API](https://api.slack.com/methods/reactions.add)
 - [Slack reactions.remove API](https://api.slack.com/methods/reactions.remove)
 - [Botpress Slack Integration](https://www.botpress.com/docs/integrations/integration-guides/slack)
-- [Issue #15: Add typing indicator support for Slack agents](https://github.com/your-org/devbox-agent/issues/15)
+- [Issue #15: Add typing indicator support for Slack agents](https://github.com/galpha-ai/Alpha-devbox/issues/15)
 - [slackapi/bolt-js #885: Typing indicator discussion](https://github.com/slackapi/bolt-js/issues/885)

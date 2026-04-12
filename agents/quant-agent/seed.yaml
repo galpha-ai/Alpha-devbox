@@ -1,5 +1,0 @@
-model: claude-opus-4-6
-repos:
-  - name: crypto-quant
-    source: https://github.com/galpha-ai/crypto-quant.git
-    ref: main
