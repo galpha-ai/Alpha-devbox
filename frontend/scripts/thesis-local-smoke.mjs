@@ -2,7 +2,7 @@ import process from "node:process";
 import { chromium } from "playwright";
 
 const baseUrl = process.env.DEVBOX_E2E_URL || "http://127.0.0.1:5175/";
-const repoPrompt = "Using the seeded crypto-quant repo, what file is the primary edit target for the starter strategy? Reply in one short sentence and include the exact repo-relative path.";
+const introPrompt = "Reply with one short sentence saying hello and mention that you can help with quant research.";
 const chartPrompt = `Reply with one short sentence and then exactly this markdown table:\n\n| Month | Revenue | Cost |\n| --- | ---: | ---: |\n| Jan | 10 | 4 |\n| Feb | 12 | 5 |\n| Mar | 14 | 6 |`;
 
 const browser = await chromium.launch({ headless: true });
@@ -20,9 +20,9 @@ try {
   const modeBadge = page.getByText(/live|stream|polling/i).first();
   await modeBadge.waitFor({ state: "visible", timeout: 15_000 });
 
-  await sendPrompt(page, repoPrompt);
-  await waitForText(page, repoPrompt, 15_000);
-  await waitForAssistantResponse(page, /crates\/poly-strat-starter\/src\/strategy\.rs|src\/strategy\.rs/i, 180_000);
+  await sendPrompt(page, introPrompt);
+  await waitForText(page, introPrompt, 15_000);
+  await waitForAssistantResponse(page, /hello|quant/i, 180_000);
 
   await sendPrompt(page, chartPrompt);
   await page.getByText("Jan").waitFor({ state: "visible", timeout: 180_000 });

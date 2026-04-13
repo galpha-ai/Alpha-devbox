@@ -75,7 +75,7 @@ export interface ContainerOutput {
   result: string | null;
   newSessionId?: string;
   error?: string;
-  errorKind?: 'stale_session_resume';
+  errorKind?: 'stale_session_resume' | 'seed_clone_failed';
 }
 
 interface SeedManifestRepo {

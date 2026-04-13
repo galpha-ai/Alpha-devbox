@@ -408,6 +408,37 @@ describe('container-runner timeout behavior (file protocol)', () => {
     expect(result.errorKind).toBe('stale_session_resume');
   });
 
+  it('classifies seed clone failures emitted by the runner entrypoint', async () => {
+    const runtime = makeRuntime((config) => {
+      const runDir = containerPathToHostPath(config, config.env.DEVBOX_RUN_DIR);
+      fs.mkdirSync(path.join(runDir, 'out'), { recursive: true });
+      fs.writeFileSync(
+        path.join(runDir, 'done.json'),
+        JSON.stringify({ status: 'success' }),
+      );
+      config.onStderrChunk?.("Cloning into '/workspace/crypto-quant'...\n");
+      config.onStderrChunk?.(
+        'DEVBOX_SEED_CLONE_ERROR: Timed out cloning https://github.com/galpha-ai/crypto-quant.git after 20s.\n',
+      );
+      return {
+        id: 'test-container',
+        waitForExit: async () => ({ code: 128 }),
+        stop: async () => {},
+      };
+    });
+
+    const result = await runContainerAgent(
+      runtime,
+      testGroup,
+      testInput,
+      () => {},
+    );
+
+    expect(result.status).toBe('error');
+    expect(result.errorKind).toBe('seed_clone_failed');
+    expect(result.error).toContain('DEVBOX_SEED_CLONE_ERROR');
+  });
+
   it('fails fast when seed repo source is local path', async () => {
     fs.mkdirSync('/tmp/devbox-app/agents/test-group', { recursive: true });
     fs.writeFileSync(

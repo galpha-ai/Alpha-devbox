@@ -610,6 +610,33 @@ async function processSessionMessages(sessionKey: string): Promise<boolean> {
       return true;
     }
 
+    if (output.errorKind === 'seed_clone_failed') {
+      if (!outputSentToUser) {
+        const timestamp = new Date().toISOString();
+        const text =
+          'Failed to start the workspace because the seed repo clone timed out or failed. Check runner network access to the repo host and retry.';
+        storeMessage({
+          id: `bot-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          chat_jid: chatJid,
+          thread_id: scope.threadId,
+          sender: ASSISTANT_NAME,
+          sender_name: ASSISTANT_NAME,
+          content: text,
+          timestamp,
+          is_from_me: true,
+          is_bot_message: true,
+        });
+        await channel.sendMessage(chatJid, text, {
+          threadId: scope.threadId,
+        });
+      }
+      logger.warn(
+        { agent: agent.name, sessionKey, threadId: scope.threadId },
+        'Seed repo clone failed; skipping automatic retry',
+      );
+      return true;
+    }
+
     // If output was already sent to the user, don't roll back the cursor.
     if (outputSentToUser) {
       logger.warn(

@@ -12,6 +12,7 @@ export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
 export GIT_CONFIG_GLOBAL="${GIT_CONFIG_GLOBAL:-${HOME}/.gitconfig}"
 GIT_AUTH_TOKEN=""
 GIT_AUTH_TOKENS_JSON=""
+GIT_CLONE_TIMEOUT_SECONDS="${DEVBOX_GIT_CLONE_TIMEOUT_SECONDS:-20}"
 
 # Read controller-provided input first so seeding can use ephemeral git auth
 # secrets.
@@ -22,6 +23,19 @@ if [ -f "${INPUT_JSON}" ] && command -v jq >/dev/null 2>&1; then
     .secrets.DEVBOX_GIT_AUTH_TOKENS // empty
     | if type == "string" then (fromjson? // empty) else . end
   ' "${INPUT_JSON}" 2>/dev/null || true)"
+
+  while IFS= read -r secret_key; do
+    [ -n "${secret_key}" ] || continue
+    case "${secret_key}" in
+      DEVBOX_GIT_AUTH_TOKEN|DEVBOX_GIT_AUTH_TOKENS)
+        continue
+        ;;
+    esac
+    secret_value="$(jq -r --arg key "${secret_key}" '.secrets[$key] // empty' "${INPUT_JSON}" 2>/dev/null || true)"
+    if [ -n "${secret_value}" ]; then
+      export "${secret_key}=${secret_value}"
+    fi
+  done < <(jq -r '.secrets | keys[]?' "${INPUT_JSON}" 2>/dev/null || true)
 fi
 
 if [ -n "${GIT_AUTH_TOKENS_JSON}" ]; then
@@ -96,6 +110,45 @@ rewrite_github_source_with_token() {
   return 1
 }
 
+run_git_clone() {
+  local source="$1"
+  local target="$2"
+  shift 2
+  local status=0
+  local -a clone_cmd=(
+    git
+    -c
+    http.lowSpeedLimit=1
+    -c
+    http.lowSpeedTime=15
+    clone
+  )
+
+  if [ "$#" -gt 0 ]; then
+    clone_cmd+=("$@")
+  fi
+  clone_cmd+=("${source}" "${target}")
+
+  if command -v timeout >/dev/null 2>&1; then
+    GIT_TERMINAL_PROMPT=0 timeout "${GIT_CLONE_TIMEOUT_SECONDS}" \
+      "${clone_cmd[@]}" || status=$?
+  else
+    GIT_TERMINAL_PROMPT=0 "${clone_cmd[@]}" || status=$?
+  fi
+
+  if [ "${status}" -eq 0 ]; then
+    return 0
+  fi
+
+  if [ "${status}" -eq 124 ]; then
+    echo "DEVBOX_SEED_CLONE_ERROR: Timed out cloning ${source} after ${GIT_CLONE_TIMEOUT_SECONDS}s. Check network access to the repository host." >&2
+  else
+    echo "DEVBOX_SEED_CLONE_ERROR: Failed to clone ${source} (exit ${status})." >&2
+  fi
+
+  return "${status}"
+}
+
 # All bind-mounted directories (session, workspace, ipc/*) are pre-created on
 # the host by container-runner.ts before the container starts. No mkdir needed
 # here.
@@ -135,9 +188,9 @@ if [ ! -f "${WORKSPACE_ROOT}/.seeded" ]; then
           fi
         fi
         if [ -n "${ref}" ]; then
-          git clone --branch "${ref}" --single-branch "${clone_source}" "${target}"
+          run_git_clone "${clone_source}" "${target}" --branch "${ref}" --single-branch
         else
-          git clone "${clone_source}" "${target}"
+          run_git_clone "${clone_source}" "${target}"
         fi
       fi
 
