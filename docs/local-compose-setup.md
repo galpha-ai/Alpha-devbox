@@ -16,17 +16,21 @@ How to run the devbox-agent stack locally using Docker Compose.
    - Generate an App-Level Token with scope `connections:write` — this is your `SLACK_APP_TOKEN` (`xapp-...`)
 3. Add **Bot Token Scopes** (Features > OAuth & Permissions > Bot Token Scopes):
    - `chat:write` — send messages
-   - `channels:history` — read public channel messages
-   - `channels:read` — list channels
-   - `groups:history` — read private channel messages
-   - `groups:read` — list private channels
+   - `channels:history`, `channels:read` — public channel reads + discovery
+   - `groups:history`, `groups:read` — private channel reads + discovery
+   - `im:history`, `im:read`, `im:write` — direct-message event compatibility in Slack app settings
+   - `mpim:history`, `mpim:read` — multi-party DM event compatibility in Slack app settings
    - `users:read` — resolve user display names
+   - `reactions:write` — required if you want the bot's Slack status/typing reactions
 4. **Subscribe to bot events** (Features > Event Subscriptions > Subscribe to bot events):
    - `message.channels`
    - `message.groups`
+   - `message.im`
+   - `message.mpim`
 5. **Install to Workspace** (Settings > Install App) — copy the Bot User OAuth Token (`xoxb-...`) as `SLACK_BOT_TOKEN`
 6. Invite the bot to a channel: `/invite @YourBotName`
 7. Note the **channel ID** (click channel name > About > bottom of panel, or from the URL)
+8. In `config.compose.yaml`, bind Slack with a specific `slack:<channel_id>` entry. Current config docs do not describe a Slack DM wildcard binding.
 
 ## 2. Set Up Environment
 
@@ -111,7 +115,7 @@ channels:
   #       requires_trigger: false
 ```
 
-Only include channel types you have tokens for. The controller validates at startup that the required tokens are present for each channel prefix (`slack:*` needs `SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN`, `tg:*` needs `TELEGRAM_BOT_TOKEN`).
+Only include channel types you have tokens for. The controller validates at startup that the required tokens are present for each channel prefix (`slack:*` needs `SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN`, `tg:*` needs `TELEGRAM_BOT_TOKEN`). For Telegram setup, use `/chatid` to copy a group or DM identifier and `/ping` to confirm the bot is online.
 
 ## 4. Build and Start
 

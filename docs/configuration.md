@@ -17,8 +17,8 @@ The config file is validated at startup using a Zod schema (defined in `src/conf
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `assistant_name` | string | `"Devbox"` | Bot display name. Also used as the default trigger prefix (`@<assistant_name>`). |
-| `telegram_bot_token` | string | -- | Telegram Bot API token. Can also be set via `TELEGRAM_BOT_TOKEN` env var. Required if any channel ID starts with `tg:`. |
-| `slack_bot_token` | string | -- | Slack bot token (`xoxb-...`). Can also be set via `SLACK_BOT_TOKEN` env var. Required if any channel ID starts with `slack:`. |
+| `telegram_bot_token` | string | -- | Telegram Bot API token. Can also be set via `TELEGRAM_BOT_TOKEN` env var. Required if any channel ID starts with `tg:`. The Telegram adapter also supports `/chatid` for discovering IDs and `/ping` for a quick health check. |
+| `slack_bot_token` | string | -- | Slack bot token (`xoxb-...`). Can also be set via `SLACK_BOT_TOKEN` env var. Required if any channel ID starts with `slack:`. Typical app scopes include message read/write scopes and `users:read`; add `reactions:write` if you want Slack status/typing reactions. |
 | `slack_app_token` | string | -- | Slack app-level token (`xapp-...`) for Socket Mode. Can also be set via `SLACK_APP_TOKEN` env var. Required alongside `slack_bot_token`. |
 | `data_root` | string | Current working directory | Root directory for all runtime data (SQLite database, session workspaces, agent logs). Can also be set via `DEVBOX_DATA_ROOT` env var. |
 | `trigger_pattern` | string | `^@<assistant_name>\b` | Regex override for the message trigger pattern. Case-insensitive. When omitted, the trigger is auto-generated from `assistant_name`. |
@@ -170,12 +170,12 @@ channels:
 | Format | Description | Example |
 |--------|-------------|---------|
 | `tg:<chat_id>` | Specific Telegram group or supergroup. | `tg:-1001234567890` |
-| `tg:user:*` | Wildcard matching all Telegram DMs. | `tg:user:*` |
-| `tg:user:<user_id>` | Specific Telegram user DM. | `tg:user:123456789` |
-| `slack:<channel_id>` | Specific Slack channel. | `slack:C0123456789` |
+| `tg:user:*` | Wildcard matching all Telegram DMs. Useful when you want the bot to auto-handle Telegram private chats by default. | `tg:user:*` |
+| `tg:user:<user_id>` | Specific Telegram user DM. You can discover the numeric ID with `/chatid`. | `tg:user:123456789` |
+| `slack:<channel_id>` | Specific Slack channel. Current docs/config only describe specific channel bindings, not a Slack DM wildcard. | `slack:C0123456789` |
 | `web:*` | Wildcard matching all web frontend users. | `web:*` |
 
-Wildcard channels (`tg:user:*`, `web:*`) act as catch-all bindings. A message is matched against specific channel IDs first; the wildcard is used only if no specific match exists.
+Wildcard channels (`tg:user:*`, `web:*`) act as catch-all bindings. A message is matched against specific channel IDs first; the wildcard is used only if no specific match exists. For Telegram, `/chatid` is the easiest way to discover the right `tg:...` value for a group or DM.
 
 ## Agent Definition (seed.yaml)
 

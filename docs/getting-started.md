@@ -42,6 +42,88 @@ Expected result:
 
 If Docker is unavailable, skip Path 1 and Path 2 and use Path 3.
 
+## Optional: Connect Slack or Telegram
+
+You can start with the built-in Web channel only, then add Slack or Telegram later.
+
+### Slack
+
+Slack support uses **Socket Mode** and needs both of these secrets:
+
+- `SLACK_BOT_TOKEN` (`xoxb-...`)
+- `SLACK_APP_TOKEN` (`xapp-...`, created with `connections:write`)
+
+Use a Slack app manifest or equivalent settings that include these minimum pieces:
+
+- bot token scopes for message reading and replying, such as:
+  - `chat:write`
+  - `channels:history`, `channels:read`
+  - `groups:history`, `groups:read`
+  - `im:history`, `im:read`, `im:write`
+  - `mpim:history`, `mpim:read`
+  - `users:read`
+- bot events:
+  - `message.channels`
+  - `message.groups`
+  - `message.im`
+  - `message.mpim`
+- `socket_mode_enabled: true`
+
+If you want Slack status/typing reactions from the bot, also grant `reactions:write`.
+
+In `config.yaml`, bind a specific Slack channel with `slack:<channel_id>`, for example:
+
+```yaml
+channels:
+  - id: "slack:C0123456789"
+    agents:
+      - name: main
+        trigger: "@Devbox"
+        requires_trigger: true
+```
+
+Current docs and config only document **specific Slack channel bindings**. Do not assume a Slack DM wildcard binding exists.
+
+### Telegram
+
+Telegram support needs one secret:
+
+- `TELEGRAM_BOT_TOKEN`
+
+The bot exposes two useful commands:
+
+- `/chatid` — prints the `tg:...` ID you can copy into config
+- `/ping` — confirms the bot is online
+
+Channel ID patterns:
+
+- Telegram group or supergroup: `tg:<chat_id>`
+- Telegram DM wildcard: `tg:user:*`
+- Specific Telegram DM: `tg:user:<user_id>`
+
+Example:
+
+```yaml
+channels:
+  - id: "tg:-1001234567890"
+    agents:
+      - name: main
+        trigger: "@Devbox"
+        requires_trigger: true
+
+  - id: "tg:user:*"
+    agents:
+      - name: main
+        requires_trigger: false
+```
+
+Use `tg:user:*` when you want the bot to handle Telegram DMs by default.
+
+### Where to find the full setup details
+
+- See [Configuration](configuration.md) for all channel config fields and channel ID formats.
+- See [Local Docker Compose Setup](local-compose-setup.md) for a fuller local stack walkthrough.
+
 ## Path 1: Fastest First Run
 
 This is the shortest path to a working local deployment.
@@ -83,6 +165,13 @@ This local path is already preconfigured for the built-in web frontend and local
 ### 3. Start the local web stack
 
 ```bash
+npm run dev
+```
+
+If your shell exports other Claude / Anthropic variables globally, clear them for this project first so local `.env.local` stays authoritative:
+
+```bash
+unset ANTHROPIC_AUTH_TOKEN ANTHROPIC_BASE_URL CLAUDE_CODE_OAUTH_TOKEN
 npm run dev
 ```
 
