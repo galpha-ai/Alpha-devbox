@@ -23,7 +23,7 @@
 ```bash
 git clone https://github.com/galpha-ai/Alpha-devbox.git && cd Alpha-devbox
 npm install
-cp .env.example .env.local   # add your ANTHROPIC_API_KEY
+cp .env.example .env.local   # add your Claude credential (Anthropic / Vertex / Bedrock / OpenRouter)
 npm run dev                   # one command: builds runner image, starts controller + web UI
 ```
 
@@ -59,9 +59,9 @@ Every coding agent today makes you choose:
 | Multi-channel chat (Slack / TG / Web) | partial | ❌ | ❌ | ❌ | ✅ |
 | Agent-as-Code (Git-versioned) | ❌ | ❌ | local files | partial | ✅ |
 | Kubernetes-native runtime | ❌ | ❌ | n/a | partial | ✅ |
-| Multi-provider models | partial | ❌ | ❌ | ✅ | Claude today¹ |
+| Model providers | partial | ❌ | ❌ | ✅ | ✅¹ |
 
-> ¹ Currently runs on the Claude Agent SDK (Sonnet, Opus, Haiku). Multi-provider support is on the roadmap. You can use an Anthropic-compatible proxy via `ANTHROPIC_BASE_URL` today.
+> ¹ Runs Claude via Anthropic API, Google Vertex AI, Amazon Bedrock, or any Anthropic-compatible gateway (OpenRouter, LiteLLM, etc.). See `.env.example` for configuration.
 
 </details>
 
@@ -139,17 +139,7 @@ Repos, storage, logs, secrets, model traffic, tool calls — all stay on infrast
 
 ## Status
 
-**v0.1 alpha** — core architecture is implemented, tested (252 tests), and ready for early adopters.
-
-| Phase | What | Status |
-| --- | --- | --- |
-| **0** | Sandbox isolation, sessions, multi-channel chat, Docker + K8s | ✅ shipped |
-| **1** | REST API aligned with Managed Agents semantics | 🚧 design |
-| **2** | Observability (tracing, cost tracking, audit logging) | planned |
-| **3** | Multi-agent coordination (agent-to-agent, parent/child) | planned |
-| **4** | Self-evaluation and CI/CD integration | planned |
-
-The roadmap targets API compatibility with Claude Managed Agents so you can migrate workloads between hosted and self-hosted without rewriting your orchestration layer. See **[docs/roadmap.md](docs/roadmap.md)** for details.
+**v0.1 alpha** — core architecture shipped, ready for early adopters. See **[docs/roadmap.md](docs/roadmap.md)** for what's next.
 
 ---
 

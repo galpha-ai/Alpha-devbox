@@ -763,6 +763,13 @@ async function readSecrets(
     'CLAUDE_CODE_USE_VERTEX',
     'CLOUD_ML_REGION',
     'ANTHROPIC_VERTEX_PROJECT_ID',
+    'CLAUDE_CODE_USE_BEDROCK',
+    'AWS_ACCESS_KEY_ID',
+    'AWS_SECRET_ACCESS_KEY',
+    'AWS_SESSION_TOKEN',
+    'AWS_REGION',
+    'AWS_DEFAULT_REGION',
+    'ANTHROPIC_BEDROCK_BASE_URL',
     'ANTHROPIC_DEFAULT_SONNET_MODEL',
   ]) {
     const val = process.env[key];
@@ -1049,6 +1056,13 @@ export async function runContainerAgent(
     'CLAUDE_CODE_USE_VERTEX',
     'CLOUD_ML_REGION',
     'ANTHROPIC_VERTEX_PROJECT_ID',
+    'CLAUDE_CODE_USE_BEDROCK',
+    'AWS_ACCESS_KEY_ID',
+    'AWS_SECRET_ACCESS_KEY',
+    'AWS_SESSION_TOKEN',
+    'AWS_REGION',
+    'AWS_DEFAULT_REGION',
+    'ANTHROPIC_BEDROCK_BASE_URL',
     'ANTHROPIC_DEFAULT_SONNET_MODEL',
   ]) {
     const val = process.env[key];
