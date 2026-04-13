@@ -4,6 +4,7 @@
  */
 import { createSign } from 'crypto';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import YAML from 'yaml';
 
@@ -481,6 +482,29 @@ function buildVolumeMounts(
     containerPath: '/ipc',
     readonly: false,
   });
+
+  // Copy GCP Application Default Credentials into the session directory when
+  // using Vertex AI. We copy instead of bind-mounting to avoid host file
+  // permission issues (the devbox user inside the container may not be able
+  // to read the host's ADC file). The session dir is already bind-mounted
+  // with correct ownership.
+  if (process.env.CLAUDE_CODE_USE_VERTEX) {
+    const adcSrc =
+      process.env.GOOGLE_APPLICATION_CREDENTIALS ||
+      path.join(os.homedir(), '.config', 'gcloud', 'application_default_credentials.json');
+    if (fs.existsSync(adcSrc)) {
+      const adcDst = path.join(sessionDir, 'gcloud-adc.json');
+      fs.copyFileSync(adcSrc, adcDst);
+      fs.chmodSync(adcDst, 0o644);
+      logger.info({ adcSrc }, '[bvm] copied GCP ADC for Vertex AI');
+    } else {
+      logger.warn(
+        { adcSrc },
+        '[bvm] CLAUDE_CODE_USE_VERTEX is set but no ADC file found; Vertex auth may fail inside the container',
+      );
+    }
+  }
+
   logger.info(
     { agent: agent.name },
     `[bvm ${bvmE()}] buildVolumeMounts complete`,
@@ -1050,6 +1074,11 @@ export async function runContainerAgent(
     DEVBOX_RUN_DIR: runFiles.containerRunDir,
     HOME: CONTAINER_HOME,
   };
+
+  // Point the runner at the copied ADC file when using Vertex AI.
+  if (process.env.CLAUDE_CODE_USE_VERTEX) {
+    runtimeEnv.GOOGLE_APPLICATION_CREDENTIALS = '/session/gcloud-adc.json';
+  }
 
   // Forward model/API configuration from controller env to runner pods.
   for (const key of [

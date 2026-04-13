@@ -14,8 +14,8 @@ for env_file in .env .env.local .env.web-local; do
   fi
 done
 
-if [[ -z "${ANTHROPIC_API_KEY:-}" && -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]]; then
-  echo "Missing Claude credentials. Set ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN in .env/.env.local before running dev:web-local." >&2
+if [[ -z "${ANTHROPIC_API_KEY:-}" && -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" && -z "${CLAUDE_CODE_USE_VERTEX:-}" && -z "${CLAUDE_CODE_USE_BEDROCK:-}" ]]; then
+  echo "Missing Claude credentials. Set one of: ANTHROPIC_API_KEY, CLAUDE_CODE_OAUTH_TOKEN, CLAUDE_CODE_USE_VERTEX=1, or CLAUDE_CODE_USE_BEDROCK=1 in .env/.env.local before running dev:web-local." >&2
   exit 1
 fi
 
