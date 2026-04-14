@@ -61,10 +61,6 @@ BACKEND_PORT="${BACKEND_PORT%%/*}"
 FRONTEND_PORT="${FRONTEND_URL#http://127.0.0.1:}"
 FRONTEND_PORT="${FRONTEND_PORT%%/*}"
 
-if [[ "${DEVBOX_WEB_CLEAN:-0}" == "1" ]]; then
-  echo "DEVBOX_WEB_CLEAN=1 -> removing local data root at $DATA_ROOT" >&2
-  rm -rf "$DATA_ROOT"
-fi
 mkdir -p "$DATA_ROOT"
 
 if [[ ! -d node_modules ]]; then

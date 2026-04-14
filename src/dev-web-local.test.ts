@@ -76,12 +76,11 @@ afterEach(() => {
 });
 
 describe('scripts/dev-web-local.sh', () => {
-  it('prints an explicit warning before wiping the local data root', () => {
+  it('preserves the local data root even if the legacy clean flag is set', () => {
     const result = runDevScript({ DEVBOX_WEB_CLEAN: '1' });
 
     expect(result.status).toBe(0);
-    expect(result.stdout + result.stderr).toContain('DEVBOX_WEB_CLEAN=1');
-    expect(fs.existsSync(result.sentinelPath)).toBe(false);
+    expect(fs.existsSync(result.sentinelPath)).toBe(true);
   });
 
   it('preserves the local data root by default', () => {

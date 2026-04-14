@@ -226,7 +226,6 @@ Optional:
 
 - `ANTHROPIC_BASE_URL` if you use a proxy / compatible endpoint
 - `DEVBOX_DISABLE_SESSION_RESUME=1` for cleaner local smoke runs
-- `DEVBOX_WEB_CLEAN=1` to reset local session data on each run
 
 This local path is already preconfigured for the built-in web frontend and local demo agent. No extra `config.yaml` is required.
 
@@ -253,6 +252,14 @@ If your shell exports other Claude / Anthropic variables globally, clear them fo
 
 ```bash
 unset ANTHROPIC_AUTH_TOKEN ANTHROPIC_BASE_URL CLAUDE_CODE_OAUTH_TOKEN
+npm run dev
+```
+
+If you want a completely fresh local state, stop the stack and remove the data
+directory explicitly before restarting:
+
+```bash
+rm -rf .devbox-local
 npm run dev
 ```
 
