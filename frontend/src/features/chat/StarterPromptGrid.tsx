@@ -5,10 +5,10 @@ import {
   GitCompareArrows,
   TrendingUp,
 } from 'lucide-react';
-import btcImg from '@/assets/thesis/btc-momentum.jpg';
-import sp500Img from '@/assets/thesis/sp500-reversion.jpg';
-import nbaImg from '@/assets/thesis/nba-prediction.jpg';
-import pairsImg from '@/assets/thesis/pairs-trading.jpg';
+import btcImg from '@/assets/chat/btc-momentum.jpg';
+import sp500Img from '@/assets/chat/sp500-reversion.jpg';
+import nbaImg from '@/assets/chat/nba-prediction.jpg';
+import pairsImg from '@/assets/chat/pairs-trading.jpg';
 
 const STARTER_CARDS = [
   {

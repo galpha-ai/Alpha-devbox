@@ -129,12 +129,12 @@ vi.mock('@galpha-ai/better-markdown/react', () => ({
 }));
 
 import { MarkdownChartRenderer } from './MarkdownChartRenderer';
-import { ThesisWorkspace } from './ThesisWorkspace';
-import type { ThesisTransportClient } from './transport';
+import { ChatWorkspace } from './ChatWorkspace';
+import type { ChatTransportClient } from './transport';
 
-function createTransportClient(): ThesisTransportClient {
+function createTransportClient(): ChatTransportClient {
   return {
-    chatTransport: {} as ThesisTransportClient['chatTransport'],
+    chatTransport: {} as ChatTransportClient['chatTransport'],
     createConversation: vi.fn(async () => ({ conversationId: 'conv-1' })),
     listConversations: vi.fn(async () => ({ conversations: [] })),
     getUiMessages: vi.fn(async () => ({
@@ -237,7 +237,7 @@ function deferred<T>() {
   return { promise, resolve };
 }
 
-describe('ThesisWorkspace', () => {
+describe('ChatWorkspace', () => {
   it('delegates markdown rendering to @galpha-ai/better-markdown', () => {
     const { container } = render(
       <MarkdownChartRenderer
@@ -259,7 +259,7 @@ describe('ThesisWorkspace', () => {
     const transportClient = createTransportClient();
 
     render(
-      <ThesisWorkspace
+      <ChatWorkspace
         transportClient={transportClient}
         onLogout={() => {}}
         onSessionExpired={() => {}}
@@ -292,7 +292,7 @@ describe('ThesisWorkspace', () => {
       .mockImplementationOnce(async () => hydrate3.promise);
 
     render(
-      <ThesisWorkspace
+      <ChatWorkspace
         transportClient={transportClient}
         onLogout={() => {}}
         onSessionExpired={() => {}}
@@ -403,7 +403,7 @@ describe('ThesisWorkspace', () => {
     });
 
     render(
-      <ThesisWorkspace
+      <ChatWorkspace
         transportClient={transportClient}
         onLogout={() => {}}
         onSessionExpired={() => {}}
@@ -432,7 +432,7 @@ describe('ThesisWorkspace', () => {
     });
 
     render(
-      <ThesisWorkspace
+      <ChatWorkspace
         transportClient={transportClient}
         onLogout={() => {}}
         onSessionExpired={() => {}}
@@ -462,7 +462,7 @@ describe('ThesisWorkspace', () => {
       createUiMessage(
         'u1',
         'user',
-        'Initial BTC momentum thesis?',
+        'Initial BTC momentum setup?',
         '2026-04-12T00:00:00.000Z',
       ),
       createUiMessage(
@@ -478,14 +478,14 @@ describe('ThesisWorkspace', () => {
     });
 
     render(
-      <ThesisWorkspace
+      <ChatWorkspace
         transportClient={transportClient}
         onLogout={() => {}}
         onSessionExpired={() => {}}
       />,
     );
 
-    await screen.findByText('Initial BTC momentum thesis?');
+    await screen.findByText('Initial BTC momentum setup?');
 
     const textarea = await screen.findByPlaceholderText('Message the agent...');
     fireEvent.change(textarea, { target: { value: 'Any risk controls for chop?' } });
@@ -513,7 +513,7 @@ describe('ThesisWorkspace', () => {
     });
 
     render(
-      <ThesisWorkspace
+      <ChatWorkspace
         transportClient={transportClient}
         onLogout={() => {}}
         onSessionExpired={() => {}}

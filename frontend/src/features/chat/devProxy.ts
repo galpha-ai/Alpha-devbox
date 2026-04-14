@@ -3,19 +3,19 @@ import type { IncomingMessage } from "node:http";
 import type { ProxyOptions } from "vite";
 
 export const DEFAULT_LOCAL_DEVBOX_PROXY_TARGET = "http://127.0.0.1:18092";
-export const DEFAULT_THESIS_DEV_PROXY_TARGET = DEFAULT_LOCAL_DEVBOX_PROXY_TARGET;
+export const DEFAULT_CHAT_DEV_PROXY_TARGET = DEFAULT_LOCAL_DEVBOX_PROXY_TARGET;
 
-export interface ThesisDevProxyTargets {
+export interface ChatDevProxyTargets {
   devbox: string;
   userService: string;
   localUserId?: string;
 }
 
-export function resolveThesisDevProxyTarget(configuredBaseUrl?: string) {
-  return resolveThesisDevProxyTargets({ apiBaseUrl: configuredBaseUrl }).devbox;
+export function resolveChatDevProxyTarget(configuredBaseUrl?: string) {
+  return resolveChatDevProxyTargets({ apiBaseUrl: configuredBaseUrl }).devbox;
 }
 
-export function resolveThesisDevProxyTargets({
+export function resolveChatDevProxyTargets({
   apiBaseUrl,
   devboxBaseUrl,
   userServiceBaseUrl,
@@ -25,8 +25,8 @@ export function resolveThesisDevProxyTargets({
   devboxBaseUrl?: string;
   userServiceBaseUrl?: string;
   localUserId?: string;
-}): ThesisDevProxyTargets {
-  const defaultTarget = normalizeBaseUrl(apiBaseUrl || DEFAULT_THESIS_DEV_PROXY_TARGET);
+}): ChatDevProxyTargets {
+  const defaultTarget = normalizeBaseUrl(apiBaseUrl || DEFAULT_CHAT_DEV_PROXY_TARGET);
   const normalizedLocalUserId = localUserId?.trim() || undefined;
   const resolvedDevboxTarget = normalizeBaseUrl(devboxBaseUrl || DEFAULT_LOCAL_DEVBOX_PROXY_TARGET);
 
@@ -57,7 +57,7 @@ export function extractUserIdFromBearerToken(authorizationHeader?: string | stri
   return typeof userId === "string" && userId.trim() ? userId : null;
 }
 
-export function createThesisDevProxy(targets: ThesisDevProxyTargets): Record<string, ProxyOptions> {
+export function createChatDevProxy(targets: ChatDevProxyTargets): Record<string, ProxyOptions> {
   const devboxTarget = normalizeBaseUrl(targets.devbox);
   const userServiceTarget = normalizeBaseUrl(targets.userService);
 

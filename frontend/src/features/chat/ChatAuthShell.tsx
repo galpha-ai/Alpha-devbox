@@ -2,15 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   clearAuthSession,
-  createThesisAuthClient,
+  createAuthClient,
   ensureMockAuthSession,
   resolveLocalDevUserId,
-  resolveThesisApiBaseUrl,
+  resolveApiBaseUrl,
 } from './auth';
-import { createThesisTransportClient } from './transport';
-import { ThesisWorkspace } from './ThesisWorkspace';
+import { createChatTransportClient } from './transport';
+import { ChatWorkspace } from './ChatWorkspace';
 
-export function ThesisAuthShell() {
+export function ChatAuthShell() {
   const [localUserId] = useState(() =>
     resolveLocalDevUserId(
       window.localStorage,
@@ -19,16 +19,16 @@ export function ThesisAuthShell() {
   );
 
   return (
-    <ThesisSeededSessionRuntime localUserId={localUserId} />
+    <ChatSeededSessionRuntime localUserId={localUserId} />
   );
 }
 
-function ThesisSeededSessionRuntime({
+function ChatSeededSessionRuntime({
   localUserId,
 }: {
   localUserId: string;
 }) {
-  const { transportClient } = useThesisClients();
+  const { transportClient } = useChatClients();
   const [, setSession] = useState(() =>
     ensureMockAuthSession(window.localStorage, localUserId),
   );
@@ -47,7 +47,7 @@ function ThesisSeededSessionRuntime({
   }, [localUserId]);
 
   return (
-    <ThesisWorkspace
+    <ChatWorkspace
       transportClient={transportClient}
       sessionActionLabel={null}
       onLogout={handleResetSession}
@@ -56,10 +56,10 @@ function ThesisSeededSessionRuntime({
   );
 }
 
-function useThesisClients() {
+function useChatClients() {
   const baseUrl = useMemo(
     () =>
-      resolveThesisApiBaseUrl(
+      resolveApiBaseUrl(
         import.meta.env.DEV,
         import.meta.env.VITE_API_URL,
         typeof window !== 'undefined' ? window.location.origin : '',
@@ -67,9 +67,9 @@ function useThesisClients() {
     [],
   );
 
-  const authClient = useMemo(() => createThesisAuthClient({ baseUrl }), [baseUrl]);
+  const authClient = useMemo(() => createAuthClient({ baseUrl }), [baseUrl]);
   const transportClient = useMemo(
-    () => createThesisTransportClient({ authFetch: authClient.authFetch }),
+    () => createChatTransportClient({ authFetch: authClient.authFetch }),
     [authClient],
   );
 

@@ -227,7 +227,7 @@ Optional:
 - `ANTHROPIC_BASE_URL` if you use a proxy / compatible endpoint
 - `DEVBOX_DISABLE_SESSION_RESUME=1` for cleaner local smoke runs
 
-This local path is already preconfigured for the built-in web frontend and local demo agent. No extra `config.yaml` is required.
+This local path is already preconfigured for the built-in web chat workspace and local demo agent. No extra `config.yaml` is required.
 
 If you also want Slack and/or Telegram on the same local stack, prepare these optional files:
 
@@ -273,7 +273,7 @@ Expected result:
 
 - the script refreshes the local `devbox-runner:latest` image before start
 - the backend starts on `http://127.0.0.1:18092`
-- the frontend starts on `http://127.0.0.1:5175/`
+- the web chat workspace starts on `http://127.0.0.1:5175/`
 - no Slack or Telegram tokens are required for this path
 
 ### 4. Verify the deployment

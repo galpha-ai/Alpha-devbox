@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useChat } from '@ai-sdk/react';
+import type { UIMessage } from 'ai';
 import {
   Loader2,
   LogOut,
@@ -12,19 +13,8 @@ import {
   X,
 } from 'lucide-react';
 
-import { ArtifactRenderer } from './ArtifactRenderer';
-import {
-  getChatMessageText,
-  type ThesisArtifact,
-  type ThesisChatMessage,
-} from './devbox';
-import {
-  extractLatestSupportedArtifact,
-  stripWrappedArtifactBlocks,
-} from './protocol';
 import { StarterPromptGrid } from './StarterPromptGrid';
-import type { ThesisPanelStatus } from './ThesisResultPanel';
-import { ThesisTransportError, type ThesisTransportClient } from './transport';
+import { ChatTransportError, type ChatTransportClient } from './transport';
 import { MarkdownChartRenderer } from './MarkdownChartRenderer';
 
 const MOBILE_BREAKPOINT_PX = 1024;
@@ -37,8 +27,16 @@ const proseClasses = `prose prose-invert prose-sm max-w-none
   prose-li:text-[hsl(var(--body-muted))] prose-li:leading-relaxed
   prose-strong:text-foreground prose-code:text-foreground`;
 
-interface ThesisWorkspaceProps {
-  transportClient: ThesisTransportClient;
+type ChatPanelStatus = 'idle' | 'processing' | 'complete' | 'error';
+type ChatMessageMetadata = {
+  timestamp?: string;
+  sender?: string;
+  senderName?: string;
+};
+type ChatMessage = UIMessage<ChatMessageMetadata>;
+
+interface ChatWorkspaceProps {
+  transportClient: ChatTransportClient;
   onLogout: () => void | Promise<void>;
   onSessionExpired: () => void;
   sessionActionLabel?: string | null;
@@ -47,19 +45,19 @@ interface ThesisWorkspaceProps {
 interface ConversationState {
   conversationId: string;
   title: string;
-  messages: ThesisChatMessage[];
-  status: ThesisPanelStatus;
+  messages: ChatMessage[];
+  status: ChatPanelStatus;
   errorCode?: string | null;
   errorMessage?: string | null;
   hydrated: boolean;
 }
 
-export function ThesisWorkspace({
+export function ChatWorkspace({
   transportClient,
   onLogout,
   onSessionExpired,
   sessionActionLabel = null,
-}: ThesisWorkspaceProps) {
+}: ChatWorkspaceProps) {
   const [isMobileViewport, setIsMobileViewport] = useState(() =>
     typeof window !== 'undefined'
       ? window.innerWidth < MOBILE_BREAKPOINT_PX
@@ -113,7 +111,7 @@ export function ThesisWorkspace({
   );
 
   const replaceConversationMessages = useCallback(
-    (conversationId: string, nextMessages: ThesisChatMessage[]) => {
+    (conversationId: string, nextMessages: ChatMessage[]) => {
       setConversations((currentConversations) =>
         currentConversations.map((conversation) => {
           if (conversation.conversationId !== conversationId) {
@@ -166,7 +164,7 @@ export function ThesisWorkspace({
       hydrateRequestVersionRef.current.set(conversationId, nextVersion);
 
       try {
-        const { messages } = await transportClient.getUiMessages<ThesisChatMessage>(
+        const { messages } = await transportClient.getUiMessages<ChatMessage>(
           conversationId,
           100,
         );
@@ -197,7 +195,7 @@ export function ThesisWorkspace({
     sendMessage,
     status: chatStatus,
     clearError,
-  } = useChat<ThesisChatMessage>({
+  } = useChat<ChatMessage>({
     id: activeConversationId || '__draft__',
     messages: activeConversation?.messages ?? [],
     transport: transportClient.chatTransport,
@@ -210,7 +208,7 @@ export function ThesisWorkspace({
 
       updateConversation(conversationId, (current) => {
         const finishedMessages = Array.isArray(messages)
-          ? normalizeChatMessages(messages as ThesisChatMessage[])
+          ? normalizeChatMessages(messages as ChatMessage[])
           : [];
         const nextMessages =
           finishedMessages.length > 0 ? finishedMessages : current.messages;
@@ -291,9 +289,7 @@ export function ThesisWorkspace({
       !nextMessages.some(
         (message) =>
           message.role === 'assistant' &&
-          (Boolean(getChatMessageText(message).trim()) ||
-            Boolean(message.metadata?.artifactOnly) ||
-            Boolean(message.metadata?.artifact)),
+          Boolean(getChatMessageText(message).trim()),
       )
     ) {
       return;
@@ -821,12 +817,7 @@ function ConversationThread({
 }) {
   const visibleMessages = conversation.messages.filter((message) => {
     const content = getChatMessageText(message).trim();
-    return (
-      message.role === 'user' ||
-      content ||
-      message.metadata?.artifactOnly ||
-      message.metadata?.artifact
-    );
+    return message.role === 'user' || content;
   });
   const hasLiveAssistantTurn = hasVisibleLatestAssistantTurn(
     conversation.messages,
@@ -879,9 +870,8 @@ function ConversationThread({
   );
 }
 
-function MessageBubble({ message }: { message: ThesisChatMessage }) {
+function MessageBubble({ message }: { message: ChatMessage }) {
   const content = getChatMessageText(message).trim();
-  const artifact = message.metadata?.artifact ?? null;
 
   if (message.role === 'user') {
     return (
@@ -907,74 +897,15 @@ function MessageBubble({ message }: { message: ThesisChatMessage }) {
             />
           </div>
         ) : null}
-        {artifact ? <InlineArtifactCard artifact={artifact} /> : null}
-        {!content && !artifact && message.metadata?.artifactOnly ? (
-          <div className="rounded-2xl rounded-bl-md border border-border/30 bg-card/70 px-4 py-3 text-sm text-foreground">
-            Generated a structured artifact.
-          </div>
-        ) : null}
       </div>
     </div>
   );
-}
-
-function InlineArtifactCard({ artifact }: { artifact: ThesisArtifact }) {
-  const [collapsed, setCollapsed] = useState(true);
-  const title = artifact.data.title;
-  const summary = summarizeArtifact(artifact);
-  const badge = artifact.type === 'chart_v1' ? 'Chart' : 'Report';
-
-  return (
-    <div className="min-w-0 overflow-hidden rounded-2xl border border-border/30 bg-card/70 px-4 py-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.18em] text-primary">
-          {badge}
-        </span>
-        <div className="min-w-0 flex-1 text-sm font-medium text-foreground">
-          {title}
-        </div>
-        <button
-          type="button"
-          onClick={() => setCollapsed((current) => !current)}
-          className="rounded-lg border border-border/40 px-3 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-        >
-          {collapsed ? 'Expand' : 'Collapse'}
-        </button>
-      </div>
-
-      {collapsed ? (
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          {summary}
-        </p>
-      ) : (
-        <div className="mt-4">
-          <ArtifactRenderer artifact={artifact} />
-        </div>
-      )}
-    </div>
-  );
-}
-
-function summarizeArtifact(artifact: ThesisArtifact) {
-  const normalized = artifact.data.summary_markdown
-    .replace(/[`*_>#-]/g, ' ')
-    .replace(/\[(.*?)\]\((.*?)\)/g, '$1')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  if (!normalized) {
-    return 'No summary provided.';
-  }
-
-  return normalized.length > 140
-    ? `${normalized.slice(0, 140)}...`
-    : normalized;
 }
 
 function createConversationState(
   conversationId: string,
   title = 'New Chat',
-  messages: ThesisChatMessage[] = [],
+  messages: ChatMessage[] = [],
 ): ConversationState {
   return {
     conversationId,
@@ -996,8 +927,8 @@ function createDraftConversationState(): ConversationState {
 }
 
 function resolveHydratedChatStatus(
-  messages: ThesisChatMessage[],
-): ThesisPanelStatus {
+  messages: ChatMessage[],
+): ChatPanelStatus {
   if (
     messages.some(
       (message) =>
@@ -1037,14 +968,14 @@ function trimTitle(value: string) {
   return value.length > 48 ? `${value.slice(0, 48)}...` : value;
 }
 
-function hasAssistantText(messages: ThesisChatMessage[]) {
+function hasAssistantText(messages: ChatMessage[]) {
   return messages.some(
     (message) =>
       message.role === 'assistant' && getChatMessageText(message).trim(),
   );
 }
 
-function hasVisibleLatestAssistantTurn(messages: ThesisChatMessage[]) {
+function hasVisibleLatestAssistantTurn(messages: ChatMessage[]) {
   const latestMessage = [...messages]
     .reverse()
     .find((message) => message.role === 'assistant');
@@ -1052,14 +983,11 @@ function hasVisibleLatestAssistantTurn(messages: ThesisChatMessage[]) {
     return false;
   }
 
-  return Boolean(
-    getChatMessageText(latestMessage).trim() ||
-    latestMessage.metadata?.artifactOnly,
-  );
+  return Boolean(getChatMessageText(latestMessage).trim());
 }
 
 function normalizeWorkspaceError(error: unknown) {
-  if (error instanceof ThesisTransportError) {
+  if (error instanceof ChatTransportError) {
     return {
       code:
         error.status === 401
@@ -1140,25 +1068,23 @@ function mapConversationErrorBody(
   );
 }
 
-function normalizeChatMessages(messages: ThesisChatMessage[]) {
+function normalizeChatMessages(messages: ChatMessage[]) {
   return messages.map(normalizeChatMessage);
 }
 
-function toConversationTitleMessages(messages: ThesisChatMessage[]) {
+function toConversationTitleMessages(messages: ChatMessage[]) {
   return messages.map((message) => ({
     role: message.role,
     content: getChatMessageText(message),
   }));
 }
 
-function normalizeChatMessage(message: ThesisChatMessage): ThesisChatMessage {
+function normalizeChatMessage(message: ChatMessage): ChatMessage {
   if (message.role !== 'assistant') {
     return message;
   }
 
-  const content = getChatMessageText(message);
-  const artifact = extractLatestSupportedArtifact(content);
-  const strippedContent = stripWrappedArtifactBlocks(content);
+  const content = sanitizeAssistantContent(getChatMessageText(message));
 
   return {
     ...message,
@@ -1168,14 +1094,12 @@ function normalizeChatMessage(message: ThesisChatMessage): ThesisChatMessage {
       sender: message.metadata?.sender || 'Devbox',
       senderName: message.metadata?.senderName || 'Devbox',
       timestamp: message.metadata?.timestamp || new Date().toISOString(),
-      artifact,
-      artifactOnly: Boolean(artifact) && !strippedContent.trim(),
     },
-    parts: strippedContent
+    parts: content
       ? [
           {
             type: 'text',
-            text: strippedContent,
+            text: content,
             state: 'done',
           },
         ]
@@ -1183,26 +1107,30 @@ function normalizeChatMessage(message: ThesisChatMessage): ThesisChatMessage {
   };
 }
 
-function getChatMessagesFingerprint(messages: ThesisChatMessage[]) {
+function getChatMessagesFingerprint(messages: ChatMessage[]) {
   return messages
-    .map((message) => {
-      const artifact = message.metadata?.artifact;
-
-      return [
-        message.role,
-        message.id,
-        getChatMessageText(message).trim(),
-        message.metadata?.artifactOnly ? 'artifact-only' : 'content',
-        artifact ? `${artifact.type}:${artifact.data.title}` : '',
-      ].join(':');
-    })
+    .map((message) => [
+      message.role,
+      message.id,
+      getChatMessageText(message).trim(),
+    ].join(':'))
     .join('|');
 }
 
-function getArtifactFingerprint(artifact: ThesisArtifact | null) {
-  if (!artifact) {
-    return '';
-  }
+function getChatMessageText(message: ChatMessage) {
+  return message.parts
+    .filter((part): part is Extract<typeof part, { type: 'text' }> => part.type === 'text')
+    .map((part) => part.text)
+    .join('');
+}
 
-  return `${artifact.type}:${artifact.data.title}`;
+function sanitizeAssistantContent(content: string) {
+  const stripped = stripStructuredResponseBlocks(content).trim();
+  return stripped || 'Generated a structured response.';
+}
+
+function stripStructuredResponseBlocks(content: string) {
+  return content
+    .replace(/<<<CHART_V1>>>[\s\S]*?<<<END_CHART_V1>>>/g, '')
+    .replace(/<<<THESIS_REPORT_V1>>>[\s\S]*?<<<END_THESIS_REPORT_V1>>>/g, '');
 }

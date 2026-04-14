@@ -2,12 +2,12 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import path from "path";
-import { createThesisDevProxy, resolveThesisDevProxyTargets } from "./src/features/thesis/devProxy";
+import { createChatDevProxy, resolveChatDevProxyTargets } from "./src/features/chat/devProxy";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const proxyTargets = resolveThesisDevProxyTargets({
+  const proxyTargets = resolveChatDevProxyTargets({
     apiBaseUrl: env.VITE_API_URL,
     devboxBaseUrl: env.VITE_THESIS_DEVBOX_PROXY_TARGET,
     userServiceBaseUrl: env.VITE_THESIS_USER_SERVICE_PROXY_TARGET,
@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => {
     server: {
       host: "::",
       port: 3000,
-      proxy: createThesisDevProxy(proxyTargets),
+      proxy: createChatDevProxy(proxyTargets),
       headers: {
         "Cache-Control": "no-store",
       },

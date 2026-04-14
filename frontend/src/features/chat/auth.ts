@@ -7,7 +7,7 @@ export const AUTH_STORAGE_KEYS = {
 const SEEDED_SESSION_BLOCK_KEY = "thesis_seeded_session_blocked_seed";
 const LOCAL_DEV_USER_ID_STORAGE_KEY = "thesis_local_dev_user_id";
 
-export interface ThesisUser {
+export interface AuthUser {
   id: string;
   address: string;
   email: string | null;
@@ -19,13 +19,13 @@ export interface ThesisUser {
   chain_id: string;
 }
 
-export interface ThesisAuthSession {
+export interface AuthSession {
   accessToken: string | null;
   refreshToken: string | null;
-  user: ThesisUser | null;
+  user: AuthUser | null;
 }
 
-export interface ThesisEnvSeed {
+export interface AuthEnvSeed {
   accessToken?: string;
   refreshToken?: string;
   user?: string;
@@ -54,7 +54,7 @@ export interface AuthVerifyResponse {
   refresh_token: string;
   token_type: string;
   expires_in: number;
-  user: ThesisUser;
+  user: AuthUser;
 }
 
 export interface AuthRefreshResponse {
@@ -68,7 +68,7 @@ interface ApiEnvelope<T> {
   data: T;
 }
 
-interface ThesisAuthClientOptions {
+interface AuthClientOptions {
   baseUrl: string;
   fetch?: typeof fetch;
   storage?: Storage;
@@ -110,7 +110,7 @@ export function resolveLocalDevUserId(
   return nextUserId;
 }
 
-export function ensureMockAuthSession(storage: Storage, localUserId: string): ThesisAuthSession {
+export function ensureMockAuthSession(storage: Storage, localUserId: string): AuthSession {
   writeAuthSession(storage, {
     accessToken: LOCAL_DEV_ACCESS_TOKEN,
     refreshToken: null,
@@ -120,7 +120,7 @@ export function ensureMockAuthSession(storage: Storage, localUserId: string): Th
   return readAuthSession(storage);
 }
 
-export function resolveThesisApiBaseUrl(
+export function resolveApiBaseUrl(
   isDev: boolean,
   configuredBaseUrl: string | undefined,
   fallbackBaseUrl: string,
@@ -128,7 +128,7 @@ export function resolveThesisApiBaseUrl(
   return normalizeBaseUrl(configuredBaseUrl || fallbackBaseUrl);
 }
 
-export function readAuthSession(storage: Storage): ThesisAuthSession {
+export function readAuthSession(storage: Storage): AuthSession {
   const accessToken = storage.getItem(AUTH_STORAGE_KEYS.accessToken);
   const refreshToken = storage.getItem(AUTH_STORAGE_KEYS.refreshToken);
   const user = parseStoredUser(storage.getItem(AUTH_STORAGE_KEYS.user));
@@ -147,8 +147,8 @@ export function getAccessToken(storage: Storage = window.localStorage): string |
 export function seedAuthSessionFromEnv(
   storage: Storage,
   isDev: boolean,
-  seed: ThesisEnvSeed,
-): ThesisAuthSession {
+  seed: AuthEnvSeed,
+): AuthSession {
   const current = readAuthSession(storage);
   if (!isDev || current.accessToken) {
     return current;
@@ -183,7 +183,7 @@ export function seedAuthSessionFromEnv(
   return current;
 }
 
-export function writeAuthSession(storage: Storage, session: ThesisAuthSession) {
+export function writeAuthSession(storage: Storage, session: AuthSession) {
   writeStorageValue(storage, AUTH_STORAGE_KEYS.accessToken, session.accessToken);
   writeStorageValue(storage, AUTH_STORAGE_KEYS.refreshToken, session.refreshToken);
 
@@ -202,7 +202,7 @@ export function clearAuthSession(storage: Storage) {
   });
 }
 
-export function blockSeededAuthSession(storage: Storage, seed: ThesisEnvSeed) {
+export function blockSeededAuthSession(storage: Storage, seed: AuthEnvSeed) {
   const fingerprint = getSeededSessionFingerprint(seed);
   if (!fingerprint) {
     storage.removeItem(SEEDED_SESSION_BLOCK_KEY);
@@ -234,7 +234,7 @@ export function isLocalDevAccessToken(token: string | null | undefined) {
   return token === LOCAL_DEV_ACCESS_TOKEN;
 }
 
-export function createThesisAuthClient(options: ThesisAuthClientOptions) {
+export function createAuthClient(options: AuthClientOptions) {
   const fetchImpl = options.fetch ?? globalThis.fetch.bind(globalThis);
   const storage = options.storage ?? window.localStorage;
   const baseUrl = normalizeBaseUrl(options.baseUrl);
@@ -364,7 +364,7 @@ async function requestJson<T = unknown>(input: string, init: RequestInit): Promi
   };
 }
 
-function createLocalDevUser(localUserId: string): ThesisUser {
+function createLocalDevUser(localUserId: string): AuthUser {
   const now = new Date().toISOString();
 
   return {
@@ -380,7 +380,7 @@ function createLocalDevUser(localUserId: string): ThesisUser {
   };
 }
 
-function getSeededSessionFingerprint(seed: ThesisEnvSeed) {
+function getSeededSessionFingerprint(seed: AuthEnvSeed) {
   if (seed.accessToken?.trim()) {
     return `access:${seed.accessToken.trim()}`;
   }
@@ -428,13 +428,13 @@ function encodeBase64(bytes: Uint8Array) {
   return globalThis.btoa(binary);
 }
 
-function parseStoredUser(value: string | null): ThesisUser | null {
+function parseStoredUser(value: string | null): AuthUser | null {
   if (!value) {
     return null;
   }
 
   try {
-    return JSON.parse(value) as ThesisUser;
+    return JSON.parse(value) as AuthUser;
   } catch {
     return null;
   }
