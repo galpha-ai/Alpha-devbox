@@ -13,9 +13,9 @@
     --primary: 72 100% 50%;
     --primary-foreground: 0 0% 0%;
     --secondary: 0 0% 8%;
-    --secondary-foreground: 0 0% 70%;
+    --secondary-foreground: 0 0% 78%;
     --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 50%;
+    --muted-foreground: 0 0% 68%;
     --accent: 72 100% 50%;
     --accent-foreground: 0 0% 0%;
     --destructive: 0 85% 60%;
@@ -28,6 +28,8 @@
     --lime: 72 100% 50%;
     --lime-dim: 72 60% 40%;
     --surface-secondary: 0 0% 3%;
+    --body-foreground: 0 0% 90%;
+    --body-muted: 0 0% 78%;
   }
 }
 

@@ -491,7 +491,12 @@ function buildVolumeMounts(
   if (process.env.CLAUDE_CODE_USE_VERTEX) {
     const adcSrc =
       process.env.GOOGLE_APPLICATION_CREDENTIALS ||
-      path.join(os.homedir(), '.config', 'gcloud', 'application_default_credentials.json');
+      path.join(
+        os.homedir(),
+        '.config',
+        'gcloud',
+        'application_default_credentials.json',
+      );
     if (fs.existsSync(adcSrc)) {
       const adcDst = path.join(sessionDir, 'gcloud-adc.json');
       fs.copyFileSync(adcSrc, adcDst);

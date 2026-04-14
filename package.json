@@ -22,6 +22,7 @@
     "dev": "bash scripts/dev-web-local.sh",
     "dev:server": "tsx src/index.ts --config config.web-local.yaml",
     "dev:web-local": "bash scripts/dev-web-local.sh",
+    "dev:chat-local": "DEVBOX_CONFIG_PATH=config.chat-local.yaml DEVBOX_LOCAL_ENV_FILES='.env .env.local .env.chat-local' bash scripts/dev-web-local.sh",
     "e2e:web-local": "npm --prefix frontend run e2e:local",
     "frontend:dev": "npm --prefix frontend run dev",
     "frontend:build": "npm --prefix frontend run build",

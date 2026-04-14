@@ -20,6 +20,8 @@ agents/*/logs/
 /config.yaml
 /config.local.yaml
 /config.compose.yaml
+/config.chat-local.yaml
+/.env.chat-local
 
 # Local environment config (see tools.example.md)
 /tools.md

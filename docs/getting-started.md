@@ -53,7 +53,66 @@ Slack support uses **Socket Mode** and needs both of these secrets:
 - `SLACK_BOT_TOKEN` (`xoxb-...`)
 - `SLACK_APP_TOKEN` (`xapp-...`, created with `connections:write`)
 
-Use a Slack app manifest or equivalent settings that include these minimum pieces:
+**Recommended path:** create the Slack app **from a manifest** instead of clicking through each setting manually.
+
+1. Go to https://api.slack.com/apps
+2. Click **Create New App**
+3. Choose **From an app manifest**
+4. Pick your workspace
+5. Paste a manifest like this:
+
+```json
+{
+  "display_information": {
+    "name": "Devbox Agent",
+    "description": "AI coding agent with isolated sandboxes",
+    "background_color": "#2c2d30"
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "Devbox",
+      "always_online": true
+    }
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "channels:history",
+        "channels:read",
+        "chat:write",
+        "groups:history",
+        "groups:read",
+        "im:history",
+        "im:read",
+        "im:write",
+        "mpim:history",
+        "mpim:read",
+        "users:read",
+        "reactions:write"
+      ]
+    }
+  },
+  "settings": {
+    "event_subscriptions": {
+      "bot_events": [
+        "message.channels",
+        "message.groups",
+        "message.im",
+        "message.mpim"
+      ]
+    },
+    "socket_mode_enabled": true
+  }
+}
+```
+
+After the app is created:
+
+1. In **Settings → Socket Mode**, create an app-level token with `connections:write` and save it as `SLACK_APP_TOKEN`
+2. In **OAuth & Permissions**, click **Install to Workspace** and save the bot token as `SLACK_BOT_TOKEN`
+3. Invite the bot to the target channel with `/invite @Devbox`
+
+If you prefer to configure Slack manually instead of using a manifest, make sure the app includes these minimum pieces:
 
 - bot token scopes for message reading and replying, such as:
   - `chat:write`
@@ -119,6 +178,15 @@ channels:
 
 Use `tg:user:*` when you want the bot to handle Telegram DMs by default.
 
+### Local fast-start config for Slack + Telegram
+
+If you want the same local web demo plus chat channels, use the checked-in local template files:
+
+- `config.chat-local.yaml.example` → copy to `config.chat-local.yaml`
+- `.env.chat-local.example` → copy to `.env.chat-local`
+
+That local chat config keeps `web:*` enabled, adds one sample Slack channel binding, one sample Telegram group binding, and `tg:user:*` for Telegram DMs.
+
 ### Where to find the full setup details
 
 - See [Configuration](configuration.md) for all channel config fields and channel ID formats.
@@ -161,6 +229,19 @@ Optional:
 - `DEVBOX_WEB_CLEAN=1` to reset local session data on each run
 
 This local path is already preconfigured for the built-in web frontend and local demo agent. No extra `config.yaml` is required.
+
+If you also want Slack and/or Telegram on the same local stack, prepare these optional files:
+
+```bash
+cp config.chat-local.yaml.example config.chat-local.yaml
+cp .env.chat-local.example .env.chat-local
+```
+
+Then replace the placeholder Slack channel ID / Telegram chat ID in `config.chat-local.yaml`, fill the tokens in `.env.chat-local`, and start with:
+
+```bash
+npm run dev:chat-local
+```
 
 ### 3. Start the local web stack
 

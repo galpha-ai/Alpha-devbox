@@ -31,6 +31,8 @@ Open **http://127.0.0.1:5175/** — type a question, get an answer. Your convers
 
 No Slack setup. No Kubernetes. No repo cloning. Just `npm run dev`.
 
+Want local Slack / Telegram too? Copy `config.chat-local.yaml.example` + `.env.chat-local.example`, then run `npm run dev:chat-local`.
+
 ---
 
 ## Why this exists

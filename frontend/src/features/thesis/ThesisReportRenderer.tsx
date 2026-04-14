@@ -47,8 +47,8 @@ const proseClasses = `prose prose-invert prose-sm max-w-none
   prose-h2:text-xl prose-h2:mb-3
   prose-h3:text-base prose-h3:mt-6 prose-h3:mb-3
   prose-strong:text-foreground prose-table:text-xs
-  prose-p:text-muted-foreground prose-p:leading-relaxed
-  prose-li:text-muted-foreground prose-li:leading-relaxed
+  prose-p:text-[hsl(var(--body-foreground))] prose-p:leading-relaxed
+  prose-li:text-[hsl(var(--body-muted))] prose-li:leading-relaxed
   prose-code:text-foreground prose-code:bg-muted/40 prose-code:px-1 prose-code:py-0.5 prose-code:rounded
   prose-hr:border-border/30`;
 

@@ -11,10 +11,68 @@ How to run the devbox-agent stack locally using Docker Compose.
 
 ## 1. Create a Slack Bot (if using Slack)
 
-1. Go to https://api.slack.com/apps > **Create New App** > **From scratch**
-2. Enable **Socket Mode** (Settings > Socket Mode > toggle On)
-   - Generate an App-Level Token with scope `connections:write` — this is your `SLACK_APP_TOKEN` (`xapp-...`)
-3. Add **Bot Token Scopes** (Features > OAuth & Permissions > Bot Token Scopes):
+Recommended: create the Slack app from a manifest instead of clicking through each setting manually.
+
+1. Go to https://api.slack.com/apps > **Create New App** > **From an app manifest**
+2. Pick your workspace
+3. Paste this manifest:
+
+```json
+{
+  "display_information": {
+    "name": "Devbox Agent",
+    "description": "AI coding agent with isolated sandboxes",
+    "background_color": "#2c2d30"
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "Devbox",
+      "always_online": true
+    }
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "channels:history",
+        "channels:read",
+        "chat:write",
+        "groups:history",
+        "groups:read",
+        "im:history",
+        "im:read",
+        "im:write",
+        "mpim:history",
+        "mpim:read",
+        "users:read",
+        "reactions:write"
+      ]
+    }
+  },
+  "settings": {
+    "event_subscriptions": {
+      "bot_events": [
+        "message.channels",
+        "message.groups",
+        "message.im",
+        "message.mpim"
+      ]
+    },
+    "socket_mode_enabled": true
+  }
+}
+```
+
+4. In **Settings > Socket Mode**, generate an App-Level Token with scope `connections:write` — this is your `SLACK_APP_TOKEN` (`xapp-...`)
+5. In **OAuth & Permissions**, click **Install to Workspace** and copy the Bot User OAuth Token (`xoxb-...`) as `SLACK_BOT_TOKEN`
+6. Invite the bot to a channel: `/invite @YourBotName`
+7. Note the **channel ID** (click channel name > About > bottom of panel, or from the URL)
+8. In `config.compose.yaml`, bind Slack with a specific `slack:<channel_id>` entry. Current config docs do not describe a Slack DM wildcard binding.
+
+If you prefer to configure Slack manually, add these settings instead:
+
+- Enable **Socket Mode** (Settings > Socket Mode > toggle On)
+  - Generate an App-Level Token with scope `connections:write` — this is your `SLACK_APP_TOKEN` (`xapp-...`)
+- Add **Bot Token Scopes** (Features > OAuth & Permissions > Bot Token Scopes):
    - `chat:write` — send messages
    - `channels:history`, `channels:read` — public channel reads + discovery
    - `groups:history`, `groups:read` — private channel reads + discovery
@@ -22,15 +80,11 @@ How to run the devbox-agent stack locally using Docker Compose.
    - `mpim:history`, `mpim:read` — multi-party DM event compatibility in Slack app settings
    - `users:read` — resolve user display names
    - `reactions:write` — required if you want the bot's Slack status/typing reactions
-4. **Subscribe to bot events** (Features > Event Subscriptions > Subscribe to bot events):
+- **Subscribe to bot events** (Features > Event Subscriptions > Subscribe to bot events):
    - `message.channels`
    - `message.groups`
    - `message.im`
    - `message.mpim`
-5. **Install to Workspace** (Settings > Install App) — copy the Bot User OAuth Token (`xoxb-...`) as `SLACK_BOT_TOKEN`
-6. Invite the bot to a channel: `/invite @YourBotName`
-7. Note the **channel ID** (click channel name > About > bottom of panel, or from the URL)
-8. In `config.compose.yaml`, bind Slack with a specific `slack:<channel_id>` entry. Current config docs do not describe a Slack DM wildcard binding.
 
 ## 2. Set Up Environment
 

@@ -22,8 +22,8 @@ import { ThesisReportRenderer } from './ThesisReportRenderer';
 
 const proseClasses = `prose prose-invert prose-sm max-w-none 
   prose-headings:text-foreground prose-headings:font-display
-  prose-p:text-muted-foreground prose-p:leading-relaxed
-  prose-li:text-muted-foreground prose-li:leading-relaxed
+  prose-p:text-[hsl(var(--body-foreground))] prose-p:leading-relaxed
+  prose-li:text-[hsl(var(--body-muted))] prose-li:leading-relaxed
   prose-strong:text-foreground prose-code:text-foreground`;
 
 const tooltipStyle = {
@@ -70,7 +70,7 @@ function ChartArtifactRenderer({
         <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
           Insights
         </div>
-        <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+        <ul className="mt-3 space-y-2 text-sm text-[hsl(var(--body-foreground))]">
           {artifact.insights.map((insight) => (
             <li key={insight}>{insight}</li>
           ))}
