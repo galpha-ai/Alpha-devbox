@@ -39,6 +39,7 @@ vi.mock('@ai-sdk/react', async () => {
           role: 'user',
           parts: [{ type: 'text', text, state: 'done' }],
         };
+        const shouldStreamEmptyAssistant = text.includes('__EMPTY_ASSISTANT__');
         const assistantMessage = {
           id: `stream-a${seq}`,
           role: 'assistant',
@@ -47,13 +48,15 @@ vi.mock('@ai-sdk/react', async () => {
             sender: 'Devbox',
             senderName: 'Devbox',
           },
-          parts: [
-            {
-              type: 'text',
-              text: 'hello back',
-              state: 'done',
-            },
-          ],
+          parts: shouldStreamEmptyAssistant
+            ? []
+            : [
+                {
+                  type: 'text',
+                  text: 'hello back',
+                  state: 'done',
+                },
+              ],
         };
 
         let messagesAfterUser: any[] = [];
@@ -278,6 +281,46 @@ describe('ChatWorkspace', () => {
         screen.queryByText('Assistant is working...'),
       ).not.toBeInTheDocument();
     });
+  });
+
+  it('rehydrates canonical history when the streamed finish payload has no assistant text', async () => {
+    const transportClient = createTransportClient();
+    vi.mocked(transportClient.getUiMessages).mockResolvedValueOnce({
+      messages: [
+        createUiMessage(
+          'u1',
+          'user',
+          '__EMPTY_ASSISTANT__ show canonical answer',
+          '2026-04-11T00:00:00.000Z',
+        ),
+        createUiMessage(
+          'a1',
+          'assistant',
+          'canonical answer',
+          '2026-04-11T00:00:01.000Z',
+        ),
+      ],
+    });
+
+    render(
+      <ChatWorkspace
+        transportClient={transportClient}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    const textarea = await screen.findByPlaceholderText('Message the agent...');
+    fireEvent.change(textarea, {
+      target: { value: '__EMPTY_ASSISTANT__ show canonical answer' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
+
+    await screen.findByText('canonical answer');
+    expect(
+      screen.queryByText('Generated a structured response.'),
+    ).not.toBeInTheDocument();
+    expect(transportClient.getUiMessages).toHaveBeenCalledWith('conv-1', 100);
   });
 
   it('ignores stale hydration results so later follow-ups do not disappear', async () => {

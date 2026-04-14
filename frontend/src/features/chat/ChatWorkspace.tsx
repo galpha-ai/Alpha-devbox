@@ -206,10 +206,11 @@ export function ChatWorkspace({
         return;
       }
 
+      const finishedMessages = Array.isArray(messages)
+        ? normalizeChatMessages(messages as ChatMessage[])
+        : [];
+
       updateConversation(conversationId, (current) => {
-        const finishedMessages = Array.isArray(messages)
-          ? normalizeChatMessages(messages as ChatMessage[])
-          : [];
         const nextMessages =
           finishedMessages.length > 0 ? finishedMessages : current.messages;
 
@@ -227,6 +228,10 @@ export function ChatWorkspace({
           hydrated: true,
         };
       });
+
+      if (!hasAssistantText(finishedMessages)) {
+        void loadConversationMessages(conversationId);
+      }
     },
     onError: (error) => {
       const conversationId = activeConversationIdRef.current;
@@ -1125,8 +1130,7 @@ function getChatMessageText(message: ChatMessage) {
 }
 
 function sanitizeAssistantContent(content: string) {
-  const stripped = stripStructuredResponseBlocks(content).trim();
-  return stripped || 'Generated a structured response.';
+  return stripStructuredResponseBlocks(content).trim();
 }
 
 function stripStructuredResponseBlocks(content: string) {
