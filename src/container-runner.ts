@@ -861,6 +861,18 @@ function isStaleSessionResumeFailure(
   );
 }
 
+function isSeedCloneFailure(
+  stderr: string,
+  donePayload: RunDonePayload | null,
+): boolean {
+  if (stderr.includes('DEVBOX_SEED_CLONE_ERROR:')) return true;
+  return (
+    donePayload?.status === 'error' &&
+    typeof donePayload.error === 'string' &&
+    donePayload.error.includes('DEVBOX_SEED_CLONE_ERROR:')
+  );
+}
+
 function buildResumeFailureLogLines(
   agentName: string,
   input: ContainerInput,
@@ -1418,7 +1430,9 @@ export async function runContainerAgent(
   if (donePayload?.status === 'error') {
     const errorKind = isStaleSessionResumeFailure(donePayload, input.sessionId)
       ? 'stale_session_resume'
-      : undefined;
+      : isSeedCloneFailure(stderr, donePayload)
+        ? 'seed_clone_failed'
+        : undefined;
     return {
       status: 'error',
       result: null,
@@ -1429,11 +1443,15 @@ export async function runContainerAgent(
   }
 
   if (exitCode !== 0 && exitCode !== null) {
+    const errorKind = isSeedCloneFailure(stderr, donePayload)
+      ? 'seed_clone_failed'
+      : undefined;
     return {
       status: 'error',
       result: null,
       error: `Container exited with code ${exitCode}: ${stderr.slice(-200)}`,
       newSessionId,
+      errorKind,
     };
   }
 
