@@ -13,6 +13,7 @@ import { logger } from '../logger.js';
 import { makeSessionScopeKey } from '../session-scope.js';
 import {
   Channel,
+  NewMessage,
   OnChatMetadata,
   OnInboundMessage,
   RegisteredAgent,
@@ -278,6 +279,25 @@ export class WebChannel implements Channel {
           this.jsonResponse(res, 400, { error: 'Invalid request body' }),
         );
       return;
+    }
+
+    const canonicalMatch = path.match(
+      /^\/api\/devbox\/conversations\/([^/]+)\/ui-messages$/,
+    );
+    if (canonicalMatch) {
+      const conversationId = canonicalMatch[1];
+      if (req.method === 'GET') {
+        const before = url.searchParams.get('before') ?? undefined;
+        const limit = parseInt(url.searchParams.get('limit') ?? '50', 10);
+        const derivedAt = new Date().toISOString();
+        const rawMessages = getMessageHistory(chatJid, conversationId, {
+          before,
+          limit,
+        });
+        const messages = canonicalizeChatMessages(rawMessages);
+        this.jsonResponse(res, 200, { messages, derivedAt });
+        return;
+      }
     }
 
     const msgMatch = path.match(
@@ -658,4 +678,44 @@ function getLatestUserMessageText(messages: unknown) {
     .map((part) => part.text)
     .join('')
     .trim();
+}
+
+type CanonicalChatMessage = {
+  id: string;
+  role: 'user' | 'assistant';
+  parts: Array<{ type: 'text'; text: string; state: 'done' }>;
+  metadata: {
+    timestamp: string;
+    sender: string;
+    senderName: string;
+  };
+};
+
+function canonicalizeChatMessages(
+  messages: NewMessage[],
+): CanonicalChatMessage[] {
+  return [...messages]
+    .filter((msg) => msg.content?.length)
+    .sort((a, b) => {
+      if (a.timestamp === b.timestamp) {
+        return a.id.localeCompare(b.id);
+      }
+      return a.timestamp.localeCompare(b.timestamp);
+    })
+    .map((msg) => ({
+      id: msg.id,
+      role: msg.is_bot_message ? 'assistant' : 'user',
+      parts: [
+        {
+          type: 'text',
+          text: msg.content,
+          state: 'done',
+        },
+      ],
+      metadata: {
+        timestamp: msg.timestamp,
+        sender: msg.sender,
+        senderName: msg.sender_name || msg.sender,
+      },
+    }));
 }

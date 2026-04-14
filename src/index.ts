@@ -352,11 +352,20 @@ export function _setRegisteredAgents(
   registeredAgents = agents;
 }
 
+/** @internal - exported for testing */
+export function _setContainerRuntimeForTesting(
+  runtime: ContainerRuntime | null,
+): void {
+  containerRuntime = runtime;
+}
+
 /**
  * Process all pending messages for a session.
  * Called by the SessionQueue when it's this session's turn.
  */
-async function processSessionMessages(sessionKey: string): Promise<boolean> {
+export async function processSessionMessages(
+  sessionKey: string,
+): Promise<boolean> {
   const psmStart = Date.now();
   const psmElapsed = () => `${Date.now() - psmStart}ms`;
   logger.info(
@@ -510,7 +519,7 @@ async function processSessionMessages(sessionKey: string): Promise<boolean> {
   await setChannelStatus(channel, chatJid, sessionKey, 'processing');
   let hadError = false;
   let outputSentToUser = false;
-  let finalStatusSent = false;
+  let sawTerminalStatus = false;
 
   const output = await runAgent(
     agent,
@@ -552,18 +561,14 @@ async function processSessionMessages(sessionKey: string): Promise<boolean> {
 
       if (result.status === 'success') {
         queue.notifyIdle(sessionKey);
-        if (!finalStatusSent) {
-          await setChannelStatus(channel, chatJid, sessionKey, 'success');
-          finalStatusSent = true;
-        }
+        await setChannelStatus(channel, chatJid, sessionKey, 'success');
+        sawTerminalStatus = true;
       }
 
       if (result.status === 'error') {
         hadError = true;
-        if (!finalStatusSent) {
-          await setChannelStatus(channel, chatJid, sessionKey, 'error');
-          finalStatusSent = true;
-        }
+        await setChannelStatus(channel, chatJid, sessionKey, 'error');
+        sawTerminalStatus = true;
       }
     },
   );
@@ -572,7 +577,7 @@ async function processSessionMessages(sessionKey: string): Promise<boolean> {
     { sessionKey, output, hadError },
     `[${psmElapsed()}] runAgent finished`,
   );
-  if (!finalStatusSent) {
+  if (!sawTerminalStatus) {
     const finalStatus =
       output.status === 'error' || hadError ? 'error' : 'success';
     await setChannelStatus(channel, chatJid, sessionKey, finalStatus);

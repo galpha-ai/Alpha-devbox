@@ -4,7 +4,11 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-for env_file in .env .env.local .env.web-local; do
+CONFIG_PATH="${DEVBOX_CONFIG_PATH:-config.web-local.yaml}"
+ENV_FILES_RAW="${DEVBOX_LOCAL_ENV_FILES:-.env .env.local .env.web-local}"
+read -r -a ENV_FILES <<< "$ENV_FILES_RAW"
+
+for env_file in "${ENV_FILES[@]}"; do
   if [[ -f "$env_file" ]]; then
     echo "Loading $env_file"
     set -a
@@ -14,16 +18,17 @@ for env_file in .env .env.local .env.web-local; do
   fi
 done
 
-[[ -n "${ANTHROPIC_API_KEY:-}${CLAUDE_CODE_USE_VERTEX:-}${CLAUDE_CODE_USE_BEDROCK:-}" ]] \
-  && unset ANTHROPIC_AUTH_TOKEN CLAUDE_CODE_OAUTH_TOKEN
+if [[ -n "${ANTHROPIC_API_KEY:-}${CLAUDE_CODE_USE_VERTEX:-}${CLAUDE_CODE_USE_BEDROCK:-}" ]]; then
+  unset ANTHROPIC_AUTH_TOKEN CLAUDE_CODE_OAUTH_TOKEN
+fi
 
 if [[ -z "${ANTHROPIC_API_KEY:-}" && -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" && -z "${CLAUDE_CODE_USE_VERTEX:-}" && -z "${CLAUDE_CODE_USE_BEDROCK:-}" ]]; then
-  echo "Missing Claude credentials. Set one of: ANTHROPIC_API_KEY, CLAUDE_CODE_OAUTH_TOKEN, CLAUDE_CODE_USE_VERTEX=1, or CLAUDE_CODE_USE_BEDROCK=1 in .env/.env.local before running dev:web-local." >&2
+  echo "Missing Claude credentials. Set one of: ANTHROPIC_API_KEY, CLAUDE_CODE_OAUTH_TOKEN, CLAUDE_CODE_USE_VERTEX=1, or CLAUDE_CODE_USE_BEDROCK=1 in the configured env files before running the local dev script." >&2
   exit 1
 fi
 
 if ! docker info >/dev/null 2>&1; then
-  echo "Docker is not running. Start Docker first, then re-run npm run dev:web-local." >&2
+  echo "Docker is not running. Start Docker first, then re-run the local dev script." >&2
   exit 1
 fi
 
@@ -56,7 +61,7 @@ BACKEND_PORT="${BACKEND_PORT%%/*}"
 FRONTEND_PORT="${FRONTEND_URL#http://127.0.0.1:}"
 FRONTEND_PORT="${FRONTEND_PORT%%/*}"
 
-if [[ "${DEVBOX_WEB_CLEAN:-1}" == "1" ]]; then
+if [[ "${DEVBOX_WEB_CLEAN:-0}" == "1" ]]; then
   rm -rf "$DATA_ROOT"
 fi
 mkdir -p "$DATA_ROOT"
@@ -86,12 +91,12 @@ kill_listener_on_port() {
 kill_listener_on_port "$BACKEND_PORT"
 kill_listener_on_port "$FRONTEND_PORT"
 
-pkill -f 'tsx src/index.ts --config config.web-local.yaml' >/dev/null 2>&1 || true
+pkill -f "tsx src/index.ts --config $CONFIG_PATH" >/dev/null 2>&1 || true
 pkill -f 'frontend run dev -- --host 127.0.0.1 --port 5175' >/dev/null 2>&1 || true
 docker ps -aq --filter 'name=^devbox-' | xargs -r docker rm -f >/dev/null 2>&1 || true
 
-echo "Starting backend on $BACKEND_URL ..."
-npm run dev:server &
+echo "Starting backend on $BACKEND_URL with $CONFIG_PATH ..."
+npx tsx src/index.ts --config "$CONFIG_PATH" &
 BACKEND_PID=$!
 FRONTEND_PID=""
 
@@ -128,6 +133,7 @@ echo
 echo "Devbox local web is running:"
 echo "  Frontend: $FRONTEND_URL"
 echo "  Backend:  $BACKEND_URL/api/devbox/health"
+echo "  Config:   $CONFIG_PATH"
 echo
 echo "Press Ctrl+C to stop both services."
 

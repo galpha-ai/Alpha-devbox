@@ -810,7 +810,7 @@ export function getMessageHistory(
         `SELECT id, chat_jid, thread_id, sender, sender_name, content, timestamp, is_bot_message
          FROM messages
          WHERE chat_jid = ? AND thread_id = ? AND timestamp < ?
-         ORDER BY timestamp DESC
+         ORDER BY timestamp DESC, id DESC
          LIMIT ?`,
       )
       .all(chatJid, normalized, options.before, limit) as Array<
@@ -824,7 +824,7 @@ export function getMessageHistory(
       `SELECT id, chat_jid, thread_id, sender, sender_name, content, timestamp, is_bot_message
        FROM messages
        WHERE chat_jid = ? AND thread_id = ?
-       ORDER BY timestamp DESC
+       ORDER BY timestamp DESC, id DESC
        LIMIT ?`,
     )
     .all(chatJid, normalized, limit) as Array<

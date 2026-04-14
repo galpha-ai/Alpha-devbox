@@ -4,21 +4,22 @@ import {
   clearAuthSession,
   createThesisAuthClient,
   ensureMockAuthSession,
+  resolveLocalDevUserId,
   resolveThesisApiBaseUrl,
 } from './auth';
 import { createThesisTransportClient } from './transport';
 import { ThesisWorkspace } from './ThesisWorkspace';
 
-const DEFAULT_THESIS_MOCK_USER_ID = 'thesis-demo-user';
-
 export function ThesisAuthShell() {
+  const [localUserId] = useState(() =>
+    resolveLocalDevUserId(
+      window.localStorage,
+      import.meta.env.VITE_THESIS_LOCAL_USER_ID,
+    ),
+  );
+
   return (
-    <ThesisSeededSessionRuntime
-      localUserId={
-        import.meta.env.VITE_THESIS_LOCAL_USER_ID?.trim() ||
-        DEFAULT_THESIS_MOCK_USER_ID
-      }
-    />
+    <ThesisSeededSessionRuntime localUserId={localUserId} />
   );
 }
 

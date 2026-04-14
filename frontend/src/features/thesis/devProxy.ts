@@ -4,7 +4,6 @@ import type { ProxyOptions } from "vite";
 
 export const DEFAULT_LOCAL_DEVBOX_PROXY_TARGET = "http://127.0.0.1:18092";
 export const DEFAULT_THESIS_DEV_PROXY_TARGET = DEFAULT_LOCAL_DEVBOX_PROXY_TARGET;
-export const DEFAULT_THESIS_LOCAL_USER_ID = "thesis-demo-user";
 
 export interface ThesisDevProxyTargets {
   devbox: string;
@@ -28,7 +27,7 @@ export function resolveThesisDevProxyTargets({
   localUserId?: string;
 }): ThesisDevProxyTargets {
   const defaultTarget = normalizeBaseUrl(apiBaseUrl || DEFAULT_THESIS_DEV_PROXY_TARGET);
-  const normalizedLocalUserId = localUserId?.trim() || DEFAULT_THESIS_LOCAL_USER_ID;
+  const normalizedLocalUserId = localUserId?.trim() || undefined;
   const resolvedDevboxTarget = normalizeBaseUrl(devboxBaseUrl || DEFAULT_LOCAL_DEVBOX_PROXY_TARGET);
 
   return {

@@ -21,6 +21,10 @@ export interface ThesisTransportClient {
   chatTransport: DefaultChatTransport<UIMessage>;
   createConversation(): Promise<{ conversationId: string }>;
   listConversations(): Promise<{ conversations: ThesisConversationSummary[] }>;
+  getUiMessages<TMessage extends UIMessage = UIMessage>(
+    conversationId: string,
+    limit?: number,
+  ): Promise<ThesisTransportMessageList<TMessage>>;
   getMessages<TMessage = unknown>(
     conversationId: string,
     before?: string,
@@ -92,6 +96,22 @@ export function createThesisTransportClient(options: ThesisTransportClientOption
       return requestJson(authFetch, "/api/devbox/conversations", {
         method: "GET",
       });
+    },
+
+    async getUiMessages<TMessage extends UIMessage = UIMessage>(
+      conversationId: string,
+      limit = 100,
+    ): Promise<ThesisTransportMessageList<TMessage>> {
+      const params = new URLSearchParams();
+      params.set("limit", String(limit));
+
+      return requestJson(
+        authFetch,
+        `/api/devbox/conversations/${conversationId}/ui-messages?${params.toString()}`,
+        {
+          method: "GET",
+        },
+      );
     },
 
     async getMessages<TMessage = unknown>(

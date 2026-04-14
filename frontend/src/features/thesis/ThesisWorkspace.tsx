@@ -14,9 +14,7 @@ import {
 
 import { ArtifactRenderer } from './ArtifactRenderer';
 import {
-  buildConversationSnapshot,
   getChatMessageText,
-  toThesisChatMessages,
   type ThesisArtifact,
   type ThesisChatMessage,
 } from './devbox';
@@ -35,8 +33,8 @@ const CHAT_UPDATE_THROTTLE_MS = 100;
 const proseClasses = `prose prose-invert prose-sm max-w-none 
   prose-headings:text-foreground prose-headings:font-display
   prose-h2:text-lg prose-h3:text-base
-  prose-p:text-muted-foreground prose-p:leading-relaxed
-  prose-li:text-muted-foreground prose-li:leading-relaxed
+  prose-p:text-[hsl(var(--body-foreground))] prose-p:leading-relaxed
+  prose-li:text-[hsl(var(--body-muted))] prose-li:leading-relaxed
   prose-strong:text-foreground prose-code:text-foreground`;
 
 interface ThesisWorkspaceProps {
@@ -82,6 +80,7 @@ export function ThesisWorkspace({
     conversationId: string;
     prompt: string;
   } | null>(null);
+  const hydrateRequestVersionRef = useRef(new Map<string, number>());
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -113,39 +112,33 @@ export function ThesisWorkspace({
     [],
   );
 
-  const replaceConversationFromSnapshot = useCallback(
-    (
-      conversationId: string,
-      fallbackTitle: string,
-      snapshot: ReturnType<typeof buildConversationSnapshot>,
-    ) => {
-      updateConversation(conversationId, (current) => {
-        const nextMessages =
-          snapshot.messages.length > 0
-            ? toThesisChatMessages(snapshot.messages)
-            : current.messages;
-        const nextStatus =
-          snapshot.messages.length > 0
-            ? resolveHydratedStatus(snapshot)
-            : current.status;
-        const preserveError = nextStatus === 'processing';
+  const replaceConversationMessages = useCallback(
+    (conversationId: string, nextMessages: ThesisChatMessage[]) => {
+      setConversations((currentConversations) =>
+        currentConversations.map((conversation) => {
+          if (conversation.conversationId !== conversationId) {
+            return conversation;
+          }
 
-        return {
-          ...current,
-          title: deriveConversationTitle(
-            trimTitle(fallbackTitle || current.title),
-            snapshot.messages,
-            conversationId,
-          ),
-          messages: nextMessages,
-          status: nextStatus,
-          errorCode: preserveError ? (current.errorCode ?? null) : null,
-          errorMessage: preserveError ? (current.errorMessage ?? null) : null,
-          hydrated: true,
-        };
-      });
+          const nextStatus = resolveHydratedChatStatus(nextMessages);
+
+          return {
+            ...conversation,
+            title: deriveConversationTitle(
+              trimTitle(conversation.title),
+              toConversationTitleMessages(nextMessages),
+              conversationId,
+            ),
+            messages: nextMessages,
+            status: nextStatus,
+            errorCode: null,
+            errorMessage: null,
+            hydrated: true,
+          };
+        }),
+      );
     },
-    [updateConversation],
+    [],
   );
 
   const applyConversationError = useCallback(
@@ -166,34 +159,36 @@ export function ThesisWorkspace({
     [onSessionExpired, updateConversation],
   );
 
-  const hydrateConversation = useCallback(
+  const loadConversationMessages = useCallback(
     async (conversationId: string) => {
+      const nextVersion =
+        (hydrateRequestVersionRef.current.get(conversationId) ?? 0) + 1;
+      hydrateRequestVersionRef.current.set(conversationId, nextVersion);
+
       try {
-        const { messages } = await transportClient.getMessages(
+        const { messages } = await transportClient.getUiMessages<ThesisChatMessage>(
           conversationId,
-          undefined,
           100,
         );
-        const snapshot = buildConversationSnapshot(messages);
-        const currentConversation = conversations.find(
-          (conversation) => conversation.conversationId === conversationId,
-        );
-
-        replaceConversationFromSnapshot(
+        if (
+          hydrateRequestVersionRef.current.get(conversationId) !== nextVersion
+        ) {
+          return;
+        }
+        replaceConversationMessages(
           conversationId,
-          currentConversation?.title || `Chat ${conversationId.slice(0, 8)}`,
-          snapshot,
+          normalizeChatMessages(messages),
         );
       } catch (error) {
+        if (
+          hydrateRequestVersionRef.current.get(conversationId) !== nextVersion
+        ) {
+          return;
+        }
         applyConversationError(conversationId, error);
       }
     },
-    [
-      applyConversationError,
-      conversations,
-      replaceConversationFromSnapshot,
-      transportClient,
-    ],
+    [applyConversationError, replaceConversationMessages, transportClient],
   );
 
   const {
@@ -207,13 +202,33 @@ export function ThesisWorkspace({
     messages: activeConversation?.messages ?? [],
     transport: transportClient.chatTransport,
     experimental_throttle: CHAT_UPDATE_THROTTLE_MS,
-    onFinish: ({ isAbort, isDisconnect, isError }) => {
+    onFinish: ({ messages, isAbort, isDisconnect, isError }) => {
       const conversationId = activeConversationIdRef.current;
       if (!conversationId || isAbort || isDisconnect || isError) {
         return;
       }
 
-      void hydrateConversation(conversationId);
+      updateConversation(conversationId, (current) => {
+        const finishedMessages = Array.isArray(messages)
+          ? normalizeChatMessages(messages as ThesisChatMessage[])
+          : [];
+        const nextMessages =
+          finishedMessages.length > 0 ? finishedMessages : current.messages;
+
+        return {
+          ...current,
+          title: deriveConversationTitle(
+            trimTitle(current.title),
+            toConversationTitleMessages(nextMessages),
+            conversationId,
+          ),
+          messages: nextMessages,
+          status: resolveHydratedChatStatus(nextMessages),
+          errorCode: null,
+          errorMessage: null,
+          hydrated: true,
+        };
+      });
     },
     onError: (error) => {
       const conversationId = activeConversationIdRef.current;
@@ -236,7 +251,11 @@ export function ThesisWorkspace({
       return;
     }
 
-    if (chatStatus === 'submitted' || chatStatus === 'streaming') {
+    if (
+      chatStatus === 'submitted' ||
+      chatStatus === 'streaming' ||
+      activeConversation.status === 'processing'
+    ) {
       return;
     }
 
@@ -255,6 +274,50 @@ export function ThesisWorkspace({
     activeLiveMessages,
     chatStatus,
     setLiveMessages,
+  ]);
+
+  useEffect(() => {
+    if (
+      !activeConversationId ||
+      !activeConversation ||
+      activeConversation.status !== 'processing' ||
+      chatStatus !== 'ready'
+    ) {
+      return;
+    }
+
+    const nextMessages = normalizeChatMessages(activeLiveMessages);
+    if (
+      !nextMessages.some(
+        (message) =>
+          message.role === 'assistant' &&
+          (Boolean(getChatMessageText(message).trim()) ||
+            Boolean(message.metadata?.artifactOnly) ||
+            Boolean(message.metadata?.artifact)),
+      )
+    ) {
+      return;
+    }
+
+    updateConversation(activeConversationId, (current) => ({
+      ...current,
+      title: deriveConversationTitle(
+        trimTitle(current.title),
+        toConversationTitleMessages(nextMessages),
+        activeConversationId,
+      ),
+      messages: nextMessages,
+      status: resolveHydratedChatStatus(nextMessages),
+      errorCode: null,
+      errorMessage: null,
+      hydrated: true,
+    }));
+  }, [
+    activeConversation,
+    activeConversationId,
+    activeLiveMessages,
+    chatStatus,
+    updateConversation,
   ]);
 
   useEffect(() => {
@@ -377,8 +440,8 @@ export function ThesisWorkspace({
       return;
     }
 
-    void hydrateConversation(activeConversationId);
-  }, [activeConversationId, conversations, hydrateConversation]);
+    void loadConversationMessages(activeConversationId);
+  }, [activeConversationId, conversations, loadConversationMessages]);
 
   const handleCreateConversation = useCallback(() => {
     if (
@@ -932,21 +995,21 @@ function createDraftConversationState(): ConversationState {
   };
 }
 
-function resolveHydratedStatus(
-  snapshot: ReturnType<typeof buildConversationSnapshot>,
+function resolveHydratedChatStatus(
+  messages: ThesisChatMessage[],
 ): ThesisPanelStatus {
-  if (snapshot.latestArtifact) {
+  if (
+    messages.some(
+      (message) =>
+        message.role === 'assistant' &&
+        (Boolean(message.metadata?.artifact) ||
+          Boolean(getChatMessageText(message).trim())),
+    )
+  ) {
     return 'complete';
   }
 
-  const hasAssistantReply = snapshot.messages.some(
-    (message) => message.role === 'assistant',
-  );
-  if (hasAssistantReply) {
-    return 'complete';
-  }
-
-  return snapshot.messages.some((message) => message.role === 'user')
+  return messages.some((message) => message.role === 'user')
     ? 'processing'
     : 'idle';
 }
@@ -1078,20 +1141,14 @@ function mapConversationErrorBody(
 }
 
 function normalizeChatMessages(messages: ThesisChatMessage[]) {
-  const deduped: ThesisChatMessage[] = [];
+  return messages.map(normalizeChatMessage);
+}
 
-  for (const message of messages) {
-    const nextMessage = normalizeChatMessage(message);
-    const previousMessage = deduped[deduped.length - 1];
-
-    if (isDuplicateAssistantChatMessage(previousMessage, nextMessage)) {
-      continue;
-    }
-
-    deduped.push(nextMessage);
-  }
-
-  return deduped;
+function toConversationTitleMessages(messages: ThesisChatMessage[]) {
+  return messages.map((message) => ({
+    role: message.role,
+    content: getChatMessageText(message),
+  }));
 }
 
 function normalizeChatMessage(message: ThesisChatMessage): ThesisChatMessage {
@@ -1124,31 +1181,6 @@ function normalizeChatMessage(message: ThesisChatMessage): ThesisChatMessage {
         ]
       : [],
   };
-}
-
-function isDuplicateAssistantChatMessage(
-  previousMessage: ThesisChatMessage | undefined,
-  currentMessage: ThesisChatMessage,
-) {
-  if (!previousMessage) {
-    return false;
-  }
-
-  if (
-    previousMessage.role !== 'assistant' ||
-    currentMessage.role !== 'assistant'
-  ) {
-    return false;
-  }
-
-  return (
-    getChatMessageText(previousMessage).trim() ===
-      getChatMessageText(currentMessage).trim() &&
-    Boolean(previousMessage.metadata?.artifactOnly) ===
-      Boolean(currentMessage.metadata?.artifactOnly) &&
-    getArtifactFingerprint(previousMessage.metadata?.artifact ?? null) ===
-      getArtifactFingerprint(currentMessage.metadata?.artifact ?? null)
-  );
 }
 
 function getChatMessagesFingerprint(messages: ThesisChatMessage[]) {

@@ -5,6 +5,7 @@ export const AUTH_STORAGE_KEYS = {
 } as const;
 
 const SEEDED_SESSION_BLOCK_KEY = "thesis_seeded_session_blocked_seed";
+const LOCAL_DEV_USER_ID_STORAGE_KEY = "thesis_local_dev_user_id";
 
 export interface ThesisUser {
   id: string;
@@ -74,6 +75,40 @@ interface ThesisAuthClientOptions {
 }
 
 const LOCAL_DEV_ACCESS_TOKEN = "local-dev-access-token";
+
+export function resolveLocalDevUserId(
+  storage: Storage,
+  configuredLocalUserId?: string,
+  createId: () => string = () => globalThis.crypto.randomUUID(),
+) {
+  const explicitUserId = configuredLocalUserId?.trim();
+  if (explicitUserId) {
+    storage.setItem(LOCAL_DEV_USER_ID_STORAGE_KEY, explicitUserId);
+    return explicitUserId;
+  }
+
+  const persistedUserId = storage
+    .getItem(LOCAL_DEV_USER_ID_STORAGE_KEY)
+    ?.trim();
+  if (persistedUserId) {
+    return persistedUserId;
+  }
+
+  const currentSession = readAuthSession(storage);
+  const migratedUserId =
+    isLocalDevAccessToken(currentSession.accessToken) &&
+    currentSession.user?.id?.trim()
+      ? currentSession.user.id.trim()
+      : null;
+  if (migratedUserId) {
+    storage.setItem(LOCAL_DEV_USER_ID_STORAGE_KEY, migratedUserId);
+    return migratedUserId;
+  }
+
+  const nextUserId = createId();
+  storage.setItem(LOCAL_DEV_USER_ID_STORAGE_KEY, nextUserId);
+  return nextUserId;
+}
 
 export function ensureMockAuthSession(storage: Storage, localUserId: string): ThesisAuthSession {
   writeAuthSession(storage, {

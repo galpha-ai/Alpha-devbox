@@ -215,6 +215,87 @@ describe('WebChannel', () => {
     expect(body).toContain('The assistant failed before completing the reply.');
   });
 
+  it('GET /conversations/:id/ui-messages returns canonical ascending UI messages', async () => {
+    mockedGetMessageHistory.mockReturnValueOnce([
+      {
+        id: 'm3',
+        chat_jid: 'web:user1',
+        thread_id: 'conv-1',
+        sender: 'agent',
+        sender_name: 'Agent',
+        content: 'Second reply',
+        timestamp: '2024-03-01T10:00:00.000Z',
+        is_bot_message: true,
+      },
+      {
+        id: 'm1',
+        chat_jid: 'web:user1',
+        thread_id: 'conv-1',
+        sender: 'user1',
+        sender_name: 'User One',
+        content: 'First question',
+        timestamp: '2024-03-01T08:00:00.000Z',
+        is_bot_message: false,
+      },
+    ]);
+
+    const res = await fetch(
+      `http://localhost:${port}/api/devbox/conversations/conv-1/ui-messages?before=2024-04-01T00:00:00.000Z&limit=2`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', 'X-User-Id': 'user1' },
+      },
+    );
+
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as any;
+    expect(body.messages).toEqual([
+      {
+        id: 'm1',
+        role: 'user',
+        parts: [
+          {
+            type: 'text',
+            text: 'First question',
+            state: 'done',
+          },
+        ],
+        metadata: {
+          timestamp: '2024-03-01T08:00:00.000Z',
+          sender: 'user1',
+          senderName: 'User One',
+        },
+      },
+      {
+        id: 'm3',
+        role: 'assistant',
+        parts: [
+          {
+            type: 'text',
+            text: 'Second reply',
+            state: 'done',
+          },
+        ],
+        metadata: {
+          timestamp: '2024-03-01T10:00:00.000Z',
+          sender: 'agent',
+          senderName: 'Agent',
+        },
+      },
+    ]);
+    expect(typeof body.derivedAt).toBe('string');
+    expect(new Date(body.derivedAt).toString()).not.toBe('Invalid Date');
+
+    expect(mockedGetMessageHistory).toHaveBeenLastCalledWith(
+      'web:user1',
+      'conv-1',
+      {
+        before: '2024-04-01T00:00:00.000Z',
+        limit: 2,
+      },
+    );
+  });
+
   it('sendMessage is a no-op without an active AI SDK stream', async () => {
     await expect(
       channel.sendMessage('web:user1', 'agent reply', { threadId: 'conv-1' }),

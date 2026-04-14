@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/exhaustive-deps */
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -23,18 +24,26 @@ vi.mock('@ai-sdk/react', async () => {
     }) => {
       const [messages, setMessages] = React.useState(initialMessages);
       const [status, setStatus] = React.useState<'submitted' | 'streaming' | 'ready' | 'error'>('ready');
+      const messageCounterRef = React.useRef(0);
 
       React.useEffect(() => {
         setMessages(initialMessages);
         setStatus('ready');
+        messageCounterRef.current = 0;
       }, [id]);
 
       const sendMessage = vi.fn(async ({ text }: { text: string }) => {
+        const seq = ++messageCounterRef.current;
+        const userMessage = {
+          id: `local-u${seq}`,
+          role: 'user',
+          parts: [{ type: 'text', text, state: 'done' }],
+        };
         const assistantMessage = {
-          id: 'stream-a1',
+          id: `stream-a${seq}`,
           role: 'assistant',
           metadata: {
-            timestamp: '2026-04-11T00:00:01.000Z',
+            timestamp: `2026-04-11T00:00:${String(seq).padStart(2, '0')}.000Z`,
             sender: 'Devbox',
             senderName: 'Devbox',
           },
@@ -47,25 +56,31 @@ vi.mock('@ai-sdk/react', async () => {
           ],
         };
 
+        let messagesAfterUser: any[] = [];
+        let messagesAfterAssistant: any[] = [];
+
         setStatus('submitted');
-        setMessages((current: any[]) => [
-          ...current,
-          {
-            id: 'local-u1',
-            role: 'user',
-            parts: [{ type: 'text', text, state: 'done' }],
-          },
-        ]);
+        setMessages((current: any[]) => {
+          messagesAfterUser = [...current, userMessage];
+          return messagesAfterUser;
+        });
 
         await Promise.resolve();
 
         setStatus('streaming');
-        setMessages((current: any[]) => [...current, assistantMessage]);
+        setMessages((current: any[]) => {
+          messagesAfterAssistant = [...current, assistantMessage];
+          return messagesAfterAssistant;
+        });
         setStatus('ready');
+        await Promise.resolve();
 
         await onFinish?.({
           message: assistantMessage,
-          messages: [],
+          messages:
+            messagesAfterAssistant.length > 0
+              ? messagesAfterAssistant
+              : [...messagesAfterUser, assistantMessage],
           isAbort: false,
           isDisconnect: false,
           isError: false,
@@ -122,6 +137,30 @@ function createTransportClient(): ThesisTransportClient {
     chatTransport: {} as ThesisTransportClient['chatTransport'],
     createConversation: vi.fn(async () => ({ conversationId: 'conv-1' })),
     listConversations: vi.fn(async () => ({ conversations: [] })),
+    getUiMessages: vi.fn(async () => ({
+      messages: [
+        {
+          id: 'u1',
+          role: 'user',
+          metadata: {
+            timestamp: '2026-04-11T00:00:00.000Z',
+            sender: 'test-user',
+            senderName: 'You',
+          },
+          parts: [{ type: 'text', text: 'hello', state: 'done' }],
+        },
+        {
+          id: 'a1',
+          role: 'assistant',
+          metadata: {
+            timestamp: '2026-04-11T00:00:01.000Z',
+            sender: 'Devbox',
+            senderName: 'Devbox',
+          },
+          parts: [{ type: 'text', text: 'hello back', state: 'done' }],
+        },
+      ],
+    })),
     getMessages: vi.fn(async () => ({
       messages: [
         {
@@ -148,6 +187,54 @@ function createTransportClient(): ThesisTransportClient {
     })),
     deleteConversation: vi.fn(async () => ({ deleted: true as const })),
   };
+}
+
+function createApiMessage(
+  id: string,
+  role: 'user' | 'assistant',
+  content: string,
+  timestamp: string,
+  conversationId = 'conv-1',
+) {
+  return {
+    id,
+    chat_jid: 'web:test-user',
+    thread_id: conversationId,
+    sender: role === 'user' ? 'test-user' : 'Devbox',
+    sender_name: role === 'user' ? 'You' : 'Devbox',
+    content,
+    timestamp,
+    is_bot_message: role === 'assistant' ? 1 : 0,
+  };
+}
+
+function createUiMessage(
+  id: string,
+  role: 'user' | 'assistant',
+  content: string,
+  timestamp: string,
+) {
+  return {
+    id,
+    role,
+    metadata: {
+      timestamp,
+      sender: role === 'user' ? 'test-user' : 'Devbox',
+      senderName: role === 'user' ? 'You' : 'Devbox',
+    },
+    parts: content
+      ? [{ type: 'text', text: content, state: 'done' as const }]
+      : [],
+  };
+}
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((res) => {
+    resolve = res;
+  });
+
+  return { promise, resolve };
 }
 
 describe('ThesisWorkspace', () => {
@@ -191,5 +278,254 @@ describe('ThesisWorkspace', () => {
         screen.queryByText('Assistant is working...'),
       ).not.toBeInTheDocument();
     });
+  });
+
+  it('ignores stale hydration results so later follow-ups do not disappear', async () => {
+    const hydrate1 = deferred<{ messages: ReturnType<typeof createUiMessage>[] }>();
+    const hydrate2 = deferred<{ messages: ReturnType<typeof createUiMessage>[] }>();
+    const hydrate3 = deferred<{ messages: ReturnType<typeof createUiMessage>[] }>();
+
+    const transportClient = createTransportClient();
+    vi.mocked(transportClient.getUiMessages)
+      .mockImplementationOnce(async () => hydrate1.promise)
+      .mockImplementationOnce(async () => hydrate2.promise)
+      .mockImplementationOnce(async () => hydrate3.promise);
+
+    render(
+      <ThesisWorkspace
+        transportClient={transportClient}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    const textarea = await screen.findByPlaceholderText('Message the agent...');
+
+    fireEvent.change(textarea, { target: { value: 'Mean reversion on S&P 500 sectors' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
+    await screen.findByText('hello back');
+    await screen.findAllByText('Mean reversion on S&P 500 sectors');
+
+    fireEvent.change(textarea, { target: { value: 'follow up one' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
+    await screen.findAllByText('follow up one');
+
+    fireEvent.change(textarea, { target: { value: 'follow up two' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
+    await screen.findAllByText('follow up two');
+
+    hydrate3.resolve({
+      messages: [
+        createUiMessage('u1', 'user', 'Mean reversion on S&P 500 sectors', '2026-04-11T00:00:00.000Z'),
+        createUiMessage('a1', 'assistant', 'hello back', '2026-04-11T00:00:01.000Z'),
+        createUiMessage('u2', 'user', 'follow up one', '2026-04-11T00:00:02.000Z'),
+        createUiMessage('a2', 'assistant', 'hello back', '2026-04-11T00:00:03.000Z'),
+        createUiMessage('u3', 'user', 'follow up two', '2026-04-11T00:00:04.000Z'),
+        createUiMessage('a3', 'assistant', 'hello back', '2026-04-11T00:00:05.000Z'),
+      ],
+    });
+
+    await screen.findAllByText('follow up two');
+
+    hydrate1.resolve({
+      messages: [
+        createUiMessage('u1', 'user', 'Mean reversion on S&P 500 sectors', '2026-04-11T00:00:00.000Z'),
+        createUiMessage('a1', 'assistant', 'hello back', '2026-04-11T00:00:01.000Z'),
+      ],
+    });
+    hydrate2.resolve({
+      messages: [
+        createUiMessage('u1', 'user', 'Mean reversion on S&P 500 sectors', '2026-04-11T00:00:00.000Z'),
+        createUiMessage('a1', 'assistant', 'hello back', '2026-04-11T00:00:01.000Z'),
+        createUiMessage('u2', 'user', 'follow up one', '2026-04-11T00:00:02.000Z'),
+        createUiMessage('a2', 'assistant', 'hello back', '2026-04-11T00:00:03.000Z'),
+      ],
+    });
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Mean reversion on S&P 500 sectors').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('follow up one').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('follow up two').length).toBeGreaterThan(0);
+    });
+  });
+
+  it('hydrates stored follow-ups so existing turns remain visible', async () => {
+    const transportClient = createTransportClient();
+    vi.mocked(transportClient.listConversations).mockResolvedValueOnce({
+      conversations: [
+        {
+          conversationId: 'conv-hydrated',
+          title: 'Mean reversion',
+          updatedAt: '2026-04-11T00:00:05.000Z',
+        },
+      ],
+    });
+
+    vi.mocked(transportClient.getUiMessages).mockResolvedValueOnce({
+      messages: [
+        createUiMessage(
+          'u1',
+          'user',
+          'Mean reversion on S&P 500 sectors',
+          '2026-04-11T00:00:00.000Z',
+        ),
+        createUiMessage(
+          'a1',
+          'assistant',
+          'Cross-sector relative mean reversion works over short windows.',
+          '2026-04-11T00:00:01.000Z',
+        ),
+        createUiMessage(
+          'u2',
+          'user',
+          'follow up one',
+          '2026-04-11T00:00:02.000Z',
+        ),
+        createUiMessage(
+          'a2',
+          'assistant',
+          'First follow-up answer',
+          '2026-04-11T00:00:03.000Z',
+        ),
+        createUiMessage(
+          'u3',
+          'user',
+          'follow up two',
+          '2026-04-11T00:00:04.000Z',
+        ),
+        createUiMessage(
+          'a3',
+          'assistant',
+          'Second follow-up answer',
+          '2026-04-11T00:00:05.000Z',
+        ),
+      ],
+    });
+
+    render(
+      <ThesisWorkspace
+        transportClient={transportClient}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('follow up one')).toBeInTheDocument();
+      expect(screen.getByText('follow up two')).toBeInTheDocument();
+      expect(screen.getByText('Second follow-up answer')).toBeInTheDocument();
+    });
+  });
+
+  it('preserves distinct assistant turns even when adjacent hydrated content matches', async () => {
+    const transportClient = createTransportClient();
+    vi.mocked(transportClient.listConversations).mockResolvedValueOnce({
+      conversations: [{ conversationId: 'conv-1', title: 'Test', updatedAt: '2026-04-11T00:00:05.000Z' }],
+    });
+    vi.mocked(transportClient.getUiMessages).mockResolvedValueOnce({
+      messages: [
+        createUiMessage('u1', 'user', 'q1', '2026-04-11T00:00:00.000Z'),
+        createUiMessage('a1', 'assistant', 'same answer', '2026-04-11T00:00:01.000Z'),
+        createUiMessage('u2', 'user', 'q2', '2026-04-11T00:00:02.000Z'),
+        createUiMessage('a2', 'assistant', 'same answer', '2026-04-11T00:00:03.000Z'),
+      ],
+    });
+
+    render(
+      <ThesisWorkspace
+        transportClient={transportClient}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('q1')).toBeInTheDocument();
+      expect(screen.getByText('q2')).toBeInTheDocument();
+      expect(screen.getAllByText('same answer')).toHaveLength(2);
+    });
+  });
+
+  it('keeps the streamed follow-up visible after loading canonical history', async () => {
+    const transportClient = createTransportClient();
+    vi.mocked(transportClient.listConversations).mockResolvedValueOnce({
+      conversations: [
+        {
+          conversationId: 'conv-identical-stream',
+          title: 'BTC SMA',
+          updatedAt: '2026-04-12T00:00:04.000Z',
+        },
+      ],
+    });
+
+    const initialHistory = [
+      createUiMessage(
+        'u1',
+        'user',
+        'Initial BTC momentum thesis?',
+        '2026-04-12T00:00:00.000Z',
+      ),
+      createUiMessage(
+        'a1',
+        'assistant',
+        'Use a 20-day SMA for the base signal.',
+        '2026-04-12T00:00:01.000Z',
+      ),
+    ];
+
+    vi.mocked(transportClient.getUiMessages).mockResolvedValueOnce({
+      messages: initialHistory,
+    });
+
+    render(
+      <ThesisWorkspace
+        transportClient={transportClient}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    await screen.findByText('Initial BTC momentum thesis?');
+
+    const textarea = await screen.findByPlaceholderText('Message the agent...');
+    fireEvent.change(textarea, { target: { value: 'Any risk controls for chop?' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Use a 20-day SMA for the base signal.'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('hello back')).toBeInTheDocument();
+      expect(screen.getAllByText('Any risk controls for chop?').length).toBeGreaterThan(0);
+    });
+  });
+
+  it('does not use the legacy raw messages endpoint on the main web chat path', async () => {
+    const transportClient = createTransportClient();
+    vi.mocked(transportClient.listConversations).mockResolvedValueOnce({
+      conversations: [
+        {
+          conversationId: 'conv-ui-only',
+          title: 'UI only',
+          updatedAt: '2026-04-12T00:00:04.000Z',
+        },
+      ],
+    });
+
+    render(
+      <ThesisWorkspace
+        transportClient={transportClient}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    await screen.findByText('hello');
+
+    expect(transportClient.getUiMessages).toHaveBeenCalledWith(
+      'conv-ui-only',
+      100,
+    );
+    expect(transportClient.getMessages).not.toHaveBeenCalled();
   });
 });
