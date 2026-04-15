@@ -18,12 +18,13 @@ vi.mock('../logger.js', () => ({
 vi.mock('../db.js', () => ({
   getSessionsByChannel: vi.fn().mockReturnValue([]),
   getMessageHistory: vi.fn().mockReturnValue([]),
+  getReplayLinkById: vi.fn(),
   storeMessage: vi.fn(),
   storeChatMetadata: vi.fn(),
 }));
 
 import { WebChannel } from './web.js';
-import { getMessageHistory } from '../db.js';
+import { getMessageHistory, getReplayLinkById } from '../db.js';
 import type {
   OnInboundMessage,
   OnChatMetadata,
@@ -31,6 +32,7 @@ import type {
 } from '../types.js';
 
 const mockedGetMessageHistory = vi.mocked(getMessageHistory);
+const mockedGetReplayLinkById = vi.mocked(getReplayLinkById);
 
 function makeOpts(
   overrides: Partial<{
@@ -66,6 +68,7 @@ describe('WebChannel', () => {
 
   beforeEach(async () => {
     mockedGetMessageHistory.mockReset().mockReturnValue([]);
+    mockedGetReplayLinkById.mockReset();
     channel = new WebChannel(0, makeOpts());
     await channel.connect();
     port = channel.getPort();
@@ -98,6 +101,50 @@ describe('WebChannel', () => {
       },
     );
     expect(res.status).toBe(401);
+  });
+
+  it('GET /replays/:id/ui-messages works without X-User-Id', async () => {
+    mockedGetReplayLinkById.mockReturnValueOnce({
+      replayId: 'rpl_123',
+      channelId: 'slack:C123',
+      threadId: 'thread-1',
+      agentName: 'main',
+      createdAt: '2026-04-15T00:00:00.000Z',
+    });
+    mockedGetMessageHistory.mockReturnValueOnce([
+      {
+        id: 'assistant-1',
+        chat_jid: 'slack:C123',
+        thread_id: 'thread-1',
+        sender: 'Devbox',
+        sender_name: 'Devbox',
+        content: 'hello replay',
+        timestamp: '2026-04-15T00:00:01.000Z',
+        is_bot_message: true,
+      },
+    ]);
+
+    const res = await fetch(
+      `http://localhost:${port}/api/devbox/replays/rpl_123/ui-messages`,
+      { method: 'GET' },
+    );
+
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as any;
+    expect(body.replayId).toBe('rpl_123');
+    expect(body.messages[0].id).toBe('assistant-1');
+  });
+
+  it('GET /replays/:id/ui-messages returns 404 for unknown replay ids', async () => {
+    mockedGetReplayLinkById.mockReturnValueOnce(undefined);
+
+    const res = await fetch(
+      `http://localhost:${port}/api/devbox/replays/rpl_missing/ui-messages`,
+    );
+
+    expect(res.status).toBe(404);
+    const body = (await res.json()) as any;
+    expect(body.code).toBe('replay_not_found');
   });
 
   it('POST /conversations creates a conversation', async () => {

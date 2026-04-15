@@ -1,4 +1,5 @@
 import Database from 'better-sqlite3';
+import { randomBytes } from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
@@ -242,6 +243,13 @@ function createSchema(database: Database.Database): void {
       agent_name TEXT NOT NULL,
       session_id TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS replay_links (
+      replay_id TEXT PRIMARY KEY,
+      channel_id TEXT NOT NULL,
+      thread_id TEXT NOT NULL DEFAULT '',
+      agent_name TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
     CREATE TABLE IF NOT EXISTS agents (
       jid TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -265,6 +273,8 @@ function createSchema(database: Database.Database): void {
       ON scheduled_tasks(agent_name);
     CREATE UNIQUE INDEX IF NOT EXISTS idx_sessions_scope
       ON sessions(channel_id, thread_id, agent_name);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_replay_links_scope
+      ON replay_links(channel_id, thread_id, agent_name);
     CREATE INDEX IF NOT EXISTS idx_agents_agent_name ON agents(agent_name);
   `);
 
@@ -799,10 +809,36 @@ export function getSessionsByChannel(
 export function getMessageHistory(
   chatJid: string,
   threadId: string,
-  options: { before?: string; limit?: number } = {},
+  options: {
+    before?: string;
+    limit?: number;
+    includeThreadParent?: boolean;
+  } = {},
 ): NewMessage[] {
   const limit = options.limit ?? 50;
   const normalized = normalizeThreadId(threadId);
+  const includeThreadParent =
+    options.includeThreadParent === true && normalized !== '';
+
+  if (includeThreadParent) {
+    const whereBefore = options.before ? 'AND timestamp < ?' : '';
+    const rows = db
+      .prepare(
+        `SELECT id, chat_jid, thread_id, sender, sender_name, content, timestamp, is_bot_message
+         FROM messages
+         WHERE chat_jid = ?
+           AND (thread_id = ? OR (thread_id = '' AND id = ?))
+           ${whereBefore}
+         ORDER BY timestamp DESC, id DESC
+         LIMIT ?`,
+      )
+      .all(
+        ...(options.before
+          ? [chatJid, normalized, normalized, options.before, limit]
+          : [chatJid, normalized, normalized, limit]),
+      ) as Array<NewMessage & { thread_id: string }>;
+    return rows.map((row) => ({ ...row, thread_id: row.thread_id || null }));
+  }
 
   if (options.before) {
     const rows = db
@@ -831,6 +867,97 @@ export function getMessageHistory(
     NewMessage & { thread_id: string }
   >;
   return rows.map((row) => ({ ...row, thread_id: row.thread_id || null }));
+}
+
+export interface ReplayLink {
+  replayId: string;
+  channelId: string;
+  threadId: string | null;
+  agentName: string;
+  createdAt: string;
+}
+
+export function getReplayLinkById(replayId: string): ReplayLink | undefined {
+  const row = db
+    .prepare(
+      `SELECT replay_id, channel_id, thread_id, agent_name, created_at
+       FROM replay_links
+       WHERE replay_id = ?`,
+    )
+    .get(replayId) as
+    | {
+        replay_id: string;
+        channel_id: string;
+        thread_id: string;
+        agent_name: string;
+        created_at: string;
+      }
+    | undefined;
+  if (!row) return undefined;
+
+  return {
+    replayId: row.replay_id,
+    channelId: row.channel_id,
+    threadId: row.thread_id || null,
+    agentName: row.agent_name,
+    createdAt: row.created_at,
+  };
+}
+
+export function getReplayLinkByScope(
+  channelId: string,
+  threadId: string | null,
+  agentName: string,
+): ReplayLink | undefined {
+  const row = db
+    .prepare(
+      `SELECT replay_id, channel_id, thread_id, agent_name, created_at
+       FROM replay_links
+       WHERE channel_id = ? AND thread_id = ? AND agent_name = ?`,
+    )
+    .get(channelId, normalizeThreadId(threadId), agentName) as
+    | {
+        replay_id: string;
+        channel_id: string;
+        thread_id: string;
+        agent_name: string;
+        created_at: string;
+      }
+    | undefined;
+  if (!row) return undefined;
+
+  return {
+    replayId: row.replay_id,
+    channelId: row.channel_id,
+    threadId: row.thread_id || null,
+    agentName: row.agent_name,
+    createdAt: row.created_at,
+  };
+}
+
+export function getOrCreateReplayLink(
+  channelId: string,
+  threadId: string | null,
+  agentName: string,
+): ReplayLink {
+  const existing = getReplayLinkByScope(channelId, threadId, agentName);
+  if (existing) return existing;
+
+  const normalizedThreadId = normalizeThreadId(threadId);
+  const createdAt = new Date().toISOString();
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const replayId = `rpl_${randomBytes(16).toString('hex')}`;
+    db.prepare(
+      `INSERT OR IGNORE INTO replay_links (replay_id, channel_id, thread_id, agent_name, created_at)
+       VALUES (?, ?, ?, ?, ?)`,
+    ).run(replayId, channelId, normalizedThreadId, agentName, createdAt);
+
+    const link = getReplayLinkByScope(channelId, threadId, agentName);
+    if (link) return link;
+  }
+
+  throw new Error('Failed to allocate replay link');
 }
 
 // --- Registered agent accessors ---

@@ -16,6 +16,8 @@ import {
   updateTask,
   getSessionsByChannel,
   getMessageHistory,
+  getOrCreateReplayLink,
+  getReplayLinkById,
 } from './db.js';
 
 beforeEach(() => {
@@ -140,6 +142,22 @@ describe('storeMessage', () => {
     );
     expect(messages).toHaveLength(1);
     expect(messages[0].content).toBe('updated');
+  });
+});
+
+describe('replay links', () => {
+  it('returns stable replay links for the same scope', () => {
+    const first = getOrCreateReplayLink('slack:C123', 'thread-1', 'main');
+    const second = getOrCreateReplayLink('slack:C123', 'thread-1', 'main');
+
+    expect(first.replayId).toBe(second.replayId);
+    expect(first.replayId).toMatch(/^rpl_[a-f0-9]{32}$/);
+  });
+
+  it('looks up replay links by replay id', () => {
+    const created = getOrCreateReplayLink('tg:user:123', null, 'main');
+
+    expect(getReplayLinkById(created.replayId)).toEqual(created);
   });
 });
 

@@ -257,6 +257,8 @@ All supported environment variables, listed in order of precedence (env vars ove
 | Variable | Description |
 |----------|-------------|
 | `DEVBOX_DATA_ROOT` | Root directory for runtime data. Overrides `data_root` in config. |
+| `DEVBOX_PUBLIC_WEB_BASE_URL` | Preferred public base URL for replay/preview links suggested in Telegram/Slack replies. |
+| `DEVBOX_FRONTEND_URL` | Fallback base URL for replay/preview links when no public base URL is set; defaults to local frontend usage. |
 | `ANTHROPIC_API_KEY` | Claude API key for the runner to authenticate with the Anthropic API. |
 | `ANTHROPIC_BASE_URL` | Override the Anthropic API base URL (e.g., for proxies or Vertex AI). |
 | `CLAUDE_CODE_OAUTH_TOKEN` | Alternative to API key: Claude Code OAuth token for authentication. |

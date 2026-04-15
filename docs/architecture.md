@@ -42,6 +42,7 @@ The **runner** is a Node.js process inside a container that stays alive across m
 - `channels/telegram.ts`: Telegram adapter using grammy. Handles group and DM detection, `@mention` normalization, non-text message placeholders, and the `Channel` interface.
 - `channels/web.ts`: Web adapter using plain HTTP. Keeps the write path on raw messages only, serves the backend canonical `UIMessage[]` read endpoint for web chat, and exposes the AI SDK-compatible streaming endpoint (`POST /api/devbox/chat`) that maps controller `sendMessage` / `setTyping` callbacks directly into SSE UI message chunks. Auth is delegated to the upstream Envoy proxy (`X-User-Id` header). Implements the `Channel` interface without DB polling or reply-stability heuristics; normalization stays server-side.
 - `../frontend/`: Minimal browser chat workspace for the web channel. Uses a client-generated UUID sent as `X-User-Id`, renders and streams chat turns through `@ai-sdk/react` + the AI SDK transport, and reads the backend canonical `UIMessage[]` for web chat. It does not reconstruct raw history on the main path. Markdown/table rendering is delegated to `@galpha-ai/better-markdown`.
+- `replay_links` + `/api/devbox/replays/:replayId/ui-messages`: replay-only bridge for Telegram/Slack threads. Replay ids are opaque public identifiers for a stored `(channelId, threadId, agentName)` scope and are consumed by the frontend route `/replay/:replayId?reply=<dbMessageId>`.
 
 ### Runner (`container/`)
 
@@ -153,6 +154,8 @@ When the controller boots, it performs a recovery scan for interrupted user work
 8. **Global concurrency is capped.** `MAX_CONCURRENT_CONTAINERS` (default: 2) limits how many containers run simultaneously across all sessions. Excess work is queued in `SessionQueue.waitingSessions`.
 
 9. **Thread parent messages are bootstrap-only context.** The controller includes a thread's root message when activating a brand-new thread session, but resumed turns and startup recovery for existing sessions send only unread user-message deltas.
+
+10. **Replay identity is distinct from live web identity.** Replay pages use opaque `replayId` values backed by `replay_links`; they do not depend on or mutate the live `web:<userId>` conversation/session model.
 
 ## Boundaries
 

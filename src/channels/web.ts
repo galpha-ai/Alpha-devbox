@@ -8,7 +8,11 @@ import {
 } from 'ai';
 
 import { MAX_CONCURRENT_CONTAINERS } from '../config.js';
-import { getMessageHistory, getSessionsByChannel } from '../db.js';
+import {
+  getMessageHistory,
+  getReplayLinkById,
+  getSessionsByChannel,
+} from '../db.js';
 import { logger } from '../logger.js';
 import { makeSessionScopeKey } from '../session-scope.js';
 import {
@@ -171,6 +175,40 @@ export class WebChannel implements Channel {
 
     if (path === '/api/devbox/health' && req.method === 'GET') {
       this.jsonResponse(res, 200, { status: 'ok' });
+      return;
+    }
+
+    const replayMatch = path.match(
+      /^\/api\/devbox\/replays\/([^/]+)\/ui-messages$/,
+    );
+    if (replayMatch && req.method === 'GET') {
+      const replayId = replayMatch[1];
+      const before = url.searchParams.get('before') ?? undefined;
+      const limit = parseInt(url.searchParams.get('limit') ?? '100', 10);
+      const replay = getReplayLinkById(replayId);
+      if (!replay) {
+        this.jsonResponse(res, 404, {
+          error: 'Replay not found',
+          code: 'replay_not_found',
+        });
+        return;
+      }
+
+      const rawMessages = getMessageHistory(
+        replay.channelId,
+        replay.threadId || '',
+        {
+          before,
+          limit,
+          includeThreadParent: true,
+        },
+      );
+      const messages = canonicalizeChatMessages(rawMessages);
+      this.jsonResponse(res, 200, {
+        replayId,
+        derivedAt: new Date().toISOString(),
+        messages,
+      });
       return;
     }
 

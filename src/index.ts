@@ -35,6 +35,7 @@ import {
   getAllTasks,
   getMessagesSince,
   getNewMessages,
+  getOrCreateReplayLink,
   getRouterState,
   initDatabase,
   makeSessionScopeKey,
@@ -55,6 +56,11 @@ import {
   cleanupSessionScope,
   parseSessionControlCommand,
 } from './session-control.js';
+import {
+  appendReplayUrl,
+  buildReplayUrl,
+  shouldSuggestReplayLink,
+} from './replay.js';
 import { SessionScope } from './session-scope.js';
 import { startSchedulerLoop } from './task-scheduler.js';
 import {
@@ -74,6 +80,7 @@ let registeredAgents: Record<string, RegisteredAgent> = {};
 let lastAgentTimestamp: Record<string, string> = {};
 let messageLoopRunning = false;
 const statusIndicatorTargets = new Map<string, StatusIndicatorOptions>();
+const replaySuggestionTimestamps = new Map<string, number>();
 
 const channels: Channel[] = [];
 const queue = new SessionQueue();
@@ -539,8 +546,9 @@ export async function processSessionMessages(
         );
         if (text) {
           const timestamp = new Date().toISOString();
+          const botMessageId = `bot-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
           storeMessage({
-            id: `bot-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+            id: botMessageId,
             chat_jid: chatJid,
             thread_id: scope.threadId,
             sender: ASSISTANT_NAME,
@@ -550,7 +558,28 @@ export async function processSessionMessages(
             is_from_me: true,
             is_bot_message: true,
           });
-          await channel.sendMessage(chatJid, text, {
+          const shouldAppendReplayUrl = shouldSuggestReplayLink({
+            chatJid,
+            text,
+            lastSuggestedAt: replaySuggestionTimestamps.get(sessionKey),
+          });
+          const outboundText = shouldAppendReplayUrl
+            ? appendReplayUrl(
+                text,
+                buildReplayUrl(
+                  getOrCreateReplayLink(
+                    scope.channelId,
+                    scope.threadId,
+                    scope.agentName,
+                  ).replayId,
+                  botMessageId,
+                ),
+              )
+            : text;
+          if (shouldAppendReplayUrl) {
+            replaySuggestionTimestamps.set(sessionKey, Date.now());
+          }
+          await channel.sendMessage(chatJid, outboundText, {
             threadId: scope.threadId,
           });
           outputSentToUser = true;

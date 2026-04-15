@@ -31,6 +31,12 @@ export interface ChatTransportClient {
   deleteConversation(conversationId: string): Promise<{ deleted: true }>;
 }
 
+export interface ReplayTransportClient {
+  getReplayUiMessages<TMessage extends UIMessage = UIMessage>(
+    replayId: string,
+  ): Promise<ChatTransportMessageList<TMessage>>;
+}
+
 export class ChatTransportError extends Error {
   code?: string;
   status: number;
@@ -107,6 +113,24 @@ export function createChatTransportClient(options: ChatTransportClientOptions): 
   };
 }
 
+export function createReplayTransportClient(options?: { fetch?: typeof fetch }): ReplayTransportClient {
+  const fetchImpl = options?.fetch ?? fetch;
+
+  return {
+    async getReplayUiMessages<TMessage extends UIMessage = UIMessage>(
+      replayId: string,
+    ): Promise<ChatTransportMessageList<TMessage>> {
+      return requestJsonFromFetch(
+        fetchImpl,
+        `/api/devbox/replays/${encodeURIComponent(replayId)}/ui-messages`,
+        {
+          method: "GET",
+        },
+      );
+    },
+  };
+}
+
 async function requestJson<T>(
   authFetch: ChatTransportClientOptions["authFetch"],
   input: string,
@@ -114,6 +138,27 @@ async function requestJson<T>(
 ): Promise<T> {
   const response = await authFetch(input, init);
   const payload = await parseJson<T & { error?: string; code?: string; message?: string }>(response);
+
+  if (!response.ok) {
+    throw new ChatTransportError(
+      payload?.message || payload?.error || `Request failed (${response.status})`,
+      response.status,
+      payload?.code,
+    );
+  }
+
+  return payload as T;
+}
+
+async function requestJsonFromFetch<T>(
+  fetchImpl: typeof fetch,
+  input: string,
+  init: RequestInit,
+): Promise<T> {
+  const response = await fetchImpl(input, init);
+  const payload = await parseJson<
+    T & { error?: string; code?: string; message?: string }
+  >(response);
 
   if (!response.ok) {
     throw new ChatTransportError(

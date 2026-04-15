@@ -14,18 +14,11 @@ import {
 } from 'lucide-react';
 
 import { StarterPromptGrid } from './StarterPromptGrid';
+import { ChatTranscript, getChatMessageText } from './ChatTranscript';
 import { ChatTransportError, type ChatTransportClient } from './transport';
-import { MarkdownChartRenderer } from './MarkdownChartRenderer';
 
 const MOBILE_BREAKPOINT_PX = 1024;
 const CHAT_UPDATE_THROTTLE_MS = 100;
-
-const proseClasses = `prose prose-invert prose-sm max-w-none 
-  prose-headings:text-foreground prose-headings:font-display
-  prose-h2:text-lg prose-h3:text-base
-  prose-p:text-[hsl(var(--body-foreground))] prose-p:leading-relaxed
-  prose-li:text-[hsl(var(--body-muted))] prose-li:leading-relaxed
-  prose-strong:text-foreground prose-code:text-foreground`;
 
 type ChatPanelStatus = 'idle' | 'processing' | 'complete' | 'error';
 type ChatMessageMetadata = {
@@ -831,9 +824,7 @@ function ConversationThread({
   return (
     <section className="space-y-4">
       <div className="space-y-4">
-        {visibleMessages.map((message) => (
-          <MessageBubble key={message.id} message={message} />
-        ))}
+        <ChatTranscript messages={visibleMessages} />
 
         {conversation.status === 'processing' && !hasLiveAssistantTurn && (
           <div className="flex items-start gap-3">
@@ -872,38 +863,6 @@ function ConversationThread({
           )}
       </div>
     </section>
-  );
-}
-
-function MessageBubble({ message }: { message: ChatMessage }) {
-  const content = getChatMessageText(message).trim();
-
-  if (message.role === 'user') {
-    return (
-      <div className="flex justify-end">
-        <div className="min-w-0 max-w-[85%] whitespace-pre-wrap break-words rounded-2xl rounded-br-md bg-muted/60 px-4 py-3 text-sm leading-relaxed text-foreground [overflow-wrap:anywhere]">
-          {content}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex items-start gap-3">
-      <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-full border border-border/30 bg-card/70">
-        <Sparkles className="h-4 w-4 text-primary" />
-      </div>
-      <div className="min-w-0 max-w-[85%] space-y-3">
-        {content ? (
-          <div className="min-w-0 overflow-hidden rounded-2xl rounded-bl-md border border-border/30 bg-card/70 px-4 py-3">
-            <MarkdownChartRenderer
-              markdown={content}
-              proseClassName={proseClasses}
-            />
-          </div>
-        ) : null}
-      </div>
-    </div>
   );
 }
 
@@ -1120,13 +1079,6 @@ function getChatMessagesFingerprint(messages: ChatMessage[]) {
       getChatMessageText(message).trim(),
     ].join(':'))
     .join('|');
-}
-
-function getChatMessageText(message: ChatMessage) {
-  return message.parts
-    .filter((part): part is Extract<typeof part, { type: 'text' }> => part.type === 'text')
-    .map((part) => part.text)
-    .join('');
 }
 
 function sanitizeAssistantContent(content: string) {
