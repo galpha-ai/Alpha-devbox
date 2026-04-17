@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Why merge quant and discretionary — AlphaDev motivation</title>
+  <style>
+    :root {
+      --bg: #0c0f14;
+      --surface: #141925;
+      --surface-2: #1b2130;
+      --border: rgba(255,255,255,0.08);
+      --text: #e8ecf1;
+      --muted: #9aa4b2;
+      --accent: #7cf3c8;
+      --accent-2: #ffb86b;
+      --accent-3: #9ad0ff;
+      --warn: #f178b6;
+      --radius: 12px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: "Inter", "Helvetica Neue", Arial, sans-serif; line-height: 1.55; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(12,15,20,0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .brand {
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #fff;
+    }
+    .brand span.accent { color: var(--accent); }
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .nav-links a { color: var(--muted); }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 5rem 1.5rem 3rem;
+    }
+    .kicker {
+      display: inline-block;
+      padding: 0.2rem 0.7rem;
+      border: 1px solid var(--accent);
+      border-radius: 1rem;
+      color: var(--accent);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: clamp(2rem, 4.2vw, 3.2rem);
+      line-height: 1.1;
+      margin: 1.2rem 0 1rem;
+      letter-spacing: -0.02em;
+    }
+    .lede {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 760px;
+    }
+    .slogan {
+      border-left: 4px solid var(--accent);
+      padding: 0.6rem 0 0.6rem 1rem;
+      font-size: 1.15rem;
+      margin: 2rem 0;
+      color: #fff;
+    }
+
+    section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    section:first-of-type { border-top: none; }
+    h2 {
+      font-size: 1.7rem;
+      margin: 0 0 0.6rem;
+      letter-spacing: -0.01em;
+    }
+    h3 { font-size: 1.1rem; margin-top: 1.4rem; color: var(--accent); }
+    p { margin: 0.6rem 0; }
+    ul { padding-left: 1.2rem; }
+    li { margin: 0.25rem 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
+    @media (max-width: 800px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.3rem;
+    }
+    .card h3 { margin-top: 0; }
+    .card .label {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .example {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .example .ex-head {
+      display: flex;
+      align-items: baseline;
+      gap: 0.8rem;
+      margin-bottom: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .example h3 {
+      margin: 0;
+      color: #fff;
+      font-size: 1.15rem;
+    }
+    .tag {
+      display: inline-block;
+      padding: 0.15rem 0.55rem;
+      border-radius: 0.7rem;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .tag.scenario { border-color: var(--accent-3); color: var(--accent-3); }
+    .tag.execution { border-color: var(--accent-2); color: var(--accent-2); }
+    .tag.game { border-color: var(--warn); color: var(--warn); }
+    .prompt {
+      font-family: var(--mono);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.88rem;
+      color: #e1e8ef;
+      margin: 0.8rem 0 1rem;
+    }
+    .prompt::before {
+      content: "user ▸ ";
+      color: var(--muted);
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.8rem;
+      margin: 0.5rem 0;
+    }
+    @media (max-width: 800px) {
+      .steps { grid-template-columns: 1fr; }
+    }
+    .step {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.8rem 0.9rem;
+      font-size: 0.9rem;
+    }
+    .step .n {
+      font-family: var(--mono);
+      color: var(--accent);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+    }
+    .payoff {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+      margin: 0.8rem 0;
+    }
+    @media (max-width: 800px) { .payoff { grid-template-columns: 1fr; } }
+    .case {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.7rem 0.9rem;
+    }
+    .case .label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    .case .big { font-size: 1.1rem; font-weight: 600; margin-top: 0.2rem; }
+    .case.bear .big { color: var(--warn); }
+    .case.base .big { color: var(--accent-3); }
+    .case.bull .big { color: var(--accent); }
+
+    .footer {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .pullquote {
+      font-size: 1.25rem;
+      color: #fff;
+      border-left: 4px solid var(--accent-2);
+      padding-left: 1rem;
+      margin: 1.5rem 0;
+    }
+    .pullquote .cite { display: block; color: var(--muted); font-size: 0.85rem; margin-top: 0.4rem; }
+
+    .muted { color: var(--muted); }
+    .accent { color: var(--accent); }
+    .accent-2 { color: var(--accent-2); }
+    .accent-3 { color: var(--accent-3); }
+    .warn { color: var(--warn); }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand">AlphaDev <span class="accent">·</span> motivation</div>
+      <div class="nav-links">
+        <a href="#thesis">Thesis</a>
+        <a href="#two-camps">Two camps</a>
+        <a href="#three-monies">Three kinds of money</a>
+        <a href="#problem-classes">Problem classes</a>
+        <a href="#world-model">World model</a>
+        <a href="#examples">Examples</a>
+        <a href="#validation">Validation</a>
+        <a href="#positioning">Positioning</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <span class="kicker">Motivation</span>
+    <h1>Merging quant systematic investing and <span class="accent">主观 investing</span></h1>
+    <p class="lede">
+      Most discretionary traders have ideas but no research workflow. Most quant
+      platforms have workflow but can't reason about events that have never
+      happened. AlphaDev is the AI researcher that does both — and runs in the
+      background so humans only step in for the high-value decisions.
+    </p>
+    <div class="slogan">
+      Backtest any idea. Simulate any scenario.<br />
+      Automate low-value decisions. Keep humans on high-value judgment.
+    </div>
+  </header>
+
+  <section id="thesis">
+    <h2>Why this needs to exist</h2>
+    <p>
+      Discretionary investors have no shortage of opinions. What they lack is a
+      workflow that turns an opinion into something repeatable, verifiable, and
+      falsifiable. Quant systems have exactly that workflow — for the narrow
+      slice of problems that can be cleanly backtested. The slice that can't —
+      post-COVID style shocks, catalyst-driven bets, asymmetric payoffs built on
+      a view of the world — is where discretionary traders spend most of their
+      time, and where they have the fewest tools.
+    </p>
+    <p>
+      AlphaDev gives discretionary research a quant-grade research harness and
+      gives quant tooling a world-model layer that can reason about events that
+      haven't happened yet. It is not a stock picker. It is a research system.
+    </p>
+  </section>
+
+  <section id="two-camps">
+    <h2>Two camps that don't talk</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="label">Quant systematic</div>
+        <h3>What it's good at</h3>
+        <ul>
+          <li>Market microstructure, spread, slippage, adverse selection</li>
+          <li>Backtesting, robustness, attribution, failure-mode analysis</li>
+          <li>Shadow mode, sim-to-real gap calibration</li>
+          <li>Fully systematic execution at scale</li>
+        </ul>
+        <h3>Where it breaks</h3>
+        <ul>
+          <li>Events with no historical analog</li>
+          <li>Bets driven by narrative, crowding, or directional views</li>
+          <li>Asymmetric payoff construction from scratch</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="label">Discretionary (主观)</div>
+        <h3>What it's good at</h3>
+        <ul>
+          <li>Fundamentals research and business understanding</li>
+          <li>Reading sentiment, crowding, capital flow, attention flow</li>
+          <li>Constructing asymmetric bets with options</li>
+          <li>Game-theoretic judgment on narrative trades</li>
+        </ul>
+        <h3>Where it breaks</h3>
+        <ul>
+          <li>No consistent way to turn a view into a forecast</li>
+          <li>Hard to tell if a win was process or luck</li>
+          <li>Hard to compound research across a team</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="three-monies">
+    <h2>Three kinds of money in a stock</h2>
+    <p class="muted">
+      An old trader's way of seeing the market. A serious AI researcher has to
+      be able to reason about all three.
+    </p>
+    <div class="grid-3">
+      <div class="card">
+        <div class="label">1. Fundamentals money</div>
+        <p>You make money because the business improves or deteriorates, and the market slowly moves toward that truth.</p>
+        <p class="muted">The most objective. Closest to what you can actually investigate. Buffett's dog — not the leash.</p>
+      </div>
+      <div class="card">
+        <div class="label">2. Trend money</div>
+        <p>Crowding. Everyone decides the same thing is good, piles in together, and momentum feeds on itself.</p>
+        <p class="muted">Until someone trims. Momentum crashes come from the inside of the crowd, not the outside.</p>
+      </div>
+      <div class="card">
+        <div class="label">3. Game money</div>
+        <p>You sell the story; someone else carries the bag. Recursive belief chains: I think that you think that I think.</p>
+        <p class="muted">Hardest to play. Ends with a cliff-jumping game the moment belief cracks.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="problem-classes">
+    <h2>Two classes of research problem</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="label">Class A</div>
+        <h3>Forecast &amp; Backtest</h3>
+        <p>There is a target and enough history. Turn the view into ŷₜ, run a rolling predictive model, compare to realised y, produce standard statistical properties.</p>
+        <ul>
+          <li>Rolling linear / tree / DNN models</li>
+          <li>Trigger-based strategies (enter / exit conditions)</li>
+          <li>Triggers can be price, volume, earnings, news, a tweet, or the output of a previous model</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="label">Class B</div>
+        <h3>Scenario &amp; Simulation</h3>
+        <p>No clean historical analog. Run bear / base / bull. Size by Kelly. Use multi-agent simulation to play out how the world unfolds. Calibrate against real prediction markets.</p>
+        <ul>
+          <li>Construct asymmetric payoff — structure first, probability second</li>
+          <li>Build what-if simulations, replay against reality after the event</li>
+          <li>Use markets like Polymarket as an external probability signal</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="world-model">
+    <h2>What's really missing — a Financial World Model</h2>
+    <p>
+      In traditional quant, "the world model" is actually a
+      <em>market impact model</em>: spread, fill rate, adverse selection. That
+      is useful but local. It tells you about execution cost, not about what is
+      going to happen.
+    </p>
+    <p>
+      The harder object is a model of the causal relations between events —
+      earnings, macro prints, geopolitical catalysts, and sector narratives.
+      Something that can reason about a scenario that hasn't yet happened and
+      expose the right compute to the user. That's the multi-year research
+      program AlphaDev sits on top of. Year one lays the scaffolding for it.
+    </p>
+    <div class="pullquote">
+      Many big discretionary bets are not alpha that would work if market impact
+      were zero. They are <span class="accent">risk-limited</span>, not
+      market-impact-limited. What you earn is a risk premium for a scenario bet.
+      <span class="cite">— AlphaDev handoff notes, U4</span>
+    </div>
+  </section>
+
+  <section id="examples">
+    <h2>Five worked examples</h2>
+    <p class="muted">
+      Each example is the same shape: a trader types something in natural
+      language, the AI researcher decides which layer to use (backtest vs
+      scenario vs operator), runs the research, and returns a report.
+    </p>
+
+    <div class="example">
+      <div class="ex-head">
+        <span class="tag">Class A · Backtest</span>
+        <h3>Example 1 — "Do earnings surprises keep working after a gap up?"</h3>
+      </div>
+      <div class="prompt">backtest: buy SP500 names gapping up &gt;3% post-earnings, hold 5 days, 2015–today. show sharpe, turnover, and max drawdown. split by sector.</div>
+      <div class="steps">
+        <div class="step"><div class="n">STEP 1</div>Pull earnings dates + post-open gaps from ClickHouse. Split train / test by year.</div>
+        <div class="step"><div class="n">STEP 2</div>Rolling walk-forward: position = long $1 per qualified name, 5-day hold.</div>
+        <div class="step"><div class="n">STEP 3</div>Return Sharpe, turnover, DD, per-sector attribution, failure-mode table.</div>
+      </div>
+      <p class="muted">What the user would never write by hand: point-in-time universe, survivorship filter, clean sector mapping. The harness handles it.</p>
+    </div>
+
+    <div class="example">
+      <div class="ex-head">
+        <span class="tag scenario">Class B · Scenario</span>
+        <h3>Example 2 — "If the Fed cuts 50bp in July, who wins?"</h3>
+      </div>
+      <div class="prompt">scenario: fed cuts 50bp at the july meeting. give me bear / base / bull on long-duration software and on regional banks. size with kelly. calibrate probability against polymarket.</div>
+      <div class="payoff">
+        <div class="case bear"><div class="label">Bear</div><div class="big">−18%</div><div class="muted">No cut, hawkish dots. Software compresses.</div></div>
+        <div class="case base"><div class="label">Base</div><div class="big">+9%</div><div class="muted">50bp cut, neutral guidance. Repricing in line.</div></div>
+        <div class="case bull"><div class="label">Bull</div><div class="big">+28%</div><div class="muted">Cut + dovish path. Duration bid, regionals re-rate.</div></div>
+      </div>
+      <p class="muted">Kelly sizing comes from the mapped payoff × probability. Probabilities are anchored by current Polymarket pricing on the Fed path, not pulled from thin air.</p>
+    </div>
+
+    <div class="example">
+      <div class="ex-head">
+        <span class="tag scenario">Class B · Asymmetric</span>
+        <h3>Example 3 — "Build me a cheap asymmetric bet on the AI capex cycle."</h3>
+      </div>
+      <div class="prompt">construct an options structure on NVDA-complex names that loses &lt;30% in a crash and makes 3–5× in a continued capex ramp. keep cost budget under 1% of notional per 3 months.</div>
+      <div class="steps">
+        <div class="step"><div class="n">STEP 1</div>Pick the names with the cleanest capex beta. Pull listed options term structure.</div>
+        <div class="step"><div class="n">STEP 2</div>Builder tries call spreads, risk reversals, and calendars. Optimises for payoff asymmetry at fixed cost.</div>
+        <div class="step"><div class="n">STEP 3</div>Return best structure, greeks, scenario payoffs, and what breaks it.</div>
+      </div>
+      <p class="muted">The point is <em>structure first, probability second</em> — the asymmetry is built into the payoff, not estimated from a point forecast.</p>
+    </div>
+
+    <div class="example">
+      <div class="ex-head">
+        <span class="tag game">Three kinds of money · Trend / Game</span>
+        <h3>Example 4 — "Is this stock still a trend trade or has it become a game trade?"</h3>
+      </div>
+      <div class="prompt">run a crowding check on XYZ. who owns it, how long-only vs hedge fund, what does the news flow look like in the last 30 days, are we still in the momentum phase or starting to see distribution?</div>
+      <div class="steps">
+        <div class="step"><div class="n">STEP 1</div>Holdings + ownership diffs. Classify holders into types.</div>
+        <div class="step"><div class="n">STEP 2</div>News and social volume by day. Sentiment regime shift detection.</div>
+        <div class="step"><div class="n">STEP 3</div>Multi-agent sim: how does the crowd react if one large holder trims? Is this momentum, distribution, or a narrative-handoff game?</div>
+      </div>
+      <p class="muted">Same hosted research session a team can argue over in Slack — same facts, same numbers.</p>
+    </div>
+
+    <div class="example">
+      <div class="ex-head">
+        <span class="tag execution">Layer C · Operator</span>
+        <h3>Example 5 — "Put the idea live at small size and tell me when reality disagrees."</h3>
+      </div>
+      <div class="prompt">promote the gap-up strategy from example 1 into shadow mode for two weeks, then live at $500 per signal. alert me if realised fills, impact, or reason-for-move start to diverge from the sim.</div>
+      <div class="steps">
+        <div class="step"><div class="n">STEP 1</div>Shadow run. Sim fills, spreads, market impact logged per trade.</div>
+        <div class="step"><div class="n">STEP 2</div>Small-live run, capped at $500 per signal. Every live fill compared against sim.</div>
+        <div class="step"><div class="n">STEP 3</div>Process validation: for each closed trade, did the stock move for the reason the strategy assumed? If not, raise a review in the Slack thread.</div>
+      </div>
+      <p class="muted">Below $1,000: automated. Above $1,000: human approval. Low-value decisions to the machine, high-value decisions to the person.</p>
+    </div>
+  </section>
+
+  <section id="validation">
+    <h2>Validation — process, not just PnL</h2>
+    <p>
+      Markets are noisy. A good process can lose and a bad process can win.
+      Grading only on realised PnL is slow and misleading.
+    </p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Outcome axis</h3>
+        <p>Trajectory-averaged PnL across a cohort of trades. The usual.</p>
+      </div>
+      <div class="card">
+        <h3>Process axis</h3>
+        <p>Did the stock move for the reason we predicted? Did the causal chain we wrote down actually fire? Did fundamentals, sentiment, and flow evolve in the direction the thesis implied?</p>
+      </div>
+    </div>
+    <p class="muted">Grading both axes gives usable feedback in weeks instead of years. The process check is a first-class feature, not an afterthought.</p>
+  </section>
+
+  <section id="positioning">
+    <h2>Where we sit in the landscape</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>We don't compete with</h3>
+        <ul>
+          <li>Orderbook / HFT foundation models (Jane Street, XTX, HRT style). That is a compute arms race.</li>
+          <li>Generic coding agents — they write code, they don't do research.</li>
+          <li>Retail charting copilots — they stop at commentary.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>We sit one layer above</h3>
+        <ul>
+          <li>Traditional quant platforms that assume the user is an engineer.</li>
+          <li>Discretionary workflow tools with no research spine.</li>
+          <li>Scripted backtest libraries with no agent loop and no operator.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="muted">
+      Defensible surface: the whole stack on one persistent runtime — research
+      harness, historical data, scenario simulator, human-in-the-loop operator,
+      and a shared facts layer a team can compound on.
+    </p>
+  </section>
+
+  <footer class="footer">
+    <p>AlphaDev Neo-Lab · concept webpage · confidential draft.</p>
+    <p>See also: <a href="devbox-concept.md">DevBox concept</a> ·
+       <a href="one-year-plan.md">one-year plan</a> ·
+       <a href="deck.html">slide deck</a>.</p>
+  </footer>
+</body>
+</html>
