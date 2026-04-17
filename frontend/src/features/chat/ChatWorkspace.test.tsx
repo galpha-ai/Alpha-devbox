@@ -169,8 +169,8 @@ import type { ChatTransportClient } from './transport';
 function createTransportClient(): ChatTransportClient {
   return {
     chatTransport: {} as ChatTransportClient['chatTransport'],
-    createConversation: vi.fn(async () => ({ conversationId: 'conv-1' })),
-    listConversations: vi.fn(async () => ({ conversations: [] })),
+    createConversation: vi.fn(async () => ({ conversationId: 'conv-1' })) as any,
+    listConversations: vi.fn(async () => ({ conversations: [] })) as any,
     getUiMessages: vi.fn(async () => ({
       messages: [
         {
@@ -194,7 +194,7 @@ function createTransportClient(): ChatTransportClient {
           parts: [{ type: 'text', text: 'hello back', state: 'done' }],
         },
       ],
-    })),
+    })) as any,
     getMessages: vi.fn(async () => ({
       messages: [
         {
@@ -218,9 +218,9 @@ function createTransportClient(): ChatTransportClient {
           is_bot_message: 1,
         },
       ],
-    })),
-    deleteConversation: vi.fn(async () => ({ deleted: true as const })),
-  };
+    })) as any,
+    deleteConversation: vi.fn(async () => ({ deleted: true as const })) as any,
+  } as ChatTransportClient;
 }
 
 function createApiMessage(
@@ -259,7 +259,7 @@ function createUiMessage(
     parts: content
       ? [{ type: 'text', text: content, state: 'done' as const }]
       : [],
-  };
+  } as any;
 }
 
 function deferred<T>() {

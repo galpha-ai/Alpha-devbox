@@ -1128,9 +1128,11 @@ function mergeConversationMessages(
   return Array.from(merged.values());
 }
 
-function toConversationTitleMessages(messages: ChatMessage[]) {
+function toConversationTitleMessages(
+  messages: ChatMessage[],
+): Array<{ role: 'user' | 'assistant'; content: string }> {
   return messages.map((message) => ({
-    role: message.role,
+    role: message.role === 'user' ? 'user' : 'assistant',
     content: getChatMessageText(message),
   }));
 }

@@ -88,6 +88,7 @@ describe("createChatTransportClient", () => {
       messages: [firstMessage, secondMessage],
       trigger: "submit-message",
       messageId: "u2",
+      abortSignal: new AbortController().signal,
     });
 
     expect(authFetch).toHaveBeenCalledWith(
