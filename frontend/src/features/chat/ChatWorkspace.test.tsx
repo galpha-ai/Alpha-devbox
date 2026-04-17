@@ -24,7 +24,9 @@ vi.mock('@ai-sdk/react', async () => {
       }) => void | Promise<void>;
     }) => {
       const [messages, setMessages] = React.useState(initialMessages);
-      const [status, setStatus] = React.useState<'submitted' | 'streaming' | 'ready' | 'error'>('ready');
+      const [status, setStatus] = React.useState<
+        'submitted' | 'streaming' | 'ready' | 'error'
+      >('ready');
       const messageCounterRef = React.useRef(0);
 
       React.useEffect(() => {
@@ -41,6 +43,9 @@ vi.mock('@ai-sdk/react', async () => {
           parts: [{ type: 'text', text, state: 'done' }],
         };
         const shouldStreamEmptyAssistant = text.includes('__EMPTY_ASSISTANT__');
+        const shouldStreamArtifactOnly = text.includes(
+          '__ARTIFACT_ONLY_STREAM__',
+        );
         const assistantMessage = {
           id: `stream-a${seq}`,
           role: 'assistant',
@@ -51,13 +56,21 @@ vi.mock('@ai-sdk/react', async () => {
           },
           parts: shouldStreamEmptyAssistant
             ? []
-            : [
-                {
-                  type: 'text',
-                  text: 'hello back',
-                  state: 'done',
-                },
-              ],
+            : shouldStreamArtifactOnly
+              ? [
+                  {
+                    type: 'text',
+                    text: '<<<CHART_V1>>>\n{"series":[]}\n<<<END_CHART_V1>>>',
+                    state: 'done',
+                  },
+                ]
+              : [
+                  {
+                    type: 'text',
+                    text: 'hello back',
+                    state: 'done',
+                  },
+                ],
         };
 
         let messagesAfterUser: any[] = [];
@@ -259,6 +272,104 @@ describe('ChatWorkspace', () => {
     expect(vendorRenderer).toHaveAttribute('data-interactive', 'true');
   });
 
+  it('renders assistant markdown without inventing a second renderer', async () => {
+    const transportClient = createTransportClient();
+    vi.mocked(transportClient.listConversations).mockResolvedValueOnce({
+      conversations: [
+        {
+          conversationId: 'conv-structured',
+          title: 'Structured',
+          updatedAt: '2026-04-11T00:00:05.000Z',
+        },
+      ],
+    });
+    vi.mocked(transportClient.getUiMessages).mockResolvedValueOnce({
+      messages: [
+        {
+          id: 'a1',
+          role: 'assistant',
+          metadata: {
+            timestamp: '2026-04-11T00:00:01.000Z',
+            sender: 'Devbox',
+            senderName: 'Devbox',
+          },
+          parts: [
+            {
+              type: 'text',
+              text: 'Visible answer\n\n<<<CHART_V1>>>\n{"series":[]}\n<<<END_CHART_V1>>>',
+              state: 'done',
+            },
+          ],
+        } as any,
+      ],
+    });
+
+    render(
+      <ChatWorkspace
+        transportClient={transportClient}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    const vendorRenderer = await screen.findByTestId('vendor-markdown');
+    expect(vendorRenderer.getAttribute('data-markdown')).toContain(
+      'Visible answer',
+    );
+    expect(vendorRenderer.getAttribute('data-markdown')).toContain(
+      '<<<CHART_V1>>>',
+    );
+  });
+
+  it('treats chart-markdown-only assistant replies as visible transcript content', async () => {
+    const transportClient = createTransportClient();
+    vi.mocked(transportClient.listConversations).mockResolvedValueOnce({
+      conversations: [
+        {
+          conversationId: 'conv-artifact-only',
+          title: 'Artifact Only',
+          updatedAt: '2026-04-11T00:00:05.000Z',
+        },
+      ],
+    });
+    vi.mocked(transportClient.getUiMessages).mockResolvedValueOnce({
+      messages: [
+        {
+          id: 'a1',
+          role: 'assistant',
+          metadata: {
+            timestamp: '2026-04-11T00:00:01.000Z',
+            sender: 'Devbox',
+            senderName: 'Devbox',
+          },
+          parts: [
+            {
+              type: 'text',
+              text: '<<<CHART_V1>>>\n{"series":[]}\n<<<END_CHART_V1>>>',
+              state: 'done',
+            },
+          ],
+        } as any,
+      ],
+    });
+
+    render(
+      <ChatWorkspace
+        transportClient={transportClient}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    const vendorRenderer = await screen.findByTestId('vendor-markdown');
+    expect(vendorRenderer.getAttribute('data-markdown')).toContain(
+      '<<<CHART_V1>>>',
+    );
+    expect(
+      screen.queryByText('Assistant is working...'),
+    ).not.toBeInTheDocument();
+  });
+
   it('renders a single assistant reply after stream hydration', async () => {
     const transportClient = createTransportClient();
 
@@ -324,10 +435,40 @@ describe('ChatWorkspace', () => {
     expect(transportClient.getUiMessages).toHaveBeenCalledWith('conv-1', 100);
   });
 
+  it('does not rehydrate when the streamed finish payload already contains chart markdown', async () => {
+    const transportClient = createTransportClient();
+
+    render(
+      <ChatWorkspace
+        transportClient={transportClient}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    const textarea = await screen.findByPlaceholderText('Message the agent...');
+    fireEvent.change(textarea, {
+      target: { value: '__ARTIFACT_ONLY_STREAM__ show canonical chart' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
+
+    const vendorRenderer = await screen.findByTestId('vendor-markdown');
+    expect(vendorRenderer.getAttribute('data-markdown')).toContain(
+      '<<<CHART_V1>>>',
+    );
+    expect(transportClient.getUiMessages).not.toHaveBeenCalled();
+  });
+
   it('ignores stale hydration results so later follow-ups do not disappear', async () => {
-    const hydrate1 = deferred<{ messages: ReturnType<typeof createUiMessage>[] }>();
-    const hydrate2 = deferred<{ messages: ReturnType<typeof createUiMessage>[] }>();
-    const hydrate3 = deferred<{ messages: ReturnType<typeof createUiMessage>[] }>();
+    const hydrate1 = deferred<{
+      messages: ReturnType<typeof createUiMessage>[];
+    }>();
+    const hydrate2 = deferred<{
+      messages: ReturnType<typeof createUiMessage>[];
+    }>();
+    const hydrate3 = deferred<{
+      messages: ReturnType<typeof createUiMessage>[];
+    }>();
 
     const transportClient = createTransportClient();
     vi.mocked(transportClient.getUiMessages)
@@ -345,7 +486,9 @@ describe('ChatWorkspace', () => {
 
     const textarea = await screen.findByPlaceholderText('Message the agent...');
 
-    fireEvent.change(textarea, { target: { value: 'Mean reversion on S&P 500 sectors' } });
+    fireEvent.change(textarea, {
+      target: { value: 'Mean reversion on S&P 500 sectors' },
+    });
     fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
     await screen.findByText('hello back');
     await screen.findAllByText('Mean reversion on S&P 500 sectors');
@@ -360,12 +503,42 @@ describe('ChatWorkspace', () => {
 
     hydrate3.resolve({
       messages: [
-        createUiMessage('u1', 'user', 'Mean reversion on S&P 500 sectors', '2026-04-11T00:00:00.000Z'),
-        createUiMessage('a1', 'assistant', 'hello back', '2026-04-11T00:00:01.000Z'),
-        createUiMessage('u2', 'user', 'follow up one', '2026-04-11T00:00:02.000Z'),
-        createUiMessage('a2', 'assistant', 'hello back', '2026-04-11T00:00:03.000Z'),
-        createUiMessage('u3', 'user', 'follow up two', '2026-04-11T00:00:04.000Z'),
-        createUiMessage('a3', 'assistant', 'hello back', '2026-04-11T00:00:05.000Z'),
+        createUiMessage(
+          'u1',
+          'user',
+          'Mean reversion on S&P 500 sectors',
+          '2026-04-11T00:00:00.000Z',
+        ),
+        createUiMessage(
+          'a1',
+          'assistant',
+          'hello back',
+          '2026-04-11T00:00:01.000Z',
+        ),
+        createUiMessage(
+          'u2',
+          'user',
+          'follow up one',
+          '2026-04-11T00:00:02.000Z',
+        ),
+        createUiMessage(
+          'a2',
+          'assistant',
+          'hello back',
+          '2026-04-11T00:00:03.000Z',
+        ),
+        createUiMessage(
+          'u3',
+          'user',
+          'follow up two',
+          '2026-04-11T00:00:04.000Z',
+        ),
+        createUiMessage(
+          'a3',
+          'assistant',
+          'hello back',
+          '2026-04-11T00:00:05.000Z',
+        ),
       ],
     });
 
@@ -373,21 +546,53 @@ describe('ChatWorkspace', () => {
 
     hydrate1.resolve({
       messages: [
-        createUiMessage('u1', 'user', 'Mean reversion on S&P 500 sectors', '2026-04-11T00:00:00.000Z'),
-        createUiMessage('a1', 'assistant', 'hello back', '2026-04-11T00:00:01.000Z'),
+        createUiMessage(
+          'u1',
+          'user',
+          'Mean reversion on S&P 500 sectors',
+          '2026-04-11T00:00:00.000Z',
+        ),
+        createUiMessage(
+          'a1',
+          'assistant',
+          'hello back',
+          '2026-04-11T00:00:01.000Z',
+        ),
       ],
     });
     hydrate2.resolve({
       messages: [
-        createUiMessage('u1', 'user', 'Mean reversion on S&P 500 sectors', '2026-04-11T00:00:00.000Z'),
-        createUiMessage('a1', 'assistant', 'hello back', '2026-04-11T00:00:01.000Z'),
-        createUiMessage('u2', 'user', 'follow up one', '2026-04-11T00:00:02.000Z'),
-        createUiMessage('a2', 'assistant', 'hello back', '2026-04-11T00:00:03.000Z'),
+        createUiMessage(
+          'u1',
+          'user',
+          'Mean reversion on S&P 500 sectors',
+          '2026-04-11T00:00:00.000Z',
+        ),
+        createUiMessage(
+          'a1',
+          'assistant',
+          'hello back',
+          '2026-04-11T00:00:01.000Z',
+        ),
+        createUiMessage(
+          'u2',
+          'user',
+          'follow up one',
+          '2026-04-11T00:00:02.000Z',
+        ),
+        createUiMessage(
+          'a2',
+          'assistant',
+          'hello back',
+          '2026-04-11T00:00:03.000Z',
+        ),
       ],
     });
 
     await waitFor(() => {
-      expect(screen.getAllByText('Mean reversion on S&P 500 sectors').length).toBeGreaterThan(0);
+      expect(
+        screen.getAllByText('Mean reversion on S&P 500 sectors').length,
+      ).toBeGreaterThan(0);
       expect(screen.getAllByText('follow up one').length).toBeGreaterThan(0);
       expect(screen.getAllByText('follow up two').length).toBeGreaterThan(0);
     });
@@ -464,14 +669,30 @@ describe('ChatWorkspace', () => {
   it('preserves distinct assistant turns even when adjacent hydrated content matches', async () => {
     const transportClient = createTransportClient();
     vi.mocked(transportClient.listConversations).mockResolvedValueOnce({
-      conversations: [{ conversationId: 'conv-1', title: 'Test', updatedAt: '2026-04-11T00:00:05.000Z' }],
+      conversations: [
+        {
+          conversationId: 'conv-1',
+          title: 'Test',
+          updatedAt: '2026-04-11T00:00:05.000Z',
+        },
+      ],
     });
     vi.mocked(transportClient.getUiMessages).mockResolvedValueOnce({
       messages: [
         createUiMessage('u1', 'user', 'q1', '2026-04-11T00:00:00.000Z'),
-        createUiMessage('a1', 'assistant', 'same answer', '2026-04-11T00:00:01.000Z'),
+        createUiMessage(
+          'a1',
+          'assistant',
+          'same answer',
+          '2026-04-11T00:00:01.000Z',
+        ),
         createUiMessage('u2', 'user', 'q2', '2026-04-11T00:00:02.000Z'),
-        createUiMessage('a2', 'assistant', 'same answer', '2026-04-11T00:00:03.000Z'),
+        createUiMessage(
+          'a2',
+          'assistant',
+          'same answer',
+          '2026-04-11T00:00:03.000Z',
+        ),
       ],
     });
 
@@ -532,7 +753,9 @@ describe('ChatWorkspace', () => {
     await screen.findByText('Initial BTC momentum setup?');
 
     const textarea = await screen.findByPlaceholderText('Message the agent...');
-    fireEvent.change(textarea, { target: { value: 'Any risk controls for chop?' } });
+    fireEvent.change(textarea, {
+      target: { value: 'Any risk controls for chop?' },
+    });
     fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
 
     await waitFor(() => {
@@ -540,7 +763,9 @@ describe('ChatWorkspace', () => {
         screen.getByText('Use a 20-day SMA for the base signal.'),
       ).toBeInTheDocument();
       expect(screen.getByText('hello back')).toBeInTheDocument();
-      expect(screen.getAllByText('Any risk controls for chop?').length).toBeGreaterThan(0);
+      expect(
+        screen.getAllByText('Any risk controls for chop?').length,
+      ).toBeGreaterThan(0);
     });
   });
 

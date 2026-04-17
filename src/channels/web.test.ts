@@ -19,12 +19,17 @@ vi.mock('../db.js', () => ({
   getSessionsByChannel: vi.fn().mockReturnValue([]),
   getMessageHistory: vi.fn().mockReturnValue([]),
   getReplayLinkById: vi.fn(),
+  setMessageUiMessageJson: vi.fn(),
   storeMessage: vi.fn(),
   storeChatMetadata: vi.fn(),
 }));
 
 import { WebChannel } from './web.js';
-import { getMessageHistory, getReplayLinkById } from '../db.js';
+import {
+  getMessageHistory,
+  getReplayLinkById,
+  setMessageUiMessageJson,
+} from '../db.js';
 import type {
   OnInboundMessage,
   OnChatMetadata,
@@ -33,6 +38,7 @@ import type {
 
 const mockedGetMessageHistory = vi.mocked(getMessageHistory);
 const mockedGetReplayLinkById = vi.mocked(getReplayLinkById);
+const mockedSetMessageUiMessageJson = vi.mocked(setMessageUiMessageJson);
 
 function makeOpts(
   overrides: Partial<{
@@ -69,6 +75,7 @@ describe('WebChannel', () => {
   beforeEach(async () => {
     mockedGetMessageHistory.mockReset().mockReturnValue([]);
     mockedGetReplayLinkById.mockReset();
+    mockedSetMessageUiMessageJson.mockReset();
     channel = new WebChannel(0, makeOpts());
     await channel.connect();
     port = channel.getPort();
@@ -133,6 +140,36 @@ describe('WebChannel', () => {
     const body = (await res.json()) as any;
     expect(body.replayId).toBe('rpl_123');
     expect(body.messages[0].id).toBe('assistant-1');
+  });
+
+  it('GET /replays/:id/ui-messages does not backfill canonical projections', async () => {
+    mockedGetReplayLinkById.mockReturnValueOnce({
+      replayId: 'rpl_no_write',
+      channelId: 'slack:C123',
+      threadId: 'thread-1',
+      agentName: 'main',
+      createdAt: '2026-04-15T00:00:00.000Z',
+    });
+    mockedGetMessageHistory.mockReturnValueOnce([
+      {
+        id: 'assistant-1',
+        chat_jid: 'slack:C123',
+        thread_id: 'thread-1',
+        sender: 'Devbox',
+        sender_name: 'Devbox',
+        content: 'hello replay',
+        timestamp: '2026-04-15T00:00:01.000Z',
+        is_bot_message: true,
+      },
+    ]);
+
+    const res = await fetch(
+      `http://localhost:${port}/api/devbox/replays/rpl_no_write/ui-messages`,
+      { method: 'GET' },
+    );
+
+    expect(res.status).toBe(200);
+    expect(mockedSetMessageUiMessageJson).not.toHaveBeenCalled();
   });
 
   it('GET /replays/:id/ui-messages dedupes adjacent assistant echo copies', async () => {
@@ -269,6 +306,104 @@ describe('WebChannel', () => {
     expect(body).toContain('"type":"text-delta"');
     expect(body).toContain('hello back');
     expect(onMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it('POST /chat streams markdown text for chart replies', async () => {
+    mockedGetMessageHistory.mockReturnValueOnce([]).mockReturnValueOnce([
+      {
+        id: 'assistant-1',
+        chat_jid: 'web:user1',
+        thread_id: 'conv-1',
+        sender: 'Devbox',
+        sender_name: 'Devbox',
+        content:
+          'Visible answer\n<<<CHART_V1>>>{\"series\":[]}\n<<<END_CHART_V1>>>',
+        timestamp: '2026-04-15T00:00:01.000Z',
+        is_bot_message: true,
+      },
+    ] as any);
+
+    const onMessage = vi.fn(() => {
+      queueMicrotask(() => {
+        void channel.sendMessage(
+          'web:user1',
+          'Visible answer\n<<<CHART_V1>>>{\"series\":[]}\n<<<END_CHART_V1>>>',
+          {
+            threadId: 'conv-1',
+          },
+        );
+        void channel.setTyping?.('web:user1', 'success', {
+          threadId: 'conv-1',
+        });
+      });
+    });
+
+    await channel.disconnect();
+    channel = new WebChannel(0, makeOpts({ onMessage }));
+    await channel.connect();
+    port = channel.getPort();
+
+    const res = await fetch(`http://localhost:${port}/api/devbox/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-User-Id': 'user1' },
+      body: JSON.stringify({
+        id: 'conv-1',
+        message: {
+          id: 'u1',
+          role: 'user',
+          parts: [{ type: 'text', text: 'show me a chart' }],
+        },
+      }),
+    });
+
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('"type":"text-delta"');
+    expect(body).toContain('Visible answer');
+    expect(body).toContain('<<<CHART_V1>>>');
+  });
+
+  it('POST /chat preserves markdown text for direct web sends without a stored assistant row', async () => {
+    mockedGetMessageHistory.mockReturnValue([]);
+
+    const onMessage = vi.fn(() => {
+      queueMicrotask(() => {
+        void channel.sendMessage(
+          'web:user1',
+          'Visible answer\n<<<CHART_V1>>>{\"series\":[]}\n<<<END_CHART_V1>>>',
+          {
+            threadId: 'conv-1',
+          },
+        );
+        void channel.setTyping?.('web:user1', 'success', {
+          threadId: 'conv-1',
+        });
+      });
+    });
+
+    await channel.disconnect();
+    channel = new WebChannel(0, makeOpts({ onMessage }));
+    await channel.connect();
+    port = channel.getPort();
+
+    const res = await fetch(`http://localhost:${port}/api/devbox/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-User-Id': 'user1' },
+      body: JSON.stringify({
+        id: 'conv-1',
+        message: {
+          id: 'u1',
+          role: 'user',
+          parts: [{ type: 'text', text: 'show me a chart' }],
+        },
+      }),
+    });
+
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('"type":"text-delta"');
+    expect(body).toContain('Visible answer');
+    expect(body).toContain('<<<CHART_V1>>>');
   });
 
   it('POST /chat accepts last-message-only submit bodies', async () => {
@@ -451,7 +586,7 @@ describe('WebChannel', () => {
     );
   });
 
-  it('GET /conversations/:id/ui-messages preserves structured artifact blocks for web rendering', async () => {
+  it('GET /conversations/:id/ui-messages keeps structured blocks inside markdown text', async () => {
     mockedGetMessageHistory.mockReturnValueOnce([
       {
         id: 'm1',
@@ -476,8 +611,13 @@ describe('WebChannel', () => {
 
     expect(res.status).toBe(200);
     const body = (await res.json()) as any;
-    expect(body.messages[0].parts[0].text).toContain('Visible answer');
-    expect(body.messages[0].parts[0].text).toContain('<<<CHART_V1>>>');
+    expect(body.messages[0].parts).toEqual([
+      {
+        type: 'text',
+        text: 'Visible answer\n<<<CHART_V1>>>{\"series\":[]}\n<<<END_CHART_V1>>>',
+        state: 'done',
+      },
+    ]);
   });
 
   it('GET /conversations/:id/ui-messages prefers stored UI projection when present', async () => {
@@ -515,6 +655,36 @@ describe('WebChannel', () => {
     expect(res.status).toBe(200);
     const body = (await res.json()) as any;
     expect(body.messages[0].parts[0].text).toBe('projected answer');
+  });
+
+  it('GET /conversations/:id/ui-messages lazily backfills missing ui_message_json', async () => {
+    mockedGetMessageHistory.mockReturnValueOnce([
+      {
+        id: 'm1',
+        chat_jid: 'web:user1',
+        thread_id: 'conv-1',
+        sender: 'agent',
+        sender_name: 'Agent',
+        content: 'legacy answer',
+        timestamp: '2024-03-01T10:00:00.000Z',
+        is_bot_message: true,
+      },
+    ] as any);
+
+    const res = await fetch(
+      `http://localhost:${port}/api/devbox/conversations/conv-1/ui-messages`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', 'X-User-Id': 'user1' },
+      },
+    );
+
+    expect(res.status).toBe(200);
+    expect(mockedSetMessageUiMessageJson).toHaveBeenCalledWith(
+      'web:user1',
+      'm1',
+      expect.stringContaining('"legacy answer"'),
+    );
   });
 
   it('sendMessage is a no-op without an active AI SDK stream', async () => {

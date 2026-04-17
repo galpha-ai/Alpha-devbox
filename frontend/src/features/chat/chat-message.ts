@@ -13,5 +13,5 @@ export function getChatMessageText(message: ChatTranscriptMessage) {
         part.type === 'text',
     )
     .map((part) => part.text)
-    .join('');
+    .join('\n\n');
 }

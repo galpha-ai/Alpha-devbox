@@ -248,8 +248,7 @@ export function ChatWorkspace({
 
   useEffect(() => {
     endRef.current?.scrollIntoView({
-      behavior:
-        activeConversation?.status === 'processing' ? 'auto' : 'smooth',
+      behavior: activeConversation?.status === 'processing' ? 'auto' : 'smooth',
     });
   }, [activeConversation?.messages, activeConversation?.status]);
 
@@ -447,8 +446,9 @@ export function ChatWorkspace({
     }
   };
 
-  const isRequestInFlight =
-    conversations.some((conversation) => conversation.status === 'processing');
+  const isRequestInFlight = conversations.some(
+    (conversation) => conversation.status === 'processing',
+  );
   const isHydratingConversation = Boolean(
     activeConversationId && activeConversation?.hydrated === false,
   );
@@ -765,7 +765,7 @@ function ConversationSession({
         };
       });
 
-      if (!hasAssistantText(finishedMessages)) {
+      if (!hasRenderableAssistantContent(finishedMessages)) {
         void loadConversationMessages(conversation.conversationId);
       }
     },
@@ -821,7 +821,9 @@ function ConversationSession({
     [chatStatus, conversation, liveMessages],
   );
 
-  return <ConversationThread conversation={conversationView} onRetry={onRetry} />;
+  return (
+    <ConversationThread conversation={conversationView} onRetry={onRetry} />
+  );
 }
 
 function ConversationThread({
@@ -859,7 +861,7 @@ function ConversationThread({
         )}
 
         {conversation.status === 'error' &&
-          !hasAssistantText(conversation.messages) && (
+          !hasRenderableAssistantContent(conversation.messages) && (
             <div className="rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-4 text-sm text-destructive">
               <div className="font-medium">
                 {mapConversationErrorTitle(conversation.errorCode)}
@@ -948,17 +950,8 @@ function mergeBootstrapConversations(
   return [...mergedCurrent, ...bootstrappedById.values()];
 }
 
-function resolveHydratedChatStatus(
-  messages: ChatMessage[],
-): ChatPanelStatus {
-  if (
-    messages.some(
-      (message) =>
-        message.role === 'assistant' &&
-        (Boolean(message.metadata?.artifact) ||
-          Boolean(getChatMessageText(message).trim())),
-    )
-  ) {
+function resolveHydratedChatStatus(messages: ChatMessage[]): ChatPanelStatus {
+  if (hasRenderableAssistantContent(messages)) {
     return 'complete';
   }
 
@@ -990,7 +983,7 @@ function trimTitle(value: string) {
   return value.length > 48 ? `${value.slice(0, 48)}...` : value;
 }
 
-function hasAssistantText(messages: ChatMessage[]) {
+function hasRenderableAssistantContent(messages: ChatMessage[]) {
   return messages.some(
     (message) =>
       message.role === 'assistant' && getChatMessageText(message).trim(),

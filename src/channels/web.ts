@@ -12,12 +12,14 @@ import { MAX_CONCURRENT_CONTAINERS } from '../config.js';
 import {
   getMessageHistory,
   getReplayLinkById,
+  setMessageUiMessageJson,
   getSessionsByChannel,
 } from '../db.js';
 import { logger } from '../logger.js';
 import {
   buildCanonicalChatMessage,
   type CanonicalChatMessage,
+  stringifyUiMessageProjection,
 } from '../ui-message.js';
 import { makeSessionScopeKey } from '../session-scope.js';
 import {
@@ -208,7 +210,9 @@ export class WebChannel implements Channel {
           includeThreadParent: true,
         },
       );
-      const messages = canonicalizeChatMessages(rawMessages);
+      const messages = canonicalizeChatMessages(
+        this.upgradeLegacyUiMessages(rawMessages, false),
+      );
       this.jsonResponse(res, 200, {
         replayId,
         derivedAt: new Date().toISOString(),
@@ -368,7 +372,9 @@ export class WebChannel implements Channel {
           before,
           limit,
         });
-        const messages = canonicalizeChatMessages(rawMessages);
+        const messages = canonicalizeChatMessages(
+          this.upgradeLegacyUiMessages(rawMessages, true),
+        );
         this.jsonResponse(res, 200, { messages, derivedAt });
         return;
       }
@@ -705,6 +711,22 @@ export class WebChannel implements Channel {
         }
       });
       req.on('error', reject);
+    });
+  }
+
+  private upgradeLegacyUiMessages(messages: NewMessage[], persist: boolean) {
+    return messages.map((message) => {
+      const canonical = buildCanonicalChatMessage(message);
+      const uiMessageJson = stringifyUiMessageProjection(canonical);
+
+      if (persist && message.ui_message_json !== uiMessageJson) {
+        setMessageUiMessageJson(message.chat_jid, message.id, uiMessageJson);
+      }
+
+      return {
+        ...message,
+        ui_message_json: uiMessageJson,
+      };
     });
   }
 }

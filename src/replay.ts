@@ -68,6 +68,8 @@ export function isReplayWorthyContent(text: string): boolean {
   if (/```[\s\S]*?```/m.test(trimmed)) return true;
   if (/```mermaid/i.test(trimmed)) return true;
   if (/<<<CHART_V1>>>[\s\S]*?<<<END_CHART_V1>>>/m.test(trimmed)) return true;
+  if (/<<<THESIS_REPORT_V1>>>[\s\S]*?<<<END_THESIS_REPORT_V1>>>/m.test(trimmed))
+    return true;
   if (/^\s{0,3}#{1,6}\s/m.test(trimmed)) return true;
   if (
     /\|[^\n]+\|\n\|(?:\s*:?-+:?\s*\|){2,}/m.test(trimmed) ||

@@ -510,6 +510,16 @@ export function storeMessageDirect(msg: {
   );
 }
 
+export function setMessageUiMessageJson(
+  chatJid: string,
+  messageId: string,
+  uiMessageJson: string,
+): void {
+  db.prepare(
+    `UPDATE messages SET ui_message_json = ? WHERE chat_jid = ? AND id = ?`,
+  ).run(uiMessageJson, chatJid, messageId);
+}
+
 function ensureUiMessageJson(
   msg: Pick<
     NewMessage,

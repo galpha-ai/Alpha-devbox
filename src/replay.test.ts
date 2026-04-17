@@ -51,6 +51,11 @@ describe('replay helpers', () => {
       ),
     ).toBe(true);
     expect(
+      isReplayWorthyContent(
+        'Visible answer\n<<<CHART_V1>>>{\"series\":[]}\n<<<END_CHART_V1>>>',
+      ),
+    ).toBe(true);
+    expect(
       isReplayWorthyContent('Short answer without structure or chart hints.'),
     ).toBe(false);
   });
