@@ -3,6 +3,8 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useState } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+const heldSendControllers = new Map<string, () => void>();
+
 vi.mock('@ai-sdk/react', async () => {
   const React = await import('react');
 
@@ -37,6 +39,9 @@ vi.mock('@ai-sdk/react', async () => {
 
       const sendMessage = vi.fn(async ({ text }: { text: string }) => {
         const seq = ++messageCounterRef.current;
+        const holdKey =
+          text.match(/__HOLD_STREAM__:(?<key>[A-Za-z0-9_-]+)/)?.groups?.key ??
+          null;
         const userMessage = {
           id: `local-u${seq}`,
           role: 'user',
@@ -89,6 +94,16 @@ vi.mock('@ai-sdk/react', async () => {
           messagesAfterAssistant = [...current, assistantMessage];
           return messagesAfterAssistant;
         });
+
+        if (holdKey) {
+          await new Promise<void>((resolve) => {
+            heldSendControllers.set(holdKey, () => {
+              heldSendControllers.delete(holdKey);
+              resolve();
+            });
+          });
+        }
+
         setStatus('ready');
         await Promise.resolve();
 
@@ -167,9 +182,14 @@ import { ChatWorkspace } from './ChatWorkspace';
 import type { ChatTransportClient } from './transport';
 
 function createTransportClient(): ChatTransportClient {
+  let createdConversationCount = 0;
+
   return {
     chatTransport: {} as ChatTransportClient['chatTransport'],
-    createConversation: vi.fn(async () => ({ conversationId: 'conv-1' })) as any,
+    createConversation: vi.fn(async () => {
+      createdConversationCount += 1;
+      return { conversationId: `conv-${createdConversationCount}` };
+    }) as any,
     listConversations: vi.fn(async () => ({ conversations: [] })) as any,
     getUiMessages: vi.fn(async () => ({
       messages: [
@@ -271,9 +291,19 @@ function deferred<T>() {
   return { promise, resolve };
 }
 
+function releaseHeldSend(key: string) {
+  const release = heldSendControllers.get(key);
+  if (!release) {
+    throw new Error(`No held send registered for key "${key}"`);
+  }
+
+  release();
+}
+
 describe('ChatWorkspace', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    heldSendControllers.clear();
   });
 
   it('renders the official speech input control', async () => {
@@ -883,6 +913,218 @@ describe('ChatWorkspace', () => {
 
     expect(screen.queryByText('hello')).not.toBeInTheDocument();
     expect(transportClient.getUiMessages).not.toHaveBeenCalled();
+  });
+
+  it('keeps the root workspace interactive while conversations are still bootstrapping', async () => {
+    const bootstrap = deferred<{
+      conversations: {
+        conversationId: string;
+        title: string;
+        updatedAt: string;
+      }[];
+    }>();
+    const transportClient = createTransportClient();
+    vi.mocked(transportClient.listConversations).mockImplementationOnce(
+      async () => bootstrap.promise,
+    );
+
+    render(
+      <ChatWorkspace
+        transportClient={transportClient}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    expect(await screen.findByText('Starter Prompts')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Restoring conversations...'),
+    ).not.toBeInTheDocument();
+
+    const textarea = await screen.findByPlaceholderText('Message the agent...');
+    fireEvent.change(textarea, { target: { value: 'hello during bootstrap' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
+
+    await waitFor(() => {
+      expect(transportClient.createConversation).toHaveBeenCalledTimes(1);
+    });
+
+    bootstrap.resolve({ conversations: [] });
+    await screen.findByText('hello back');
+  });
+
+  it('allows starting a new conversation while another one is still streaming', async () => {
+    const transportClient = createTransportClient();
+
+    render(
+      <ChatWorkspace
+        transportClient={transportClient}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    const textarea = await screen.findByPlaceholderText('Message the agent...');
+    fireEvent.change(textarea, {
+      target: { value: '__HOLD_STREAM__:first first prompt' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
+
+    await screen.findAllByText('__HOLD_STREAM__:first first prompt');
+
+    const newChatButton = screen.getByRole('button', { name: 'New Chat' });
+    expect(newChatButton).not.toBeDisabled();
+    fireEvent.click(newChatButton);
+
+    expect(screen.getByText('Starter Prompts')).toBeInTheDocument();
+
+    const draftTextarea = await screen.findByPlaceholderText(
+      'Message the agent...',
+    );
+    fireEvent.change(draftTextarea, { target: { value: 'second prompt' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
+
+    await waitFor(() => {
+      expect(transportClient.createConversation).toHaveBeenCalledTimes(2);
+    });
+
+    await act(async () => {
+      releaseHeldSend('first');
+    });
+    await screen.findByText('hello back');
+  });
+
+  it('allows switching to another conversation while the current one is still streaming', async () => {
+    const transportClient = createTransportClient();
+    vi.mocked(transportClient.listConversations).mockResolvedValueOnce({
+      conversations: [
+        {
+          conversationId: 'conv-1',
+          title: 'First',
+          updatedAt: '2026-04-11T00:00:01.000Z',
+        },
+        {
+          conversationId: 'conv-2',
+          title: 'Second',
+          updatedAt: '2026-04-11T00:00:02.000Z',
+        },
+      ],
+    });
+    vi.mocked(transportClient.getUiMessages).mockImplementation(
+      async (conversationId: string) => ({
+        messages:
+          conversationId === 'conv-2'
+            ? [
+                createUiMessage(
+                  'u2',
+                  'user',
+                  'second conversation prompt',
+                  '2026-04-11T00:00:03.000Z',
+                ),
+                createUiMessage(
+                  'a2',
+                  'assistant',
+                  'second conversation answer',
+                  '2026-04-11T00:00:04.000Z',
+                ),
+              ]
+            : [
+                createUiMessage(
+                  'u1',
+                  'user',
+                  'first conversation prompt',
+                  '2026-04-11T00:00:00.000Z',
+                ),
+                createUiMessage(
+                  'a1',
+                  'assistant',
+                  'first conversation answer',
+                  '2026-04-11T00:00:01.000Z',
+                ),
+              ],
+      }),
+    );
+
+    render(
+      <ChatWorkspace
+        transportClient={transportClient}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    await screen.findByText('first conversation prompt');
+
+    const textarea = await screen.findByPlaceholderText('Message the agent...');
+    fireEvent.change(textarea, {
+      target: { value: '__HOLD_STREAM__:switch follow up' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
+
+    await screen.findByText('__HOLD_STREAM__:switch follow up');
+
+    const secondConversationButton = screen.getByRole('button', {
+      name: 'Second',
+    });
+    expect(secondConversationButton).not.toBeDisabled();
+    fireEvent.click(secondConversationButton);
+
+    await screen.findByText('second conversation prompt');
+    await screen.findByText('second conversation answer');
+
+    await act(async () => {
+      releaseHeldSend('switch');
+    });
+  });
+
+  it('allows deleting an idle conversation while another one is still streaming', async () => {
+    const transportClient = createTransportClient();
+    vi.mocked(transportClient.listConversations).mockResolvedValueOnce({
+      conversations: [
+        {
+          conversationId: 'conv-1',
+          title: 'First',
+          updatedAt: '2026-04-11T00:00:01.000Z',
+        },
+        {
+          conversationId: 'conv-2',
+          title: 'Second',
+          updatedAt: '2026-04-11T00:00:02.000Z',
+        },
+      ],
+    });
+
+    render(
+      <ChatWorkspace
+        transportClient={transportClient}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    await screen.findByText('hello');
+
+    const textarea = await screen.findByPlaceholderText('Message the agent...');
+    fireEvent.change(textarea, {
+      target: { value: '__HOLD_STREAM__:delete keep streaming' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
+
+    await screen.findByText('__HOLD_STREAM__:delete keep streaming');
+
+    const deleteSecondButton = screen.getByRole('button', {
+      name: 'Delete Second',
+    });
+    expect(deleteSecondButton).not.toBeDisabled();
+    fireEvent.click(deleteSecondButton);
+
+    await waitFor(() => {
+      expect(transportClient.deleteConversation).toHaveBeenCalledWith('conv-2');
+    });
+
+    await act(async () => {
+      releaseHeldSend('delete');
+    });
   });
 
   it('notifies the host when a new conversation id is created', async () => {

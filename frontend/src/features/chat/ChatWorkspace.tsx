@@ -322,22 +322,23 @@ export function ChatWorkspace({
   }, [activeConversationId, conversations, loadConversationMessages]);
 
   const handleCreateConversation = useCallback(() => {
-    if (
-      conversations.some((conversation) => conversation.status === 'processing')
-    ) {
-      return;
-    }
-
     setActiveConversationId('');
     setInput('');
     setShellError(null);
     if (isMobileViewport) {
       setSidebarOpen(false);
     }
-  }, [conversations, isMobileViewport, setActiveConversationId]);
+  }, [isMobileViewport, setActiveConversationId]);
 
   const handleDeleteConversation = useCallback(
     async (conversationId: string) => {
+      const targetConversation = conversations.find(
+        (conversation) => conversation.conversationId === conversationId,
+      );
+      if (targetConversation?.status === 'processing') {
+        return;
+      }
+
       try {
         await transportClient.deleteConversation(conversationId);
         setConversations((current) => {
@@ -359,7 +360,7 @@ export function ChatWorkspace({
         handleShellError(error, onSessionExpired, setShellError);
       }
     },
-    [onSessionExpired, setActiveConversationId, transportClient],
+    [conversations, onSessionExpired, setActiveConversationId, transportClient],
   );
 
   const handleSubmit = useCallback(
@@ -427,6 +428,13 @@ export function ChatWorkspace({
     }
     return activeConversation;
   }, [activeConversation]);
+  const getPendingPromptForConversation = useCallback(
+    (conversationId: string) =>
+      pendingSubmitRef.current?.conversationId === conversationId
+        ? pendingSubmitRef.current.prompt
+        : null,
+    [],
+  );
 
   const handleRetry = useCallback(() => {
     const lastUserMessage = [...activeConversationView.messages]
@@ -447,23 +455,58 @@ export function ChatWorkspace({
     }
   };
 
-  const isRequestInFlight = conversations.some(
-    (conversation) => conversation.status === 'processing',
+  const activeConversationIsProcessing =
+    activeConversationView.status === 'processing';
+  const hasBackgroundProcessingConversations = conversations.some(
+    (conversation) =>
+      conversation.status === 'processing' &&
+      conversation.conversationId !== activeConversationView.conversationId,
   );
   const isHydratingConversation = Boolean(
     activeConversationId && activeConversation?.hydrated === false,
   );
   const canSend =
     input.trim().length > 0 &&
-    !isRequestInFlight &&
-    !isBootstrapping &&
+    !activeConversationIsProcessing &&
     !isHydratingConversation;
   const isStarterState =
+    !activeConversationId &&
     activeConversationView.messages.length === 0 &&
     activeConversationView.status !== 'processing';
+  const showConversationRestoreState =
+    Boolean(activeConversationId) &&
+    isHydratingConversation &&
+    activeConversationView.messages.length === 0;
+  const showBootstrapNotice = isBootstrapping && !activeConversationId;
+  const runtimeConversationIds = new Set<string>();
+  if (
+    activeConversationView.conversationId &&
+    !isStarterState &&
+    !showConversationRestoreState
+  ) {
+    runtimeConversationIds.add(activeConversationView.conversationId);
+  }
+  for (const conversation of conversations) {
+    if (conversation.status === 'processing') {
+      runtimeConversationIds.add(conversation.conversationId);
+    }
+  }
+  const runtimeConversations = [...runtimeConversationIds]
+    .map((conversationId) =>
+      conversations.find(
+        (conversation) => conversation.conversationId === conversationId,
+      ),
+    )
+    .filter((conversation): conversation is ConversationState =>
+      Boolean(conversation),
+    );
   const contentMaxWidthClass = isStarterState ? 'max-w-4xl' : 'max-w-[920px]';
   const composerHint =
-    'Use the mic for speech input where supported. Enter to send. Shift+Enter for a new line.';
+    isHydratingConversation
+      ? 'This chat is still restoring. Start a new chat or switch conversations while history loads.'
+      : hasBackgroundProcessingConversations
+        ? 'Another chat is still running in the background. You can keep working here.'
+        : 'Use the mic for speech input where supported. Enter to send. Shift+Enter for a new line.';
 
   return (
     <div className="relative flex h-screen overflow-hidden bg-background text-foreground">
@@ -507,7 +550,6 @@ export function ChatWorkspace({
             <button
               type="button"
               onClick={() => void handleCreateConversation()}
-              disabled={isRequestInFlight}
               className="flex w-full items-center gap-2 rounded-lg border border-border/60 px-4 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Plus className="h-4 w-4" />
@@ -534,7 +576,6 @@ export function ChatWorkspace({
                 >
                   <button
                     type="button"
-                    disabled={isRequestInFlight}
                     onClick={() => {
                       setActiveConversationId(conversation.conversationId);
                       setShellError(null);
@@ -552,7 +593,7 @@ export function ChatWorkspace({
                   <button
                     type="button"
                     aria-label={`Delete ${conversation.title}`}
-                    disabled={isRequestInFlight}
+                    disabled={conversation.status === 'processing'}
                     onClick={() => {
                       void handleDeleteConversation(
                         conversation.conversationId,
@@ -620,57 +661,83 @@ export function ChatWorkspace({
               </div>
             )}
 
-            {isBootstrapping || isHydratingConversation ? (
-              <div className="rounded-2xl border border-border/40 bg-card/35 px-6 py-16 text-center text-sm text-muted-foreground">
-                Restoring conversations...
-              </div>
-            ) : (
-              <div className="space-y-5">
-                {isStarterState ? (
-                  <StarterPromptGrid
-                    disabled={isRequestInFlight}
-                    onSelectPrompt={(prompt, title) => {
-                      if (isMobileViewport) {
-                        setSidebarOpen(false);
-                      }
-                      void handleSubmit(prompt, title);
-                    }}
-                  />
-                ) : (
-                  <ConversationSession
-                    key={activeConversationView.conversationId || '__draft__'}
-                    conversation={activeConversationView}
-                    pendingPrompt={
-                      pendingSubmitRef.current?.conversationId ===
-                      activeConversationView.conversationId
-                        ? pendingSubmitRef.current.prompt
-                        : null
+            <div className="space-y-5">
+              {showBootstrapNotice ? (
+                <div className="rounded-2xl border border-border/40 bg-card/35 px-4 py-3 text-sm text-muted-foreground">
+                  Loading saved chats…
+                </div>
+              ) : null}
+
+              {showConversationRestoreState ? (
+                <div className="rounded-2xl border border-border/40 bg-card/35 px-6 py-16 text-center text-sm text-muted-foreground">
+                  Restoring this conversation…
+                </div>
+              ) : null}
+
+              {isStarterState ? (
+                <StarterPromptGrid
+                  disabled={false}
+                  onSelectPrompt={(prompt, title) => {
+                    if (isMobileViewport) {
+                      setSidebarOpen(false);
                     }
-                    transportClient={transportClient}
-                    onConversationUpdate={(updater) =>
-                      updateConversation(
-                        activeConversationView.conversationId,
-                        updater,
-                      )
-                    }
-                    onPromptHandled={() => {
-                      const pending = pendingSubmitRef.current;
-                      if (
-                        pending?.conversationId ===
-                        activeConversationView.conversationId
-                      ) {
-                        pendingSubmitRef.current = null;
-                      }
-                    }}
-                    onRetry={handleRetry}
-                    onError={applyConversationError}
-                    onSessionExpired={onSessionExpired}
-                    loadConversationMessages={loadConversationMessages}
-                  />
-                )}
-                <div ref={endRef} />
-              </div>
-            )}
+                    void handleSubmit(prompt, title);
+                  }}
+                />
+              ) : null}
+
+              {!isStarterState &&
+                !showConversationRestoreState &&
+                runtimeConversations.map((conversation) => {
+                  const isVisible =
+                    conversation.conversationId ===
+                    activeConversationView.conversationId;
+
+                  return (
+                    <div
+                      key={conversation.conversationId}
+                      className={isVisible ? '' : 'hidden'}
+                      aria-hidden={isVisible ? undefined : true}
+                    >
+                      <ConversationSession
+                        conversation={
+                          isVisible ? activeConversationView : conversation
+                        }
+                        pendingPrompt={getPendingPromptForConversation(
+                          conversation.conversationId,
+                        )}
+                        transportClient={transportClient}
+                        onConversationUpdate={(updater) =>
+                          updateConversation(conversation.conversationId, updater)
+                        }
+                        onPromptHandled={() => {
+                          const pending = pendingSubmitRef.current;
+                          if (
+                            pending?.conversationId ===
+                            conversation.conversationId
+                          ) {
+                            pendingSubmitRef.current = null;
+                          }
+                        }}
+                        onRetry={isVisible ? handleRetry : () => {}}
+                        onError={applyConversationError}
+                        onSessionExpired={onSessionExpired}
+                        loadConversationMessages={loadConversationMessages}
+                      />
+                    </div>
+                  );
+                })}
+
+              {!isStarterState &&
+              !showConversationRestoreState &&
+              runtimeConversations.length === 0 ? (
+                <div className="rounded-2xl border border-border/40 bg-card/35 px-6 py-16 text-center text-sm text-muted-foreground">
+                  Open a conversation or start a new chat.
+                </div>
+              ) : null}
+
+              <div ref={endRef} />
+            </div>
           </div>
         </div>
 
