@@ -14,7 +14,8 @@ import {
 } from 'lucide-react';
 
 import { StarterPromptGrid } from './StarterPromptGrid';
-import { ChatTranscript, getChatMessageText } from './ChatTranscript';
+import { ChatTranscript } from './ChatTranscript';
+import { getChatMessageText } from './chat-message';
 import { ChatTransportError, type ChatTransportClient } from './transport';
 
 const MOBILE_BREAKPOINT_PX = 1024;
@@ -30,6 +31,8 @@ type ChatMessage = UIMessage<ChatMessageMetadata>;
 
 interface ChatWorkspaceProps {
   transportClient: ChatTransportClient;
+  activeConversationId?: string;
+  onActiveConversationIdChange?: (conversationId: string) => void;
   onLogout: () => void | Promise<void>;
   onSessionExpired: () => void;
   sessionActionLabel?: string | null;
@@ -47,17 +50,22 @@ interface ConversationState {
 
 export function ChatWorkspace({
   transportClient,
+  activeConversationId: controlledActiveConversationId,
+  onActiveConversationIdChange,
   onLogout,
   onSessionExpired,
   sessionActionLabel = null,
 }: ChatWorkspaceProps) {
+  const isControlledActiveConversation =
+    controlledActiveConversationId !== undefined;
   const [isMobileViewport, setIsMobileViewport] = useState(() =>
     typeof window !== 'undefined'
       ? window.innerWidth < MOBILE_BREAKPOINT_PX
       : false,
   );
   const [conversations, setConversations] = useState<ConversationState[]>([]);
-  const [activeConversationId, setActiveConversationId] = useState('');
+  const [internalActiveConversationId, setInternalActiveConversationId] =
+    useState('');
   const [input, setInput] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(() =>
     typeof window !== 'undefined'
@@ -66,6 +74,8 @@ export function ChatWorkspace({
   );
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [shellError, setShellError] = useState<string | null>(null);
+  const activeConversationId =
+    controlledActiveConversationId ?? internalActiveConversationId;
   const activeConversationIdRef = useRef(activeConversationId);
   const pendingSubmitRef = useRef<{
     conversationId: string;
@@ -78,6 +88,26 @@ export function ChatWorkspace({
   useEffect(() => {
     activeConversationIdRef.current = activeConversationId;
   }, [activeConversationId]);
+
+  const setActiveConversationId = useCallback(
+    (nextConversationId: string | ((current: string) => string)) => {
+      const resolvedConversationId =
+        typeof nextConversationId === 'function'
+          ? nextConversationId(activeConversationIdRef.current)
+          : nextConversationId;
+
+      if (resolvedConversationId === activeConversationIdRef.current) {
+        return;
+      }
+
+      if (!isControlledActiveConversation) {
+        setInternalActiveConversationId(resolvedConversationId);
+      }
+
+      onActiveConversationIdChange?.(resolvedConversationId);
+    },
+    [isControlledActiveConversation, onActiveConversationIdChange],
+  );
 
   const activeConversation = useMemo(
     () =>
@@ -182,152 +212,6 @@ export function ChatWorkspace({
     [applyConversationError, replaceConversationMessages, transportClient],
   );
 
-  const {
-    messages: liveMessages,
-    setMessages: setLiveMessages,
-    sendMessage,
-    status: chatStatus,
-    clearError,
-  } = useChat<ChatMessage>({
-    id: activeConversationId || '__draft__',
-    messages: activeConversation?.messages ?? [],
-    transport: transportClient.chatTransport,
-    experimental_throttle: CHAT_UPDATE_THROTTLE_MS,
-    onFinish: ({ messages, isAbort, isDisconnect, isError }) => {
-      const conversationId = activeConversationIdRef.current;
-      if (!conversationId || isAbort || isDisconnect || isError) {
-        return;
-      }
-
-      const finishedMessages = Array.isArray(messages)
-        ? normalizeChatMessages(messages as ChatMessage[])
-        : [];
-
-      updateConversation(conversationId, (current) => {
-        const nextMessages =
-          finishedMessages.length > 0 ? finishedMessages : current.messages;
-
-        return {
-          ...current,
-          title: deriveConversationTitle(
-            trimTitle(current.title),
-            toConversationTitleMessages(nextMessages),
-            conversationId,
-          ),
-          messages: nextMessages,
-          status: resolveHydratedChatStatus(nextMessages),
-          errorCode: null,
-          errorMessage: null,
-          hydrated: true,
-        };
-      });
-
-      if (!hasAssistantText(finishedMessages)) {
-        void loadConversationMessages(conversationId);
-      }
-    },
-    onError: (error) => {
-      const conversationId = activeConversationIdRef.current;
-      if (conversationId) {
-        applyConversationError(conversationId, error);
-        return;
-      }
-
-      handleShellError(error, onSessionExpired, setShellError);
-    },
-  });
-
-  const activeLiveMessages = useMemo(
-    () => normalizeChatMessages(liveMessages),
-    [liveMessages],
-  );
-
-  useEffect(() => {
-    if (!activeConversationId || !activeConversation?.hydrated) {
-      return;
-    }
-
-    if (
-      chatStatus === 'submitted' ||
-      chatStatus === 'streaming' ||
-      activeConversation.status === 'processing'
-    ) {
-      return;
-    }
-
-    const hydratedMessages = normalizeChatMessages(activeConversation.messages);
-    if (
-      getChatMessagesFingerprint(hydratedMessages) ===
-      getChatMessagesFingerprint(activeLiveMessages)
-    ) {
-      return;
-    }
-
-    setLiveMessages(hydratedMessages);
-  }, [
-    activeConversation,
-    activeConversationId,
-    activeLiveMessages,
-    chatStatus,
-    setLiveMessages,
-  ]);
-
-  useEffect(() => {
-    if (
-      !activeConversationId ||
-      !activeConversation ||
-      activeConversation.status !== 'processing' ||
-      chatStatus !== 'ready'
-    ) {
-      return;
-    }
-
-    const nextMessages = normalizeChatMessages(activeLiveMessages);
-    if (
-      !nextMessages.some(
-        (message) =>
-          message.role === 'assistant' &&
-          Boolean(getChatMessageText(message).trim()),
-      )
-    ) {
-      return;
-    }
-
-    updateConversation(activeConversationId, (current) => ({
-      ...current,
-      title: deriveConversationTitle(
-        trimTitle(current.title),
-        toConversationTitleMessages(nextMessages),
-        activeConversationId,
-      ),
-      messages: nextMessages,
-      status: resolveHydratedChatStatus(nextMessages),
-      errorCode: null,
-      errorMessage: null,
-      hydrated: true,
-    }));
-  }, [
-    activeConversation,
-    activeConversationId,
-    activeLiveMessages,
-    chatStatus,
-    updateConversation,
-  ]);
-
-  useEffect(() => {
-    const pending = pendingSubmitRef.current;
-    if (!pending || pending.conversationId !== activeConversationId) {
-      return;
-    }
-
-    pendingSubmitRef.current = null;
-    clearError();
-
-    void sendMessage({ text: pending.prompt }).catch((error) => {
-      applyConversationError(pending.conversationId, error);
-    });
-  }, [activeConversationId, applyConversationError, clearError, sendMessage]);
-
   useEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) {
@@ -365,13 +249,9 @@ export function ChatWorkspace({
   useEffect(() => {
     endRef.current?.scrollIntoView({
       behavior:
-        chatStatus === 'submitted' ||
-        chatStatus === 'streaming' ||
-        activeConversation?.status === 'processing'
-          ? 'auto'
-          : 'smooth',
+        activeConversation?.status === 'processing' ? 'auto' : 'smooth',
     });
-  }, [activeConversation?.status, activeLiveMessages, chatStatus]);
+  }, [activeConversation?.messages, activeConversation?.status]);
 
   useEffect(() => {
     let cancelled = false;
@@ -396,10 +276,14 @@ export function ChatWorkspace({
             ),
           ),
         );
-        setConversations(nextConversations);
-        setActiveConversationId(
-          (current) => current || nextConversations[0]?.conversationId || '',
+        setConversations((current) =>
+          mergeBootstrapConversations(current, nextConversations),
         );
+        if (!isControlledActiveConversation) {
+          setInternalActiveConversationId(
+            (current) => current || nextConversations[0]?.conversationId || '',
+          );
+        }
       } catch (error) {
         if (!cancelled) {
           handleShellError(error, onSessionExpired, setShellError);
@@ -416,7 +300,7 @@ export function ChatWorkspace({
     return () => {
       cancelled = true;
     };
-  }, [onSessionExpired, transportClient]);
+  }, [isControlledActiveConversation, onSessionExpired, transportClient]);
 
   useEffect(() => {
     if (!activeConversationId) {
@@ -450,7 +334,7 @@ export function ChatWorkspace({
     if (isMobileViewport) {
       setSidebarOpen(false);
     }
-  }, [conversations, isMobileViewport]);
+  }, [conversations, isMobileViewport, setActiveConversationId]);
 
   const handleDeleteConversation = useCallback(
     async (conversationId: string) => {
@@ -475,7 +359,7 @@ export function ChatWorkspace({
         handleShellError(error, onSessionExpired, setShellError);
       }
     },
-    [onSessionExpired, transportClient],
+    [onSessionExpired, setActiveConversationId, transportClient],
   );
 
   const handleSubmit = useCallback(
@@ -507,7 +391,6 @@ export function ChatWorkspace({
           return;
         }
 
-        clearError();
         updateConversation(conversationId, (current) => ({
           ...current,
           title: current.title !== 'New Chat' ? current.title : fallbackTitle,
@@ -516,8 +399,7 @@ export function ChatWorkspace({
           errorCode: null,
           errorMessage: null,
         }));
-
-        await sendMessage({ text: prompt });
+        pendingSubmitRef.current = { conversationId, prompt };
       } catch (error) {
         if (conversationId) {
           applyConversationError(conversationId, error);
@@ -528,9 +410,8 @@ export function ChatWorkspace({
     },
     [
       applyConversationError,
-      clearError,
       onSessionExpired,
-      sendMessage,
+      setActiveConversationId,
       transportClient,
       updateConversation,
     ],
@@ -544,18 +425,8 @@ export function ChatWorkspace({
     if (!activeConversation) {
       return createDraftConversationState();
     }
-
-    return {
-      ...activeConversation,
-      messages: activeLiveMessages,
-      status:
-        chatStatus === 'submitted' || chatStatus === 'streaming'
-          ? 'processing'
-          : chatStatus === 'error'
-            ? 'error'
-            : activeConversation.status,
-    };
-  }, [activeConversation, activeLiveMessages, chatStatus]);
+    return activeConversation;
+  }, [activeConversation]);
 
   const handleRetry = useCallback(() => {
     const lastUserMessage = [...activeConversationView.messages]
@@ -577,8 +448,6 @@ export function ChatWorkspace({
   };
 
   const isRequestInFlight =
-    chatStatus === 'submitted' ||
-    chatStatus === 'streaming' ||
     conversations.some((conversation) => conversation.status === 'processing');
   const isHydratingConversation = Boolean(
     activeConversationId && activeConversation?.hydrated === false,
@@ -588,7 +457,9 @@ export function ChatWorkspace({
     !isRequestInFlight &&
     !isBootstrapping &&
     !isHydratingConversation;
-  const isStarterState = activeConversationView.messages.length === 0;
+  const isStarterState =
+    activeConversationView.messages.length === 0 &&
+    activeConversationView.status !== 'processing';
   const contentMaxWidthClass = isStarterState ? 'max-w-4xl' : 'max-w-[920px]';
 
   return (
@@ -763,9 +634,35 @@ export function ChatWorkspace({
                     }}
                   />
                 ) : (
-                  <ConversationThread
+                  <ConversationSession
+                    key={activeConversationView.conversationId || '__draft__'}
                     conversation={activeConversationView}
+                    pendingPrompt={
+                      pendingSubmitRef.current?.conversationId ===
+                      activeConversationView.conversationId
+                        ? pendingSubmitRef.current.prompt
+                        : null
+                    }
+                    transportClient={transportClient}
+                    onConversationUpdate={(updater) =>
+                      updateConversation(
+                        activeConversationView.conversationId,
+                        updater,
+                      )
+                    }
+                    onPromptHandled={() => {
+                      const pending = pendingSubmitRef.current;
+                      if (
+                        pending?.conversationId ===
+                        activeConversationView.conversationId
+                      ) {
+                        pendingSubmitRef.current = null;
+                      }
+                    }}
                     onRetry={handleRetry}
+                    onError={applyConversationError}
+                    onSessionExpired={onSessionExpired}
+                    loadConversationMessages={loadConversationMessages}
                   />
                 )}
                 <div ref={endRef} />
@@ -804,6 +701,127 @@ export function ChatWorkspace({
       </main>
     </div>
   );
+}
+
+function ConversationSession({
+  conversation,
+  pendingPrompt,
+  transportClient,
+  onConversationUpdate,
+  onPromptHandled,
+  onRetry,
+  onError,
+  onSessionExpired,
+  loadConversationMessages,
+}: {
+  conversation: ConversationState;
+  pendingPrompt: string | null;
+  transportClient: ChatTransportClient;
+  onConversationUpdate: (
+    updater: (current: ConversationState) => ConversationState,
+  ) => void;
+  onPromptHandled: () => void;
+  onRetry: () => void;
+  onError: (conversationId: string, error: unknown) => void;
+  onSessionExpired: () => void;
+  loadConversationMessages: (conversationId: string) => Promise<void>;
+}) {
+  const lastSentPromptRef = useRef<string | null>(null);
+  const {
+    messages: liveMessages,
+    sendMessage,
+    status: chatStatus,
+    clearError,
+  } = useChat<ChatMessage>({
+    id: conversation.conversationId || '__draft__',
+    messages: conversation.messages,
+    transport: transportClient.chatTransport,
+    experimental_throttle: CHAT_UPDATE_THROTTLE_MS,
+    onFinish: ({ messages, isAbort, isDisconnect, isError }) => {
+      if (isAbort || isDisconnect || isError) {
+        return;
+      }
+
+      const finishedMessages = Array.isArray(messages)
+        ? normalizeChatMessages(messages as ChatMessage[])
+        : [];
+
+      onConversationUpdate((current) => {
+        const nextMessages =
+          finishedMessages.length > 0 ? finishedMessages : current.messages;
+
+        return {
+          ...current,
+          title: deriveConversationTitle(
+            trimTitle(current.title),
+            toConversationTitleMessages(nextMessages),
+            current.conversationId,
+          ),
+          messages: nextMessages,
+          status: resolveHydratedChatStatus(nextMessages),
+          errorCode: null,
+          errorMessage: null,
+          hydrated: true,
+        };
+      });
+
+      if (!hasAssistantText(finishedMessages)) {
+        void loadConversationMessages(conversation.conversationId);
+      }
+    },
+    onError: (error) => {
+      onError(conversation.conversationId, error);
+      const normalized = normalizeWorkspaceError(error);
+      if (normalized.code === 'session_expired') {
+        onSessionExpired();
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (!pendingPrompt) {
+      lastSentPromptRef.current = null;
+      return;
+    }
+
+    if (lastSentPromptRef.current === pendingPrompt) {
+      return;
+    }
+
+    lastSentPromptRef.current = pendingPrompt;
+    onPromptHandled();
+    clearError();
+
+    void sendMessage({ text: pendingPrompt }).catch((error) => {
+      onError(conversation.conversationId, error);
+    });
+  }, [
+    clearError,
+    conversation.conversationId,
+    onError,
+    onPromptHandled,
+    pendingPrompt,
+    sendMessage,
+  ]);
+
+  const conversationView = useMemo(
+    () => ({
+      ...conversation,
+      messages: mergeConversationMessages(
+        conversation.messages,
+        normalizeChatMessages(liveMessages),
+      ),
+      status:
+        chatStatus === 'submitted' || chatStatus === 'streaming'
+          ? 'processing'
+          : chatStatus === 'error'
+            ? 'error'
+            : conversation.status,
+    }),
+    [chatStatus, conversation, liveMessages],
+  );
+
+  return <ConversationThread conversation={conversationView} onRetry={onRetry} />;
 }
 
 function ConversationThread({
@@ -888,6 +906,46 @@ function createDraftConversationState(): ConversationState {
     status: 'idle',
     hydrated: true,
   };
+}
+
+function mergeBootstrapConversations(
+  currentConversations: ConversationState[],
+  bootstrappedConversations: ConversationState[],
+) {
+  const bootstrappedById = new Map(
+    bootstrappedConversations.map((conversation) => [
+      conversation.conversationId,
+      conversation,
+    ]),
+  );
+
+  const mergedCurrent = currentConversations.map((conversation) => {
+    const bootstrapped = bootstrappedById.get(conversation.conversationId);
+    if (!bootstrapped) {
+      return conversation;
+    }
+
+    bootstrappedById.delete(conversation.conversationId);
+
+    if (
+      conversation.messages.length > 0 ||
+      conversation.status !== 'idle' ||
+      conversation.hydrated
+    ) {
+      return {
+        ...bootstrapped,
+        ...conversation,
+        title:
+          conversation.title === 'New Chat'
+            ? bootstrapped.title
+            : conversation.title,
+      };
+    }
+
+    return bootstrapped;
+  });
+
+  return [...mergedCurrent, ...bootstrappedById.values()];
 }
 
 function resolveHydratedChatStatus(
@@ -1036,6 +1094,23 @@ function normalizeChatMessages(messages: ChatMessage[]) {
   return messages.map(normalizeChatMessage);
 }
 
+function mergeConversationMessages(
+  canonicalMessages: ChatMessage[],
+  liveMessages: ChatMessage[],
+) {
+  const merged = new Map<string, ChatMessage>();
+
+  for (const message of normalizeChatMessages(canonicalMessages)) {
+    merged.set(message.id, message);
+  }
+
+  for (const message of liveMessages) {
+    merged.set(message.id, message);
+  }
+
+  return Array.from(merged.values());
+}
+
 function toConversationTitleMessages(messages: ChatMessage[]) {
   return messages.map((message) => ({
     role: message.role,
@@ -1048,8 +1123,6 @@ function normalizeChatMessage(message: ChatMessage): ChatMessage {
     return message;
   }
 
-  const content = sanitizeAssistantContent(getChatMessageText(message));
-
   return {
     ...message,
     role: 'assistant',
@@ -1059,34 +1132,6 @@ function normalizeChatMessage(message: ChatMessage): ChatMessage {
       senderName: message.metadata?.senderName || 'Devbox',
       timestamp: message.metadata?.timestamp || new Date().toISOString(),
     },
-    parts: content
-      ? [
-          {
-            type: 'text',
-            text: content,
-            state: 'done',
-          },
-        ]
-      : [],
+    parts: Array.isArray(message.parts) ? message.parts : [],
   };
-}
-
-function getChatMessagesFingerprint(messages: ChatMessage[]) {
-  return messages
-    .map((message) => [
-      message.role,
-      message.id,
-      getChatMessageText(message).trim(),
-    ].join(':'))
-    .join('|');
-}
-
-function sanitizeAssistantContent(content: string) {
-  return stripStructuredResponseBlocks(content).trim();
-}
-
-function stripStructuredResponseBlocks(content: string) {
-  return content
-    .replace(/<<<CHART_V1>>>[\s\S]*?<<<END_CHART_V1>>>/g, '')
-    .replace(/<<<THESIS_REPORT_V1>>>[\s\S]*?<<<END_THESIS_REPORT_V1>>>/g, '');
 }

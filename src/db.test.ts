@@ -143,6 +143,55 @@ describe('storeMessage', () => {
     expect(messages).toHaveLength(1);
     expect(messages[0].content).toBe('updated');
   });
+
+  it('preserves ui_message_json on stored messages', () => {
+    storeChatMetadata('web:user1', '2024-01-01T00:00:00.000Z');
+
+    storeMessage({
+      id: 'bot-1',
+      chat_jid: 'web:user1',
+      thread_id: 'conv-1',
+      sender: 'Devbox',
+      sender_name: 'Devbox',
+      content: 'visible answer',
+      ui_message_json: JSON.stringify({
+        id: 'bot-1',
+        role: 'assistant',
+        parts: [{ type: 'text', text: 'visible answer', state: 'done' }],
+        metadata: {
+          timestamp: '2024-01-01T00:00:01.000Z',
+          sender: 'Devbox',
+          senderName: 'Devbox',
+        },
+      }),
+      timestamp: '2024-01-01T00:00:01.000Z',
+      is_from_me: true,
+      is_bot_message: true,
+    });
+
+    const history = getMessageHistory('web:user1', 'conv-1');
+    expect(history[0].ui_message_json).toContain('"role":"assistant"');
+  });
+
+  it('auto-populates ui_message_json when callers only provide raw content', () => {
+    storeChatMetadata('web:user1', '2024-01-01T00:00:00.000Z');
+
+    storeMessage({
+      id: 'user-1',
+      chat_jid: 'web:user1',
+      thread_id: 'conv-1',
+      sender: 'user-1',
+      sender_name: 'User One',
+      content: 'hello world',
+      timestamp: '2024-01-01T00:00:01.000Z',
+      is_from_me: false,
+      is_bot_message: false,
+    });
+
+    const history = getMessageHistory('web:user1', 'conv-1');
+    expect(history[0].ui_message_json).toContain('"role":"user"');
+    expect(history[0].ui_message_json).toContain('hello world');
+  });
 });
 
 describe('replay links', () => {

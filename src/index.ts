@@ -61,6 +61,10 @@ import {
   buildReplayUrl,
   shouldSuggestReplayLink,
 } from './replay.js';
+import {
+  formatAssistantDeliveryText,
+  prepareAssistantOutput,
+} from './assistant-output.js';
 import { SessionScope } from './session-scope.js';
 import { startSchedulerLoop } from './task-scheduler.js';
 import {
@@ -539,12 +543,12 @@ export async function processSessionMessages(
           typeof result.result === 'string'
             ? result.result
             : JSON.stringify(result.result);
-        const text = raw.replace(/<internal>[\s\S]*?<\/internal>/g, '').trim();
+        const prepared = prepareAssistantOutput(raw);
         logger.info(
           { agent: agent.name },
           `Agent output: ${raw.slice(0, 200)}`,
         );
-        if (text) {
+        if (prepared.storedText) {
           const timestamp = new Date().toISOString();
           const botMessageId = `bot-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
           storeMessage({
@@ -553,19 +557,23 @@ export async function processSessionMessages(
             thread_id: scope.threadId,
             sender: ASSISTANT_NAME,
             sender_name: ASSISTANT_NAME,
-            content: text,
+            content: prepared.storedText,
             timestamp,
             is_from_me: true,
             is_bot_message: true,
           });
           const shouldAppendReplayUrl = shouldSuggestReplayLink({
             chatJid,
-            text,
+            text: prepared.storedText,
             lastSuggestedAt: replaySuggestionTimestamps.get(sessionKey),
           });
+          const deliveryText = formatAssistantDeliveryText(
+            channel.name,
+            prepared,
+          );
           const outboundText = shouldAppendReplayUrl
             ? appendReplayUrl(
-                text,
+                deliveryText,
                 buildReplayUrl(
                   getOrCreateReplayLink(
                     scope.channelId,
@@ -575,14 +583,16 @@ export async function processSessionMessages(
                   botMessageId,
                 ),
               )
-            : text;
+            : deliveryText;
           if (shouldAppendReplayUrl) {
             replaySuggestionTimestamps.set(sessionKey, Date.now());
           }
-          await channel.sendMessage(chatJid, outboundText, {
-            threadId: scope.threadId,
-          });
-          outputSentToUser = true;
+          if (outboundText) {
+            await channel.sendMessage(chatJid, outboundText, {
+              threadId: scope.threadId,
+            });
+            outputSentToUser = true;
+          }
         }
         // Only reset idle timer on actual results, not session-update markers (result: null).
         resetIdleTimer();
@@ -1262,14 +1272,18 @@ async function main(): Promise<void> {
         logger.warn({ jid }, 'No channel owns JID, cannot send message');
         return;
       }
-      const text = formatOutbound(rawText);
+      const prepared = prepareAssistantOutput(rawText);
+      const text = formatAssistantDeliveryText(channel.name, prepared);
       if (text) await channel.sendMessage(jid, text);
     },
   });
   startIpcWatcher({
-    sendMessage: (jid, text, options) => {
+    sendMessage: (jid, rawText, options) => {
       const channel = findChannel(channels, jid);
       if (!channel) throw new Error(`No channel for JID: ${jid}`);
+      const prepared = prepareAssistantOutput(rawText);
+      const text = formatAssistantDeliveryText(channel.name, prepared);
+      if (!text) return Promise.resolve();
       return channel.sendMessage(jid, text, options);
     },
     registeredAgents: () => registeredAgents,

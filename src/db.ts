@@ -7,6 +7,10 @@ import { ASSISTANT_NAME, DATA_DIR, STORE_DIR } from './config.js';
 import { isValidAgentName } from './agent-folder.js';
 import { logger } from './logger.js';
 import {
+  buildCanonicalChatMessage,
+  stringifyUiMessageProjection,
+} from './ui-message.js';
+import {
   makeSessionScopeKey,
   normalizeThreadId,
   parseSessionScopeKey,
@@ -197,6 +201,7 @@ function createSchema(database: Database.Database): void {
       sender TEXT,
       sender_name TEXT,
       content TEXT,
+      ui_message_json TEXT,
       timestamp TEXT,
       is_from_me INTEGER,
       is_bot_message INTEGER DEFAULT 0,
@@ -303,6 +308,13 @@ function createSchema(database: Database.Database): void {
   // Add thread_id column if it doesn't exist (migration for existing DBs)
   try {
     database.exec(`ALTER TABLE messages ADD COLUMN thread_id TEXT DEFAULT ''`);
+  } catch {
+    /* column already exists */
+  }
+
+  // Add ui_message_json column if it doesn't exist (migration for canonical UI projection)
+  try {
+    database.exec(`ALTER TABLE messages ADD COLUMN ui_message_json TEXT`);
   } catch {
     /* column already exists */
   }
@@ -449,8 +461,9 @@ export function setLastGroupSync(): void {
  * Only call this for registered groups where message history is needed.
  */
 export function storeMessage(msg: NewMessage): void {
+  const uiMessageJson = ensureUiMessageJson(msg);
   db.prepare(
-    `INSERT OR REPLACE INTO messages (id, chat_jid, thread_id, sender, sender_name, content, timestamp, is_from_me, is_bot_message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT OR REPLACE INTO messages (id, chat_jid, thread_id, sender, sender_name, content, ui_message_json, timestamp, is_from_me, is_bot_message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   ).run(
     msg.id,
     msg.chat_jid,
@@ -458,6 +471,7 @@ export function storeMessage(msg: NewMessage): void {
     msg.sender,
     msg.sender_name,
     msg.content,
+    uiMessageJson,
     msg.timestamp,
     msg.is_from_me ? 1 : 0,
     msg.is_bot_message ? 1 : 0,
@@ -474,12 +488,14 @@ export function storeMessageDirect(msg: {
   sender: string;
   sender_name: string;
   content: string;
+  ui_message_json?: string | null;
   timestamp: string;
   is_from_me: boolean;
   is_bot_message?: boolean;
 }): void {
+  const uiMessageJson = ensureUiMessageJson(msg);
   db.prepare(
-    `INSERT OR REPLACE INTO messages (id, chat_jid, thread_id, sender, sender_name, content, timestamp, is_from_me, is_bot_message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT OR REPLACE INTO messages (id, chat_jid, thread_id, sender, sender_name, content, ui_message_json, timestamp, is_from_me, is_bot_message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   ).run(
     msg.id,
     msg.chat_jid,
@@ -487,9 +503,38 @@ export function storeMessageDirect(msg: {
     msg.sender,
     msg.sender_name,
     msg.content,
+    uiMessageJson,
     msg.timestamp,
     msg.is_from_me ? 1 : 0,
     msg.is_bot_message ? 1 : 0,
+  );
+}
+
+function ensureUiMessageJson(
+  msg: Pick<
+    NewMessage,
+    | 'id'
+    | 'sender'
+    | 'sender_name'
+    | 'content'
+    | 'timestamp'
+    | 'is_bot_message'
+    | 'ui_message_json'
+  >,
+) {
+  if (msg.ui_message_json) {
+    return msg.ui_message_json;
+  }
+
+  return stringifyUiMessageProjection(
+    buildCanonicalChatMessage({
+      id: msg.id,
+      sender: msg.sender,
+      sender_name: msg.sender_name,
+      content: msg.content,
+      timestamp: msg.timestamp,
+      is_bot_message: msg.is_bot_message,
+    }),
   );
 }
 
@@ -825,6 +870,7 @@ export function getMessageHistory(
     const rows = db
       .prepare(
         `SELECT id, chat_jid, thread_id, sender, sender_name, content, timestamp, is_bot_message
+                , ui_message_json
          FROM messages
          WHERE chat_jid = ?
            AND (thread_id = ? OR (thread_id = '' AND id = ?))
@@ -844,6 +890,7 @@ export function getMessageHistory(
     const rows = db
       .prepare(
         `SELECT id, chat_jid, thread_id, sender, sender_name, content, timestamp, is_bot_message
+                , ui_message_json
          FROM messages
          WHERE chat_jid = ? AND thread_id = ? AND timestamp < ?
          ORDER BY timestamp DESC, id DESC
@@ -858,6 +905,7 @@ export function getMessageHistory(
   const rows = db
     .prepare(
       `SELECT id, chat_jid, thread_id, sender, sender_name, content, timestamp, is_bot_message
+              , ui_message_json
        FROM messages
        WHERE chat_jid = ? AND thread_id = ?
        ORDER BY timestamp DESC, id DESC

@@ -121,19 +121,23 @@ export class SlackChannel implements Channel {
       const isBotMessage =
         Boolean(actualMessage.bot_id) || actualMessage.user === this.botUserId;
 
-      let senderName: string;
-
       if (isBotMessage) {
-        senderName = ASSISTANT_NAME;
-      } else {
-        senderName =
-          (await this.resolveUserName(actualMessage.user || '')) ||
-          actualMessage.user ||
-          'unknown';
+        logger.info(
+          { jid, messageId: actualMessage.ts },
+          'Ignoring Slack self/bot echo event to avoid duplicate persistence',
+        );
+        return;
       }
 
+      let senderName: string;
+
+      senderName =
+        (await this.resolveUserName(actualMessage.user || '')) ||
+        actualMessage.user ||
+        'unknown';
+
       let content = actualMessage.text;
-      if (!isBotMessage && this.botUserId) {
+      if (this.botUserId) {
         const mention = `<@${this.botUserId}>`;
         if (content.includes(mention) && !TRIGGER_PATTERN.test(content)) {
           content = `@${ASSISTANT_NAME} ${content}`;

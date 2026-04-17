@@ -158,6 +158,22 @@ describe('SlackChannel', () => {
     );
   });
 
+  it('ignores self-generated bot echo events', async () => {
+    const opts = createOpts();
+    const channel = new SlackChannel('xoxb-token', 'xapp-token', opts);
+    await channel.connect();
+
+    await triggerMessage(
+      messageEvent({
+        text: 'bot echo',
+        ts: '1700000009.000900',
+        bot_id: 'B0AK3UMMH1C',
+      }),
+    );
+
+    expect(opts.onMessage).not.toHaveBeenCalled();
+  });
+
   it('emits metadata but skips unregistered channels', async () => {
     const opts = createOpts({
       registeredAgents: () => ({}),

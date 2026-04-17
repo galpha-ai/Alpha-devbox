@@ -135,6 +135,48 @@ describe('WebChannel', () => {
     expect(body.messages[0].id).toBe('assistant-1');
   });
 
+  it('GET /replays/:id/ui-messages dedupes adjacent assistant echo copies', async () => {
+    mockedGetReplayLinkById.mockReturnValueOnce({
+      replayId: 'rpl_dup',
+      channelId: 'slack:C123',
+      threadId: 'thread-1',
+      agentName: 'main',
+      createdAt: '2026-04-15T00:00:00.000Z',
+    });
+    mockedGetMessageHistory.mockReturnValueOnce([
+      {
+        id: 'assistant-1',
+        chat_jid: 'slack:C123',
+        thread_id: 'thread-1',
+        sender: 'Devbox',
+        sender_name: 'Devbox',
+        content: 'same reply',
+        timestamp: '2026-04-15T00:00:01.000Z',
+        is_bot_message: true,
+      },
+      {
+        id: 'assistant-echo',
+        chat_jid: 'slack:C123',
+        thread_id: 'thread-1',
+        sender: 'Devbox',
+        sender_name: 'Devbox',
+        content: 'same reply',
+        timestamp: '2026-04-15T00:00:03.000Z',
+        is_bot_message: true,
+      },
+    ]);
+
+    const res = await fetch(
+      `http://localhost:${port}/api/devbox/replays/rpl_dup/ui-messages`,
+      { method: 'GET' },
+    );
+
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as any;
+    expect(body.messages).toHaveLength(1);
+    expect(body.messages[0].id).toBe('assistant-1');
+  });
+
   it('GET /replays/:id/ui-messages returns 404 for unknown replay ids', async () => {
     mockedGetReplayLinkById.mockReturnValueOnce(undefined);
 
@@ -227,6 +269,72 @@ describe('WebChannel', () => {
     expect(body).toContain('"type":"text-delta"');
     expect(body).toContain('hello back');
     expect(onMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it('POST /chat accepts last-message-only submit bodies', async () => {
+    const onMessage = vi.fn(() => {
+      queueMicrotask(() => {
+        void channel.sendMessage('web:user1', 'hello back', {
+          threadId: 'conv-1',
+        });
+        void channel.setTyping?.('web:user1', 'success', {
+          threadId: 'conv-1',
+        });
+      });
+    });
+
+    await channel.disconnect();
+    channel = new WebChannel(0, makeOpts({ onMessage }));
+    await channel.connect();
+    port = channel.getPort();
+
+    const res = await fetch(`http://localhost:${port}/api/devbox/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-User-Id': 'user1' },
+      body: JSON.stringify({
+        id: 'conv-1',
+        trigger: 'submit-message',
+        messageId: 'u2',
+        message: {
+          id: 'u2',
+          role: 'user',
+          parts: [{ type: 'text', text: 'hello agent' }],
+        },
+      }),
+    });
+
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('hello back');
+    expect(onMessage).toHaveBeenCalledTimes(1);
+    const onMessageCalls = onMessage.mock.calls as any[][];
+    expect(onMessageCalls[0]?.[1]?.content).toBe('hello agent');
+    expect(mockedGetMessageHistory).toHaveBeenCalledWith(
+      'web:user1',
+      'conv-1',
+      {
+        limit: 100,
+      },
+    );
+  });
+
+  it('POST /chat rejects invalid last-message payloads even if text content exists', async () => {
+    const res = await fetch(`http://localhost:${port}/api/devbox/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-User-Id': 'user1' },
+      body: JSON.stringify({
+        id: 'conv-1',
+        message: {
+          id: 'u2',
+          role: 'user',
+          content: 'hello agent',
+        },
+      }),
+    });
+
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as any;
+    expect(body.error).toBe('message must be a valid user UIMessage');
   });
 
   it('POST /chat emits an AI SDK error when no reply arrives', async () => {
@@ -341,6 +449,72 @@ describe('WebChannel', () => {
         limit: 2,
       },
     );
+  });
+
+  it('GET /conversations/:id/ui-messages preserves structured artifact blocks for web rendering', async () => {
+    mockedGetMessageHistory.mockReturnValueOnce([
+      {
+        id: 'm1',
+        chat_jid: 'web:user1',
+        thread_id: 'conv-1',
+        sender: 'agent',
+        sender_name: 'Agent',
+        content:
+          'Visible answer\n<<<CHART_V1>>>{\"series\":[]}\n<<<END_CHART_V1>>>',
+        timestamp: '2024-03-01T10:00:00.000Z',
+        is_bot_message: true,
+      },
+    ]);
+
+    const res = await fetch(
+      `http://localhost:${port}/api/devbox/conversations/conv-1/ui-messages`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', 'X-User-Id': 'user1' },
+      },
+    );
+
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as any;
+    expect(body.messages[0].parts[0].text).toContain('Visible answer');
+    expect(body.messages[0].parts[0].text).toContain('<<<CHART_V1>>>');
+  });
+
+  it('GET /conversations/:id/ui-messages prefers stored UI projection when present', async () => {
+    mockedGetMessageHistory.mockReturnValueOnce([
+      {
+        id: 'm1',
+        chat_jid: 'web:user1',
+        thread_id: 'conv-1',
+        sender: 'agent',
+        sender_name: 'Agent',
+        content: 'raw fallback',
+        ui_message_json: JSON.stringify({
+          id: 'm1',
+          role: 'assistant',
+          parts: [{ type: 'text', text: 'projected answer', state: 'done' }],
+          metadata: {
+            timestamp: '2024-03-01T10:00:00.000Z',
+            sender: 'agent',
+            senderName: 'Agent',
+          },
+        }),
+        timestamp: '2024-03-01T10:00:00.000Z',
+        is_bot_message: true,
+      },
+    ] as any);
+
+    const res = await fetch(
+      `http://localhost:${port}/api/devbox/conversations/conv-1/ui-messages`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', 'X-User-Id': 'user1' },
+      },
+    );
+
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as any;
+    expect(body.messages[0].parts[0].text).toBe('projected answer');
   });
 
   it('sendMessage is a no-op without an active AI SDK stream', async () => {

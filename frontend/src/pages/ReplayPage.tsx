@@ -2,10 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { MessageSquare } from "lucide-react";
 
-import {
-  ChatTranscript,
-  type ChatTranscriptMessage,
-} from "@/features/chat/ChatTranscript";
+import { ChatTranscript } from "@/features/chat/ChatTranscript";
+import type { ChatTranscriptMessage } from "@/features/chat/chat-message";
 import {
   ChatTransportError,
   createReplayTransportClient,
@@ -66,26 +64,6 @@ export default function ReplayPage() {
     target.focus();
   }, [messages, replyId]);
 
-  const title = useMemo(() => {
-    const firstUserMessage = messages.find((message) => message.role === "user");
-    const firstText = firstUserMessage
-      ? firstUserMessage.parts
-          .filter(
-            (part): part is Extract<typeof part, { type: "text" }> =>
-              part.type === "text",
-          )
-          .map((part) => part.text)
-          .join("")
-          .trim()
-      : "";
-
-    if (!firstText) {
-      return `Chat ${replayId.slice(0, 8)}`;
-    }
-
-    return firstText.length > 48 ? `${firstText.slice(0, 48)}...` : firstText;
-  }, [messages, replayId]);
-
   return (
     <div className="relative flex h-screen overflow-hidden bg-background text-foreground">
       <main className="flex min-w-0 flex-1 flex-col">
@@ -93,7 +71,7 @@ export default function ReplayPage() {
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <MessageSquare className="h-4 w-4 shrink-0 text-primary" />
             <span className="truncate text-sm font-medium text-foreground">
-              {title}
+              Replay
             </span>
           </div>
           <div className="ml-2 flex items-center gap-1.5">

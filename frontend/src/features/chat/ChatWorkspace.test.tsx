@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/exhaustive-deps */
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('@ai-sdk/react', async () => {
@@ -570,5 +571,155 @@ describe('ChatWorkspace', () => {
       100,
     );
     expect(transportClient.getMessages).not.toHaveBeenCalled();
+  });
+
+  it('keeps the starter state on the root route even when prior conversations exist', async () => {
+    const transportClient = createTransportClient();
+    vi.mocked(transportClient.listConversations).mockResolvedValueOnce({
+      conversations: [
+        {
+          conversationId: 'conv-existing',
+          title: 'Existing',
+          updatedAt: '2026-04-12T00:00:04.000Z',
+        },
+      ],
+    });
+
+    render(
+      <ChatWorkspace
+        transportClient={transportClient}
+        activeConversationId=""
+        onActiveConversationIdChange={() => {}}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    await screen.findByPlaceholderText('Message the agent...');
+
+    expect(screen.queryByText('hello')).not.toBeInTheDocument();
+    expect(transportClient.getUiMessages).not.toHaveBeenCalled();
+  });
+
+  it('notifies the host when a new conversation id is created', async () => {
+    const transportClient = createTransportClient();
+    const onActiveConversationIdChange = vi.fn();
+
+    render(
+      <ChatWorkspace
+        transportClient={transportClient}
+        activeConversationId=""
+        onActiveConversationIdChange={onActiveConversationIdChange}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    const textarea = await screen.findByPlaceholderText('Message the agent...');
+    fireEvent.change(textarea, { target: { value: 'hello' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
+
+    await waitFor(() => {
+      expect(onActiveConversationIdChange).toHaveBeenCalledWith('conv-1');
+    });
+  });
+
+  it('hydrates the route-selected conversation when the host provides an active id', async () => {
+    const transportClient = createTransportClient();
+    vi.mocked(transportClient.listConversations).mockResolvedValueOnce({
+      conversations: [
+        {
+          conversationId: 'conv-1',
+          title: 'First',
+          updatedAt: '2026-04-11T00:00:01.000Z',
+        },
+        {
+          conversationId: 'conv-2',
+          title: 'Second',
+          updatedAt: '2026-04-11T00:00:02.000Z',
+        },
+      ],
+    });
+    vi.mocked(transportClient.getUiMessages).mockImplementation(
+      async (conversationId: string) => ({
+        messages:
+          conversationId === 'conv-2'
+            ? [
+                createUiMessage(
+                  'u2',
+                  'user',
+                  'route-selected prompt',
+                  '2026-04-11T00:00:03.000Z',
+                ),
+                createUiMessage(
+                  'a2',
+                  'assistant',
+                  'route-selected answer',
+                  '2026-04-11T00:00:04.000Z',
+                ),
+              ]
+            : [
+                createUiMessage(
+                  'u1',
+                  'user',
+                  'default prompt',
+                  '2026-04-11T00:00:00.000Z',
+                ),
+                createUiMessage(
+                  'a1',
+                  'assistant',
+                  'default answer',
+                  '2026-04-11T00:00:01.000Z',
+                ),
+              ],
+      }),
+    );
+
+    render(
+      <ChatWorkspace
+        transportClient={transportClient}
+        activeConversationId="conv-2"
+        onActiveConversationIdChange={() => {}}
+        onLogout={() => {}}
+        onSessionExpired={() => {}}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('route-selected prompt')).toBeInTheDocument();
+      expect(screen.getByText('route-selected answer')).toBeInTheDocument();
+    });
+    expect(transportClient.getUiMessages).toHaveBeenCalledWith('conv-2', 100);
+  });
+
+  it('keeps the newly created conversation visible when the host immediately controls the returned id', async () => {
+    const transportClient = createTransportClient();
+
+    function ControlledHarness() {
+      const [activeConversationId, setActiveConversationId] = useState('');
+
+      return (
+        <ChatWorkspace
+          transportClient={transportClient}
+          activeConversationId={activeConversationId}
+          onActiveConversationIdChange={setActiveConversationId}
+          onLogout={() => {}}
+          onSessionExpired={() => {}}
+        />
+      );
+    }
+
+    render(<ControlledHarness />);
+
+    await screen.findByText('Starter Prompts');
+    const textarea = await screen.findByPlaceholderText('Message the agent...');
+    fireEvent.change(textarea, { target: { value: 'hello' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
+
+    await waitFor(() => {
+      expect(screen.getAllByText('hello').length).toBeGreaterThan(0);
+      expect(screen.getByText('hello back')).toBeInTheDocument();
+      expect(screen.queryByText('Starter Prompts')).not.toBeInTheDocument();
+    });
   });
 });

@@ -3,6 +3,7 @@ import http from 'http';
 import {
   createUIMessageStream,
   pipeUIMessageStreamToResponse,
+  validateUIMessages,
   type UIMessage,
   type UIMessageStreamWriter,
 } from 'ai';
@@ -14,6 +15,10 @@ import {
   getSessionsByChannel,
 } from '../db.js';
 import { logger } from '../logger.js';
+import {
+  buildCanonicalChatMessage,
+  type CanonicalChatMessage,
+} from '../ui-message.js';
 import { makeSessionScopeKey } from '../session-scope.js';
 import {
   Channel,
@@ -252,10 +257,15 @@ export class WebChannel implements Channel {
 
     if (path === '/api/devbox/chat' && req.method === 'POST') {
       this.readBody(req)
-        .then((body) => {
+        .then(async (body) => {
           const conversationId =
             typeof body.id === 'string' ? body.id.trim() : '';
-          const content = getLatestUserMessageText(body.messages);
+          const submittedMessage =
+            getSingleUserMessage(body.message) ||
+            getLatestUserMessage(body.messages);
+          const content =
+            getSingleUserMessageText(body.message) ||
+            getLatestUserMessageText(body.messages);
 
           if (!conversationId) {
             this.jsonResponse(res, 400, { error: 'id is required' });
@@ -269,9 +279,35 @@ export class WebChannel implements Channel {
             return;
           }
 
+          if (!submittedMessage) {
+            this.jsonResponse(res, 400, {
+              error: 'message must be a valid user UIMessage',
+            });
+            return;
+          }
+
           const delivery = this.resolveDeliveryTarget(chatJid, conversationId);
           if (!delivery.ok) {
             this.jsonResponse(res, 400, { error: delivery.message });
+            return;
+          }
+
+          const previousMessages = canonicalizeChatMessages(
+            getMessageHistory(chatJid, conversationId, { limit: 100 }),
+          );
+
+          try {
+            await validateUIMessages({
+              messages: [...previousMessages, submittedMessage],
+            });
+          } catch (error) {
+            logger.warn(
+              { error, chatJid, conversationId },
+              'Rejected invalid submitted UI message payload',
+            );
+            this.jsonResponse(res, 400, {
+              error: 'message must be a valid user UIMessage',
+            });
             return;
           }
 
@@ -674,37 +710,69 @@ export class WebChannel implements Channel {
 }
 
 function getLatestUserMessageText(messages: unknown) {
-  if (!Array.isArray(messages)) {
-    return '';
-  }
-
-  const latestUserMessage = [...messages].reverse().find(
-    (
-      message,
-    ): message is {
-      role: string;
-      content?: unknown;
-      parts?: Array<{ type?: string; text?: string }>;
-    } =>
-      Boolean(message) &&
-      typeof message === 'object' &&
-      'role' in message &&
-      (message as { role?: string }).role === 'user',
-  );
-
+  const latestUserMessage = getLatestUserMessage(messages);
   if (!latestUserMessage) {
     return '';
   }
 
-  if (typeof latestUserMessage.content === 'string') {
-    return latestUserMessage.content.trim();
+  return getSingleUserMessageText(latestUserMessage);
+}
+
+function getLatestUserMessage(messages: unknown): UIMessage | null {
+  if (!Array.isArray(messages)) {
+    return null;
   }
 
-  if (!Array.isArray(latestUserMessage.parts)) {
+  const latestUserMessage = [...messages]
+    .reverse()
+    .find(
+      (message): message is UIMessage =>
+        Boolean(message) &&
+        typeof message === 'object' &&
+        'role' in message &&
+        (message as { role?: string }).role === 'user',
+    );
+
+  return latestUserMessage ?? null;
+}
+
+function getSingleUserMessage(message: unknown): UIMessage | null {
+  if (!message || typeof message !== 'object') {
+    return null;
+  }
+
+  const candidate = message as UIMessage;
+  if (candidate.role && candidate.role !== 'user') {
+    return null;
+  }
+
+  return candidate;
+}
+
+function getSingleUserMessageText(message: unknown) {
+  if (!message || typeof message !== 'object') {
     return '';
   }
 
-  return latestUserMessage.parts
+  const candidate = message as {
+    role?: string;
+    content?: string;
+    parts?: Array<{ type?: string; text?: string }>;
+  };
+
+  if (candidate.role && candidate.role !== 'user') {
+    return '';
+  }
+
+  if (typeof candidate.content === 'string') {
+    return candidate.content.trim();
+  }
+
+  if (!Array.isArray(candidate.parts)) {
+    return '';
+  }
+
+  return candidate.parts
     .filter(
       (
         part,
@@ -718,42 +786,41 @@ function getLatestUserMessageText(messages: unknown) {
     .trim();
 }
 
-type CanonicalChatMessage = {
-  id: string;
-  role: 'user' | 'assistant';
-  parts: Array<{ type: 'text'; text: string; state: 'done' }>;
-  metadata: {
-    timestamp: string;
-    sender: string;
-    senderName: string;
-  };
-};
-
 function canonicalizeChatMessages(
   messages: NewMessage[],
 ): CanonicalChatMessage[] {
-  return [...messages]
-    .filter((msg) => msg.content?.length)
-    .sort((a, b) => {
-      if (a.timestamp === b.timestamp) {
-        return a.id.localeCompare(b.id);
-      }
-      return a.timestamp.localeCompare(b.timestamp);
-    })
-    .map((msg) => ({
-      id: msg.id,
-      role: msg.is_bot_message ? 'assistant' : 'user',
-      parts: [
-        {
-          type: 'text',
-          text: msg.content,
-          state: 'done',
-        },
-      ],
-      metadata: {
-        timestamp: msg.timestamp,
-        sender: msg.sender,
-        senderName: msg.sender_name || msg.sender,
-      },
-    }));
+  return dedupeReplayEchoes(
+    [...messages]
+      .filter((msg) => msg.content?.length)
+      .sort((a, b) => {
+        if (a.timestamp === b.timestamp) {
+          return a.id.localeCompare(b.id);
+        }
+        return a.timestamp.localeCompare(b.timestamp);
+      }),
+  ).map((msg) => buildCanonicalChatMessage(msg));
+}
+
+function dedupeReplayEchoes(messages: NewMessage[]): NewMessage[] {
+  const deduped: NewMessage[] = [];
+
+  for (const message of messages) {
+    const previous = deduped[deduped.length - 1];
+    if (
+      previous &&
+      previous.is_bot_message &&
+      message.is_bot_message &&
+      previous.sender === message.sender &&
+      previous.content === message.content &&
+      Math.abs(
+        new Date(previous.timestamp).getTime() -
+          new Date(message.timestamp).getTime(),
+      ) <= 5_000
+    ) {
+      continue;
+    }
+    deduped.push(message);
+  }
+
+  return deduped;
 }

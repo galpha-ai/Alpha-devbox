@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import {
   clearAuthSession,
@@ -28,6 +29,8 @@ function ChatSeededSessionRuntime({
 }: {
   localUserId: string;
 }) {
+  const navigate = useNavigate();
+  const { conversationId } = useParams<{ conversationId?: string }>();
   const { transportClient } = useChatClients();
   const [, setSession] = useState(() =>
     ensureMockAuthSession(window.localStorage, localUserId),
@@ -46,9 +49,20 @@ function ChatSeededSessionRuntime({
     setSession(ensureMockAuthSession(window.localStorage, localUserId));
   }, [localUserId]);
 
+  const handleActiveConversationIdChange = useCallback(
+    (nextConversationId: string) => {
+      navigate(
+        nextConversationId ? `/chat/${nextConversationId}` : '/',
+      );
+    },
+    [navigate],
+  );
+
   return (
     <ChatWorkspace
       transportClient={transportClient}
+      activeConversationId={conversationId ?? ''}
+      onActiveConversationIdChange={handleActiveConversationIdChange}
       sessionActionLabel={null}
       onLogout={handleResetSession}
       onSessionExpired={handleSessionExpired}

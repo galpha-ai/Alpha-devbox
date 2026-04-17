@@ -58,9 +58,7 @@ describe("ReplayPage", () => {
 
     expect(screen.getByText("Loading replay...")).toBeInTheDocument();
 
-    expect(
-      await screen.findByText("hello", { selector: "span" }),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Replay")).toBeInTheDocument();
     expect(await screen.findByText("world")).toBeInTheDocument();
     expect(
       screen.queryByPlaceholderText("Message the agent..."),

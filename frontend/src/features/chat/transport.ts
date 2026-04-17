@@ -54,6 +54,14 @@ export function createChatTransportClient(options: ChatTransportClientOptions): 
   const chatTransport = new DefaultChatTransport<UIMessage>({
     api: "/api/devbox/chat",
     fetch: (input, init) => authFetch(resolveTransportInput(input), init),
+    prepareSendMessagesRequest: ({ id, messages, trigger, messageId }) => ({
+      body: {
+        id,
+        trigger,
+        messageId,
+        message: messages[messages.length - 1],
+      },
+    }),
   });
 
   return {

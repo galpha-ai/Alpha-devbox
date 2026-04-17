@@ -1,14 +1,8 @@
 import type { MutableRefObject } from 'react';
-import type { UIMessage } from 'ai';
 import { Sparkles } from 'lucide-react';
 
 import { MarkdownChartRenderer } from './MarkdownChartRenderer';
-
-export type ChatTranscriptMessage = UIMessage<{
-  timestamp?: string;
-  sender?: string;
-  senderName?: string;
-}>;
+import { getChatMessageText, type ChatTranscriptMessage } from './chat-message';
 
 const proseClasses = `prose prose-invert prose-sm max-w-none 
   prose-headings:text-foreground prose-headings:font-display
@@ -40,16 +34,6 @@ export function ChatTranscript({
   );
 }
 
-export function getChatMessageText(message: ChatTranscriptMessage) {
-  return message.parts
-    .filter(
-      (part): part is Extract<typeof part, { type: 'text' }> =>
-        part.type === 'text',
-    )
-    .map((part) => part.text)
-    .join('');
-}
-
 function MessageBubble({
   message,
   highlighted = false,
@@ -74,12 +58,16 @@ function MessageBubble({
         data-testid={`replay-message-${message.id}`}
         data-highlighted={highlighted ? 'true' : 'false'}
         tabIndex={-1}
-        className={[
-          'flex justify-end rounded-2xl outline-none transition',
-          highlighted ? 'ring-1 ring-lime/40 ring-offset-0' : '',
-        ].join(' ')}
+        className="flex justify-end rounded-2xl outline-none transition"
       >
-        <div className="min-w-0 max-w-[85%] whitespace-pre-wrap break-words rounded-2xl rounded-br-md bg-muted/60 px-4 py-3 text-sm leading-relaxed text-foreground [overflow-wrap:anywhere]">
+        <div
+          className={[
+            'min-w-0 max-w-[85%] whitespace-pre-wrap break-words rounded-2xl rounded-br-md bg-muted/60 px-4 py-3 text-sm leading-relaxed text-foreground [overflow-wrap:anywhere] transition',
+            highlighted
+              ? 'bg-muted/80 shadow-[inset_0_0_0_1px_rgba(193,255,0,0.22)]'
+              : '',
+          ].join(' ')}
+        >
           {content}
         </div>
       </div>
@@ -92,17 +80,21 @@ function MessageBubble({
       data-testid={`replay-message-${message.id}`}
       data-highlighted={highlighted ? 'true' : 'false'}
       tabIndex={-1}
-      className={[
-        'flex items-start gap-3 rounded-2xl outline-none transition',
-        highlighted ? 'ring-1 ring-lime/40 ring-offset-0' : '',
-      ].join(' ')}
+      className="flex items-start gap-3 rounded-2xl outline-none transition"
     >
       <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-full border border-border/30 bg-card/70">
         <Sparkles className="h-4 w-4 text-primary" />
       </div>
       <div className="min-w-0 max-w-[85%] space-y-3">
         {content ? (
-          <div className="min-w-0 overflow-hidden rounded-2xl rounded-bl-md border border-border/30 bg-card/70 px-4 py-3">
+          <div
+            className={[
+              'min-w-0 overflow-hidden rounded-2xl rounded-bl-md border border-border/30 bg-card/70 px-4 py-3 transition',
+              highlighted
+                ? 'shadow-[inset_0_0_0_1px_rgba(193,255,0,0.22)]'
+                : '',
+            ].join(' ')}
+          >
             <MarkdownChartRenderer
               markdown={content}
               proseClassName={proseClasses}

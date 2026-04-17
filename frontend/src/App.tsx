@@ -8,7 +8,10 @@ const App = () => (
   <BrowserRouter>
     <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">Loading workspace...</div>}>
       <Routes>
-        <Route path="/" element={<WebChatPage />} />
+        <Route path="/" element={<WebChatPage />}>
+          <Route index element={null} />
+          <Route path="chat/:conversationId" element={null} />
+        </Route>
         <Route path="/replay/:replayId" element={<ReplayPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
