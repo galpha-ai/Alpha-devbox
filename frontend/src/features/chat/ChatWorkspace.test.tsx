@@ -3,39 +3,6 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useState } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const speechMock = vi.hoisted(() => {
-  const speechState = {
-    transcript: '',
-    listening: false,
-    browserSupportsSpeechRecognition: false,
-    isMicrophoneAvailable: true,
-  };
-  const speechListeners = new Set<() => void>();
-  const emitSpeechState = () => {
-    for (const listener of speechListeners) {
-      listener();
-    }
-  };
-
-  return {
-    speechState,
-    speechListeners,
-    emitSpeechState,
-    startListeningMock: vi.fn(async () => {
-      speechState.listening = true;
-      emitSpeechState();
-    }),
-    stopListeningMock: vi.fn(async () => {
-      speechState.listening = false;
-      emitSpeechState();
-    }),
-    resetTranscriptMock: vi.fn(() => {
-      speechState.transcript = '';
-      emitSpeechState();
-    }),
-  };
-});
-
 vi.mock('@ai-sdk/react', async () => {
   const React = await import('react');
 
@@ -157,42 +124,22 @@ vi.mock('@ai-sdk/react', async () => {
   };
 });
 
-vi.mock('react-speech-recognition', async () => {
-  const React = await import('react');
-
-  return {
-    __esModule: true,
-    default: {
-      startListening: speechMock.startListeningMock,
-      stopListening: speechMock.stopListeningMock,
-      abortListening: vi.fn(async () => {
-        speechMock.speechState.listening = false;
-        speechMock.speechState.transcript = '';
-        speechMock.emitSpeechState();
-      }),
-    },
-    useSpeechRecognition: () => {
-      const [, forceRender] = React.useReducer((value) => value + 1, 0);
-
-      React.useEffect(() => {
-        const listener = () => forceRender();
-        speechMock.speechListeners.add(listener);
-        return () => {
-          speechMock.speechListeners.delete(listener);
-        };
-      }, []);
-
-      return {
-        transcript: speechMock.speechState.transcript,
-        listening: speechMock.speechState.listening,
-        browserSupportsSpeechRecognition:
-          speechMock.speechState.browserSupportsSpeechRecognition,
-        isMicrophoneAvailable: speechMock.speechState.isMicrophoneAvailable,
-        resetTranscript: speechMock.resetTranscriptMock,
-      };
-    },
-  };
-});
+vi.mock('@/components/ai-elements/speech-input', () => ({
+  SpeechInput: ({
+    onTranscriptionChange,
+  }: {
+    onTranscriptionChange?: (text: string) => void;
+  }) => (
+    <button
+      type="button"
+      aria-label="Voice input"
+      onClick={() => onTranscriptionChange?.('spoken words')}
+      data-testid="speech-input"
+    >
+      Speech Input
+    </button>
+  ),
+}));
 
 vi.mock('@galpha-ai/better-markdown/react', () => ({
   MarkdownChartRenderer: ({
@@ -326,16 +273,10 @@ function deferred<T>() {
 
 describe('ChatWorkspace', () => {
   beforeEach(() => {
-    speechMock.speechState.transcript = '';
-    speechMock.speechState.listening = false;
-    speechMock.speechState.browserSupportsSpeechRecognition = false;
-    speechMock.speechState.isMicrophoneAvailable = true;
-    speechMock.startListeningMock.mockClear();
-    speechMock.stopListeningMock.mockClear();
-    speechMock.resetTranscriptMock.mockClear();
+    vi.clearAllMocks();
   });
 
-  it('disables voice input when speech recognition is unavailable', async () => {
+  it('renders the official speech input control', async () => {
     const transportClient = createTransportClient();
 
     render(
@@ -346,18 +287,12 @@ describe('ChatWorkspace', () => {
       />,
     );
 
-    const voiceButton = await screen.findByRole('button', {
-      name: 'Start voice input',
-    });
-    expect(voiceButton).toBeDisabled();
     expect(
-      screen.getByText('Voice input unavailable in this browser.'),
+      await screen.findByRole('button', { name: 'Voice input' }),
     ).toBeInTheDocument();
   });
 
-  it('writes speech transcripts into the existing input state', async () => {
-    speechMock.speechState.browserSupportsSpeechRecognition = true;
-
+  it('writes official speech input transcripts into the existing input state', async () => {
     const transportClient = createTransportClient();
 
     render(
@@ -369,51 +304,14 @@ describe('ChatWorkspace', () => {
     );
 
     const voiceButton = await screen.findByRole('button', {
-      name: 'Start voice input',
+      name: 'Voice input',
     });
-    fireEvent.click(voiceButton);
-
     await act(async () => {
-      speechMock.speechState.transcript = 'spoken words';
-      speechMock.speechState.listening = false;
-      speechMock.emitSpeechState();
+      fireEvent.click(voiceButton);
     });
 
     const textarea = await screen.findByPlaceholderText('Message the agent...');
     expect(textarea).toHaveValue('spoken words');
-  });
-
-  it('supports push-to-talk with pointer hold and release', async () => {
-    speechMock.speechState.browserSupportsSpeechRecognition = true;
-
-    const transportClient = createTransportClient();
-
-    render(
-      <ChatWorkspace
-        transportClient={transportClient}
-        onLogout={() => {}}
-        onSessionExpired={() => {}}
-      />,
-    );
-
-    const voiceButton = await screen.findByRole('button', {
-      name: 'Start voice input',
-    });
-
-    fireEvent.pointerDown(voiceButton);
-    expect(speechMock.startListeningMock).toHaveBeenCalled();
-    expect(
-      screen.getByText('Listening… release the mic button to stop.'),
-    ).toBeInTheDocument();
-
-    speechMock.speechState.transcript = 'hold to talk words';
-    await act(async () => {
-      fireEvent.pointerUp(voiceButton);
-    });
-    expect(speechMock.stopListeningMock).toHaveBeenCalled();
-
-    const textarea = await screen.findByPlaceholderText('Message the agent...');
-    expect(textarea).toHaveValue('hold to talk words');
   });
 
   it('delegates markdown rendering to @galpha-ai/better-markdown', () => {

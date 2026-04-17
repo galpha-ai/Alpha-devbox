@@ -1,15 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useChat } from '@ai-sdk/react';
 import type { UIMessage } from 'ai';
-import SpeechRecognition, {
-  useSpeechRecognition,
-} from 'react-speech-recognition';
 import {
   Loader2,
   LogOut,
   Menu,
-  Mic,
-  MicOff,
   MessageSquare,
   Plus,
   Send,
@@ -18,6 +13,7 @@ import {
   X,
 } from 'lucide-react';
 
+import { SpeechInput } from '@/components/ai-elements/speech-input';
 import { StarterPromptGrid } from './StarterPromptGrid';
 import { ChatTranscript } from './ChatTranscript';
 import { getChatMessageText } from './chat-message';
@@ -89,16 +85,6 @@ export function ChatWorkspace({
   const hydrateRequestVersionRef = useRef(new Map<string, number>());
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
-  const pressToTalkActiveRef = useRef(false);
-  const ignoreVoiceClickRef = useRef(false);
-  const lastAppliedTranscriptRef = useRef('');
-  const {
-    transcript,
-    listening: isListening,
-    resetTranscript,
-    browserSupportsSpeechRecognition,
-    isMicrophoneAvailable,
-  } = useSpeechRecognition();
 
   useEffect(() => {
     activeConversationIdRef.current = activeConversationId;
@@ -236,20 +222,6 @@ export function ChatWorkspace({
     textarea.style.height = 'auto';
     textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
   }, [input]);
-
-  useEffect(() => {
-    if (
-      isListening ||
-      !transcript.trim() ||
-      transcript === lastAppliedTranscriptRef.current
-    ) {
-      return;
-    }
-
-    setInput((current) => appendSpeechTranscript(current, transcript.trim()));
-    lastAppliedTranscriptRef.current = transcript;
-    resetTranscript();
-  }, [isListening, resetTranscript, transcript]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -449,68 +421,6 @@ export function ChatWorkspace({
     void handleSubmit(input);
   }, [handleSubmit, input]);
 
-  const startVoiceInput = useCallback(() => {
-    if (!browserSupportsSpeechRecognition || !isMicrophoneAvailable) {
-      return;
-    }
-
-    lastAppliedTranscriptRef.current = '';
-    resetTranscript();
-    void SpeechRecognition.startListening({
-      continuous: false,
-      language:
-        typeof navigator !== 'undefined' && navigator.language
-          ? navigator.language
-          : 'en-US',
-    });
-  }, [
-    browserSupportsSpeechRecognition,
-    isMicrophoneAvailable,
-    resetTranscript,
-  ]);
-
-  const stopVoiceInput = useCallback(() => {
-    void SpeechRecognition.stopListening();
-  }, []);
-
-  const handleVoiceInput = useCallback(() => {
-    if (ignoreVoiceClickRef.current) {
-      ignoreVoiceClickRef.current = false;
-      return;
-    }
-
-    if (isListening) {
-      stopVoiceInput();
-      return;
-    }
-
-    startVoiceInput();
-  }, [isListening, startVoiceInput, stopVoiceInput]);
-
-  const handleVoicePointerDown = useCallback(() => {
-    if (!browserSupportsSpeechRecognition || !isMicrophoneAvailable || isListening) {
-      return;
-    }
-
-    pressToTalkActiveRef.current = true;
-    ignoreVoiceClickRef.current = true;
-    startVoiceInput();
-  }, [
-    browserSupportsSpeechRecognition,
-    isListening,
-    isMicrophoneAvailable,
-    startVoiceInput,
-  ]);
-
-  const handleVoicePointerRelease = useCallback(() => {
-    if (!pressToTalkActiveRef.current) {
-      return;
-    }
-
-    pressToTalkActiveRef.current = false;
-    stopVoiceInput();
-  }, [stopVoiceInput]);
-
   const activeConversationView = useMemo(() => {
     if (!activeConversation) {
       return createDraftConversationState();
@@ -552,14 +462,8 @@ export function ChatWorkspace({
     activeConversationView.messages.length === 0 &&
     activeConversationView.status !== 'processing';
   const contentMaxWidthClass = isStarterState ? 'max-w-4xl' : 'max-w-[920px]';
-  const speechSupported = browserSupportsSpeechRecognition;
-  const composerHint = !speechSupported
-    ? 'Voice input unavailable in this browser.'
-    : !isMicrophoneAvailable
-      ? 'Microphone permission was denied.'
-    : isListening
-      ? 'Listening… release the mic button to stop.'
-      : 'Hold the mic button to talk. Enter to send. Shift+Enter for a new line.';
+  const composerHint =
+    'Use the mic for speech input where supported. Enter to send. Shift+Enter for a new line.';
 
   return (
     <div className="relative flex h-screen overflow-hidden bg-background text-foreground">
@@ -782,30 +686,19 @@ export function ChatWorkspace({
                 rows={1}
                 className="max-h-[200px] flex-1 resize-none bg-transparent px-4 py-3.5 text-sm placeholder:text-muted-foreground/60 focus:outline-none"
               />
-              <button
-                type="button"
-                onClick={handleVoiceInput}
-                onPointerDown={handleVoicePointerDown}
-                onPointerUp={handleVoicePointerRelease}
-                onPointerCancel={handleVoicePointerRelease}
-                onPointerLeave={handleVoicePointerRelease}
-                aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
-                disabled={!speechSupported}
-                title={
-                  speechSupported
-                    ? isListening
-                      ? 'Stop voice input'
-                      : 'Hold to talk'
-                    : 'Voice input unavailable in this browser'
-                }
-                className="m-1.5 rounded-xl border border-border/40 bg-background/50 p-2.5 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                {isListening ? (
-                  <MicOff className="h-4 w-4" />
-                ) : (
-                  <Mic className="h-4 w-4" />
-                )}
-              </button>
+              <SpeechInput
+                aria-label="Voice input"
+                className="m-1.5 rounded-xl border border-border/40 bg-background/50 p-2.5 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+                onTranscriptionChange={(text) => {
+                  if (!text.trim()) {
+                    return;
+                  }
+
+                  setInput((current) =>
+                    appendSpeechTranscript(current, text.trim()),
+                  );
+                }}
+              />
               <button
                 type="button"
                 onClick={handleSend}
