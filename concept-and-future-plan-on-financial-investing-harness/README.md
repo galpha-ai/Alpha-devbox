@@ -5,14 +5,30 @@ materials for the financial investing side of the AlphaDev DevBox project.
 
 ## Contents
 
+### Markdown (text handoff)
+
 - `devbox-concept.md` — What DevBox and AlphaDevBox are, and why an investing-focused
   agent harness is different from a generic coding agent.
 - `one-year-plan.md` — Year-one development plan for building an AI researcher
   neo-lab that merges quant systematic investing and discretionary (主观) investing.
-- `deck.html` — Slide deck version of the one-year plan, intended for partner
-  audiences and future LP investors. Open in any browser.
-- `motivation.html` — Concept webpage walking through the thinking on merging
-  quant and discretionary investing, with worked examples.
+
+### Website (multi-page, open in a browser)
+
+- `index.html` — Landing / hub page. Start here.
+- `product.html` — Product deep dive: DevBox + AlphaDevBox, the three-layer stack.
+- `motivation.html` — Concept page on merging quant and discretionary, with five
+  worked examples.
+- `plan.html` — Year-one plan as a styled web page.
+
+### Decks (reveal.js, open in a browser)
+
+- `deck.html` — Partner / design-partner deck. Full walkthrough of the plan.
+- `deck-lp.html` — LP investor deck. Shorter cut focused on thesis, market, and ask.
+
+### Shared
+
+- `styles.css` — Stylesheet shared by `index.html`, `product.html`, `plan.html`,
+  and `motivation.html`.
 
 ## Audiences
 
@@ -22,7 +38,7 @@ materials for the financial investing side of the AlphaDev DevBox project.
 
 ## How to use
 
-1. Read `devbox-concept.md` first for the product framing.
-2. Read `motivation.html` in a browser for the investing thesis and examples.
-3. Read `one-year-plan.md` for the detailed roadmap, or open `deck.html` for the
-   same plan in slide form.
+1. Open `index.html` in a browser — it links to every page below.
+2. For text handoff, read `devbox-concept.md` then `one-year-plan.md`.
+3. For the investing thesis with worked examples, open `motivation.html`.
+4. For presenting: `deck.html` (partner) or `deck-lp.html` (LP investor).

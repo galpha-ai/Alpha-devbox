@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Year-one plan — AlphaDev Neo-Lab</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand">AlphaDev <span class="accent">·</span> neo-lab</div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="product.html">Product</a>
+        <a href="motivation.html">Motivation</a>
+        <a href="plan.html" class="active">Year-one plan</a>
+        <a href="deck.html">Deck</a>
+        <a href="deck-lp.html">LP deck</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <span class="kicker">Year-one plan</span>
+    <h1>From MVP to <span class="accent">neo-lab</span> in four quarters</h1>
+    <p class="lede">
+      Four quarterly phases. Each phase has a user-facing deliverable, a
+      research deliverable, an infrastructure deliverable, and explicit exit
+      criteria. The year ends with a multi-user research lab running compound
+      research on a shared facts layer, and a first cut of the Financial World
+      Model.
+    </p>
+    <div class="slogan">
+      Backtest any idea. Simulate any scenario.<br />
+      Automate low-value decisions. Keep humans on high-value judgment.
+    </div>
+  </header>
+
+  <section>
+    <h2>At a glance</h2>
+    <div class="timeline">
+      <div class="q">
+        <span class="label">Q1 · Months 1–3</span>
+        <h3>Research harness + data spine</h3>
+        <p class="muted">DevBox MVP · ClickHouse · simulator CLI · rolling models · first "backtest any idea" demo.</p>
+      </div>
+      <div class="q q2">
+        <span class="label">Q2 · Months 4–6</span>
+        <h3>Scenario &amp; simulation</h3>
+        <p class="muted">Bear / base / bull · Kelly sizing · multi-agent sandbox · Polymarket bridge · option payoff builder.</p>
+      </div>
+      <div class="q q3">
+        <span class="label">Q3 · Months 7–9</span>
+        <h3>Human-in-the-loop operator</h3>
+        <p class="muted">Shadow mode · small-live ($10–$1k) · sim-to-real gap · process validation · Slack / Telegram loop.</p>
+      </div>
+      <div class="q q4">
+        <span class="label">Q4 · Months 10–12</span>
+        <h3>Neo-lab + World Model v0</h3>
+        <p class="muted">Research graph · shared facts · event causal graph · risk / factor exposure · LP-grade report.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Q1 · Research harness and data spine</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="label">User-facing</div>
+        <ul>
+          <li>First end-to-end "backtest any idea" demo</li>
+          <li>Multi-user hosted DevBox session</li>
+        </ul>
+        <div class="label" style="margin-top:1rem;">Research</div>
+        <ul>
+          <li>Rolling regression and hypothesis-test toolbox</li>
+          <li>Predictive ML baselines: linear, tree, DNN</li>
+          <li>Event-trigger backtest primitives</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="label">Infrastructure</div>
+        <ul>
+          <li>DevBox MVP on Google Cloud</li>
+          <li>ClickHouse historical data spine (equities first)</li>
+          <li>Financial historical simulator CLI with realistic fills, spreads, transaction costs</li>
+          <li>Versioned agent tool layer</li>
+        </ul>
+        <div class="label" style="margin-top:1rem;">Exit criteria</div>
+        <ul>
+          <li>One external user runs a non-trivial rolling forecast by text</li>
+          <li>Team of three compounds research in one shared Slack on the same hosted DevBox session</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Q2 · Scenario and simulation layer</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="label">User-facing</div>
+        <ul>
+          <li>"Simulate any scenario" demo</li>
+          <li>Natural-language thesis → sized, asymmetric bet recommendation in one session</li>
+        </ul>
+        <div class="label" style="margin-top:1rem;">Research</div>
+        <ul>
+          <li>Scenario generator with probability elicitation and Kelly sizing</li>
+          <li>Multi-agent simulation sandbox with configurable personalities</li>
+          <li>Option payoff builder: OTM calls, spreads, risk reversals</li>
+          <li>Prediction-market bridge (Polymarket-style)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="label">Infrastructure</div>
+        <ul>
+          <li>News / social / earnings event feed as first-class triggers</li>
+          <li>Sandbox runtime for multi-agent sims, reproducible from a seed</li>
+        </ul>
+        <div class="label" style="margin-top:1rem;">Exit criteria</div>
+        <ul>
+          <li>At least one simulation replayed against a real event after the fact</li>
+          <li>Published process postmortem comparing the simulation to reality</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Q3 · Human-in-the-loop operator</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="label">User-facing</div>
+        <ul>
+          <li>Promote strategy: research → shadow → small-live ($10–$1k)</li>
+          <li>Above $1,000: human approval required</li>
+        </ul>
+        <div class="label" style="margin-top:1rem;">Research</div>
+        <ul>
+          <li>Sim-to-real gap measurement on fills, spreads, market impact, adverse selection</li>
+          <li>Process-validation pipeline: did the stock move for the reason we predicted?</li>
+          <li>Methodology grading with higher statistical efficiency than raw PnL</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="label">Infrastructure</div>
+        <ul>
+          <li>Broker adapters (one equities, one options-capable)</li>
+          <li>Sim-vs-live PnL dashboards, drift alerts</li>
+          <li>Per-user kill switches, capital caps, audit trails</li>
+        </ul>
+        <div class="label" style="margin-top:1rem;">Exit criteria</div>
+        <ul>
+          <li>At least one strategy runs shadow → small-live without human code changes</li>
+          <li>Reason-mismatch alerts trigger human review in-thread in Slack / Telegram</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Q4 · Neo-lab scale-up and Financial World Model v0</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="label">User-facing</div>
+        <ul>
+          <li>5–10 researchers (human + AI) on a shared research graph</li>
+          <li>New members inherit the state of the lab on join</li>
+        </ul>
+        <div class="label" style="margin-top:1rem;">Research</div>
+        <ul>
+          <li>Financial World Model v0: event causal graph across macro, earnings, catalysts, narratives</li>
+          <li>Per-strategy factor / tail-risk exposure</li>
+          <li>Return classification: alpha / carry / risk premium / scenario bet</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="label">Infrastructure</div>
+        <ul>
+          <li>Research graph storage and visualisation</li>
+          <li>Shared-facts layer with per-fact provenance</li>
+          <li>Onboarding replay for new researchers (human or AI)</li>
+        </ul>
+        <div class="label" style="margin-top:1rem;">Exit criteria</div>
+        <ul>
+          <li>Monthly LP-facing report generated directly from the research graph</li>
+          <li>Three external teams on isolated research graphs</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What we are not doing</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Not an orderbook foundation model</h3>
+        <p>The HFT-adjacent, compute-heavy prediction route is already an arms race with the incumbents. We don't enter that fight.</p>
+      </div>
+      <div class="card">
+        <h3>Not a fully autonomous PM</h3>
+        <p>Humans keep high-value decisions. Automation starts at the low-value end — small trades, routine research runs, daily monitoring.</p>
+      </div>
+      <div class="card">
+        <h3>Not a generic coding agent</h3>
+        <p>DevBox is specialised for historical data, statistics, and investment research. The tool layer is the point.</p>
+      </div>
+      <div class="card">
+        <h3>Not opaque recommendations</h3>
+        <p>Every number traces back to the research graph. If you can't explain it from the graph, it doesn't ship to users or LPs.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Validation philosophy</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Outcome axis</h3>
+        <p>Trajectory-averaged PnL across a cohort of trades. Sharpe, drawdown, consistency — the usual.</p>
+      </div>
+      <div class="card">
+        <h3>Process axis</h3>
+        <p>For each closed trade: did the stock move for the reason we predicted? Did the causal chain we wrote down actually fire? Did fundamentals, flow, and sentiment evolve as the thesis implied?</p>
+      </div>
+    </div>
+    <p class="muted">Grading on both axes gives us feedback in weeks instead of years. The process check is a first-class product feature, not an afterthought.</p>
+  </section>
+
+  <section>
+    <h2>Risks and mitigations</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Research-correctness risk</h3>
+        <p>Silent data bugs or leakage. Mitigation: versioned data, deterministic pipelines, shared-facts layer with provenance on every number.</p>
+      </div>
+      <div class="card">
+        <h3>Sim-to-real gap</h3>
+        <p>Simulator flatters live PnL. Mitigation: Q3 gap-measurement program, small-capital shadow trading before any size, per-strategy alerts on drift.</p>
+      </div>
+      <div class="card">
+        <h3>Narrative sims that don't predict</h3>
+        <p>Multi-agent runs feel good but aren't accurate. Mitigation: calibrate against real prediction markets and grade process-validation rates honestly.</p>
+      </div>
+      <div class="card">
+        <h3>Regulatory risk on live trading</h3>
+        <p>Tiny caps, explicit human approval above threshold, full audit trails, conservative broker choice.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ask for LPs</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>What we need</h3>
+        <ul>
+          <li>Capital for a small senior team: agent infra, quant research, financial engineering, frontend.</li>
+          <li>Data licensing for broader coverage — options, alt data, crypto.</li>
+          <li>Introductions to discretionary funds, family offices, and sophisticated individual traders as design partners.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>What LPs get</h3>
+        <ul>
+          <li>Early access to the hosted product.</li>
+          <li>Quarterly reports generated directly from the research graph.</li>
+          <li>A front-row seat to the Financial World Model research program that year two builds on.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cta-row">
+      <a href="deck-lp.html" class="btn primary">Open the LP deck</a>
+      <a href="one-year-plan.md" class="btn">Plan as markdown</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>AlphaDev Neo-Lab · year-one plan · confidential draft.</p>
+    <p>
+      <a href="index.html">← Home</a>
+    </p>
+  </footer>
+</body>
+</html>
