@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Product — AlphaDev Neo-Lab</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand">AlphaDev <span class="accent">·</span> neo-lab</div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="product.html" class="active">Product</a>
+        <a href="motivation.html">Motivation</a>
+        <a href="plan.html">Year-one plan</a>
+        <a href="deck.html">Deck</a>
+        <a href="deck-lp.html">LP deck</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <span class="kicker">Product</span>
+    <h1>DevBox + <span class="accent">AlphaDevBox</span></h1>
+    <p class="lede">
+      DevBox is the open-source platform: a Cloud Managed Agent that runs on
+      Google Cloud and exposes a real tool layer to the model. AlphaDevBox is
+      the financial-research surface built on top of it — the hosted AI
+      researcher a discretionary trader actually uses.
+    </p>
+  </header>
+
+  <section>
+    <h2>Two layers of the same product</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="label">Platform</div>
+        <h3>DevBox</h3>
+        <p>Open-source Cloud Managed Agent. Built on Google Cloud's Cloud Agent SDK. Hosts a persistent agent, the user's own Cloud Agent SDK, and whichever front-end connections a team wants.</p>
+        <ul>
+          <li>Persistent hosted runtime</li>
+          <li>Tool layer for applied math, statistics, and quantitative packages</li>
+          <li>Multi-user sessions wired into Slack / Telegram</li>
+          <li>Versioned research environment with shared facts</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="label">Vertical surface</div>
+        <h3>AlphaDevBox</h3>
+        <p>The financial-research layer. The demo a trader sees: a hosted AI researcher that takes natural language and runs the research end to end.</p>
+        <ul>
+          <li>Backtest any idea in natural language</li>
+          <li>Simulate any scenario — including ones without a historical analog</li>
+          <li>Small-size live deployment with human-in-the-loop escalation</li>
+          <li>Shared research graph across a team</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The three-layer stack</h2>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="label">Layer A</div>
+      <h3>Forecast &amp; Backtest</h3>
+      <p>For any problem with a clear target and enough history.</p>
+      <ul>
+        <li>Turn a view into a forecast ŷₜ.</li>
+        <li>Run rolling regression, tree models, predictive DNNs — walk-forward by default.</li>
+        <li>Trigger-based strategies: price, volume, earnings, news, tweets, prior model outputs.</li>
+        <li>Standard outputs: Sharpe, turnover, drawdown, per-sector attribution, failure-mode table.</li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="label">Layer B</div>
+      <h3>Scenario &amp; Simulation</h3>
+      <p>For problems that don't have a clean historical analog — catalyst bets, regime shifts, asymmetric payoff construction.</p>
+      <ul>
+        <li>Bear / base / bull case with explicit payoffs. Default uniform probability; user can override.</li>
+        <li>Kelly-style sizing on the mapped payoff × probability.</li>
+        <li>Multi-agent what-if simulations, reproducible from a seed.</li>
+        <li>Prediction-market bridge so probabilities are anchored in something external.</li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="label">Layer C</div>
+      <h3>Operator — human-in-the-loop</h3>
+      <p>For actually deploying capital without turning the user into a full-time trader.</p>
+      <ul>
+        <li>Shadow mode and small-capital live deployment to measure the sim-to-real gap.</li>
+        <li>Automation threshold (default $1,000). Below: automated. Above: escalate to human.</li>
+        <li>Per-strategy dashboards: sim vs live PnL, fills, spreads, market impact, adverse selection.</li>
+        <li>Process validation on every closed trade: did the stock move for the reason we predicted?</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="label">Research direction</div>
+      <h3>Financial World Model</h3>
+      <p>Traditional "world models" in quant are market-impact models — useful but local. What is missing is a model of the causal relations between events: macro prints, earnings, geopolitics, sector narratives. Year one builds the scaffolding; a full model is a multi-year program.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Why this is not a coding agent</h2>
+    <p>
+      A generic coding agent writes code. AlphaDevBox calls code. The research
+      workflow — the data, the toolbox, the simulator, the operator — lives
+      inside the agent harness, not outside it. The user's natural-language
+      intent becomes a real research procedure, not a throwaway script.
+    </p>
+    <div class="grid-2">
+      <div class="card">
+        <div class="label">What lives inside</div>
+        <h3>Tool layer</h3>
+        <ul>
+          <li>Applied mathematics and statistics libraries</li>
+          <li>Quantitative research packages</li>
+          <li>Rolling regression and hypothesis testing toolboxes</li>
+          <li>ClickHouse historical data</li>
+          <li>Financial historical simulator</li>
+          <li>Persistent state across long research sessions</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="label">What we get from it</div>
+        <h3>Research primitives</h3>
+        <ul>
+          <li>Natural-language backtests with point-in-time correctness</li>
+          <li>Scenario runs that can be replayed after the event</li>
+          <li>Asymmetric bet construction as a first-class operation</li>
+          <li>Process-based validation alongside realised PnL</li>
+          <li>Shared-facts collaboration across a multi-user team</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Collaboration model</h2>
+    <p>
+      The mental model is a group of programmers doing compound engineering in
+      a shared Slack — except the work product is research on historical
+      financial data rather than code. Multiple users join the same hosted
+      DevBox session. They share the same tool layer, the same data, the same
+      facts. Every idea, backtest, scenario, and postmortem is a node on a
+      research graph. New members inherit the state of the lab instead of
+      starting from an empty spreadsheet.
+    </p>
+  </section>
+
+  <section>
+    <h2>Integration path</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Preferred: our hosted product</h3>
+        <p>DevBox on Google Cloud + persistent runtime + our tool layer + multi-user collaboration. This is where the full stack shows up, including the operator and the research graph.</p>
+      </div>
+      <div class="card">
+        <h3>Alternative: CLI into your own coding agent</h3>
+        <p>The ClickHouse historical data and the financial historical simulator can also be exposed as a CLI that plugs into external coding agents. It works — but it trades away the shared environment, which is the piece we care about most.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Open-source core</h2>
+    <p>
+      DevBox itself is open source. The open-source piece is not any single
+      feature — it's the framework: take the applied math, statistics, and
+      quantitative-research tooling that a researcher would normally run by
+      hand, and expose it as a reusable tool layer inside an agent harness
+      running on a persistent cloud runtime. The hosted AlphaDevBox, the
+      collaboration layer, the financial data, and paid access sit on top.
+    </p>
+    <div class="cta-row">
+      <a href="plan.html" class="btn primary">See the year-one plan</a>
+      <a href="motivation.html" class="btn">Read the motivation</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>AlphaDev Neo-Lab · product page · confidential draft.</p>
+    <p>
+      <a href="index.html">← Home</a>
+    </p>
+  </footer>
+</body>
+</html>

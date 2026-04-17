@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AlphaDev Neo-Lab — LP investor deck</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" id="theme" />
+  <style>
+    :root {
+      --accent: #7cf3c8;
+      --accent-2: #ffb86b;
+      --accent-3: #9ad0ff;
+      --warn: #f178b6;
+      --muted: #9aa4b2;
+    }
+    .reveal {
+      font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+      color: #e8ecf1;
+    }
+    .reveal h1, .reveal h2, .reveal h3 {
+      text-transform: none;
+      letter-spacing: -0.01em;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .reveal h1 { font-size: 2.4em; }
+    .reveal h2 { font-size: 1.6em; }
+    .reveal h3 { font-size: 1.15em; color: var(--accent); }
+    .reveal .accent { color: var(--accent); }
+    .reveal .accent-2 { color: var(--accent-2); }
+    .reveal .warn { color: var(--warn); }
+    .reveal .muted { color: var(--muted); font-size: 0.8em; }
+    .reveal .tag {
+      display: inline-block;
+      padding: 0.15em 0.6em;
+      border: 1px solid var(--accent);
+      border-radius: 1em;
+      font-size: 0.55em;
+      color: var(--accent);
+      margin-right: 0.5em;
+      vertical-align: middle;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .reveal ul { line-height: 1.5; }
+    .reveal li { margin-bottom: 0.35em; }
+    .reveal .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2em;
+      text-align: left;
+    }
+    .reveal .three-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5em;
+      text-align: left;
+    }
+    .reveal .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 1em 1.2em;
+    }
+    .reveal .card h3 { margin-top: 0; }
+    .reveal .slogan {
+      font-size: 1.3em;
+      line-height: 1.45;
+      color: #fff;
+      border-left: 4px solid var(--accent);
+      padding: 0.4em 0 0.4em 0.8em;
+      text-align: left;
+    }
+    .reveal .slogan.warn { border-left-color: var(--accent-2); }
+    .reveal .kpi {
+      font-size: 0.9em;
+      color: var(--muted);
+    }
+    .reveal table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75em;
+    }
+    .reveal th, .reveal td {
+      padding: 0.55em 0.7em;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      vertical-align: top;
+    }
+    .reveal th {
+      color: var(--muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.85em;
+    }
+    .reveal td.q1 { color: var(--accent); }
+    .reveal td.q2 { color: var(--accent-3); }
+    .reveal td.q3 { color: var(--accent-2); }
+    .reveal td.q4 { color: var(--warn); }
+    .reveal footer {
+      position: fixed;
+      bottom: 0.6em;
+      left: 1em;
+      font-size: 0.6em;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      z-index: 30;
+    }
+  </style>
+</head>
+<body>
+  <footer>AlphaDev Neo-Lab · LP deck · confidential draft</footer>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- 1. Title -->
+      <section>
+        <h1>AlphaDev Neo-Lab</h1>
+        <h2 class="accent">An AI researcher for investment</h2>
+        <p class="muted">Merging quant systematic and 主观 investing · LP investor deck</p>
+      </section>
+
+      <!-- 2. Problem -->
+      <section>
+        <h2>The gap in investing</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>Quant systematic</h3>
+            <p class="muted">Strong on execution. Weak on questions that cannot be cleanly backtested.</p>
+          </div>
+          <div class="card">
+            <h3>Discretionary (主观)</h3>
+            <p class="muted">Strong on reading the world. Weak on repeatable, falsifiable research.</p>
+          </div>
+        </div>
+        <p class="muted" style="margin-top:1em;">
+          Two camps, barely overlapping workflows. Nobody has given the
+          discretionary trader a quant-grade research harness, and nobody has
+          given quant tooling a real world-model layer.
+        </p>
+      </section>
+
+      <!-- 3. Thesis -->
+      <section>
+        <h2>Thesis</h2>
+        <div class="slogan">
+          The AI researcher that can do <span class="accent">both</span> — run
+          a rigorous backtest when history supports it, and reason through a
+          scenario when it doesn't — wins the layer above traditional quant.
+        </div>
+        <p class="muted" style="margin-top:1em;">
+          Not a stock picker. Not a coding agent. A hosted, persistent research
+          system a human trader uses in natural language, and a team can
+          compound on.
+        </p>
+      </section>
+
+      <!-- 4. Product -->
+      <section>
+        <h2>Product — three layers on one runtime</h2>
+        <div class="three-col">
+          <div class="card">
+            <h3>Research</h3>
+            <p>Forecast &amp; backtest any idea. Rolling models. Trigger-based strategies. Attribution.</p>
+          </div>
+          <div class="card">
+            <h3>Simulation</h3>
+            <p>Scenario &amp; multi-agent what-if. Asymmetric payoffs. Kelly sizing. Calibrated against prediction markets.</p>
+          </div>
+          <div class="card">
+            <h3>Operator</h3>
+            <p>Shadow → small-live. Below $1k: automated. Above $1k: human. Validate process, not just PnL.</p>
+          </div>
+        </div>
+        <p class="muted" style="margin-top:1em;">All wired into DevBox — an open-source Cloud Managed Agent on Google Cloud with a real tool layer.</p>
+      </section>
+
+      <!-- 5. Market -->
+      <section>
+        <h2>Who pays — and who doesn't</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>Paying users</h3>
+            <ul>
+              <li>Discretionary traders who want repeatable tests but don't want to code</li>
+              <li>Small investment teams that want shared compound research</li>
+              <li>Quant-curious generalists without formal methodology training</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Not our users</h3>
+            <ul>
+              <li>Large systematic funds running orderbook foundation models at scale</li>
+              <li>Teams that want to outsource engineering, not do research</li>
+              <li>Black-box signal buyers who don't care about process</li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top:1em;">We sell research capability, not outsourced engineering.</p>
+      </section>
+
+      <!-- 6. Competitive positioning -->
+      <section>
+        <h2>Competitive positioning</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>Too expensive to fight</h3>
+            <ul>
+              <li>Orderbook / HFT foundation models (Jane Street, XTX, HRT style)</li>
+              <li>Generic coding agents — they solve a different problem</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Where we win</h3>
+            <ul>
+              <li>Catalyst-based, directional, scenario-driven research</li>
+              <li>Small teams that need the full stack on one runtime</li>
+              <li>Multi-user compound research — no one else does this</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. Why now -->
+      <section>
+        <h2>Why now</h2>
+        <ul style="text-align:left;">
+          <li>Foundation-model capability is finally strong enough to act as a <em>research orchestrator</em>, not just a code completer.</li>
+          <li>Cloud Agent SDKs give us a hosted persistent runtime — the missing piece for multi-user research.</li>
+          <li>Historical data infrastructure (ClickHouse, simulators) has matured to the point where a small team can operate it.</li>
+          <li>Discretionary traders now expect an AI collaborator. The question is which one.</li>
+        </ul>
+      </section>
+
+      <!-- 8. Timeline table -->
+      <section>
+        <h2>Year-one plan</h2>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:13%;">Quarter</th>
+              <th style="width:30%;">Theme</th>
+              <th>Deliverable</th>
+              <th>Exit criteria</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="q1">Q1</td>
+              <td class="q1">Research harness + data spine</td>
+              <td>DevBox MVP, ClickHouse, simulator CLI, rolling models</td>
+              <td>External user runs a non-trivial rolling forecast by text</td>
+            </tr>
+            <tr>
+              <td class="q2">Q2</td>
+              <td class="q2">Scenario &amp; simulation</td>
+              <td>Bear/base/bull, Kelly sizing, multi-agent sandbox, option builder</td>
+              <td>One sim replayed vs reality with published postmortem</td>
+            </tr>
+            <tr>
+              <td class="q3">Q3</td>
+              <td class="q3">Human-in-the-loop operator</td>
+              <td>Shadow → $10–$1k live, sim-to-real gap, process validation</td>
+              <td>Strategy runs shadow → live without code changes</td>
+            </tr>
+            <tr>
+              <td class="q4">Q4</td>
+              <td class="q4">Neo-lab + World Model v0</td>
+              <td>Research graph, shared facts, event causal graph, LP report</td>
+              <td>Monthly LP report generated directly from the graph</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 9. What success looks like -->
+      <section>
+        <h2>End-of-year-one outcome</h2>
+        <ul style="text-align:left;">
+          <li>A hosted AI researcher a discretionary trader can talk to in natural language.</li>
+          <li>A scenario simulator that can reason about events that have never happened.</li>
+          <li>An operator that automates small trades and escalates big trades.</li>
+          <li>A multi-user neo-lab running compound research on a shared facts layer.</li>
+          <li>A first cut of a Financial World Model — enough to ground year two.</li>
+        </ul>
+      </section>
+
+      <!-- 10. Validation -->
+      <section>
+        <h2>Validation — process, not just PnL</h2>
+        <div class="slogan">
+          Markets are noisy. A good process can lose; a bad one can win.
+          Grading on realised PnL alone is slow and misleading.
+        </div>
+        <div class="two-col" style="margin-top:1em;">
+          <div class="card">
+            <h3>Outcome axis</h3>
+            <p>Trajectory-averaged PnL across trades.</p>
+          </div>
+          <div class="card">
+            <h3>Process axis</h3>
+            <p>Did the stock move for the reason we predicted? This is the faster signal.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11. Business model -->
+      <section>
+        <h2>Business model</h2>
+        <div class="three-col">
+          <div class="card">
+            <h3>Open-source core</h3>
+            <p>DevBox platform. Lowers trust cost. Attracts contributors.</p>
+          </div>
+          <div class="card">
+            <h3>Hosted paid surface</h3>
+            <p>AlphaDevBox. Individual seats, team workspaces, usage-based compute.</p>
+          </div>
+          <div class="card">
+            <h3>Team / fund tier</h3>
+            <p>Private facts graph, audit trails, compliance surfaces.</p>
+          </div>
+        </div>
+        <p class="accent" style="margin-top:1em;">Users pay for research capability, not outsourced engineering.</p>
+      </section>
+
+      <!-- 12. Risks -->
+      <section>
+        <h2>Risks &amp; mitigations</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>Research correctness</h3>
+            <p class="muted">Versioned data, deterministic pipelines, provenance on every number.</p>
+          </div>
+          <div class="card">
+            <h3>Sim-to-real gap</h3>
+            <p class="muted">Q3 measurement program. Small capital before size. Strategy-level drift alerts.</p>
+          </div>
+          <div class="card">
+            <h3>Sims that don't predict</h3>
+            <p class="muted">Calibrate against real prediction markets. Publish process-validation rates honestly.</p>
+          </div>
+          <div class="card">
+            <h3>Regulatory risk</h3>
+            <p class="muted">Tiny caps, human approval above threshold, audit trails, conservative broker choice.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 13. Team need -->
+      <section>
+        <h2>Team we're staffing in year one</h2>
+        <ul style="text-align:left;">
+          <li>Agent infrastructure — persistent runtime, tool layer, collaboration surface</li>
+          <li>Quant research — rolling models, backtesting rigor, factor / risk analysis</li>
+          <li>Financial engineering — data spine, simulator, broker integrations</li>
+          <li>Frontend &amp; product — the surfaces a trader actually touches</li>
+        </ul>
+        <p class="muted" style="margin-top:1em;">Small, senior, research-first. No layering.</p>
+      </section>
+
+      <!-- 14. What LPs get -->
+      <section>
+        <h2>What LPs get</h2>
+        <ul style="text-align:left;">
+          <li>Early access to the hosted product.</li>
+          <li>Quarterly reports <em>generated directly from the research graph</em> — every number traceable.</li>
+          <li>Warm introductions from us to discretionary funds, family offices, and design partners.</li>
+          <li>A front-row seat to the Financial World Model research program that year two builds on.</li>
+        </ul>
+      </section>
+
+      <!-- 15. Ask -->
+      <section>
+        <h2>Ask</h2>
+        <div class="slogan">
+          A focused year-one raise to ship the four quarterly milestones,
+          anchor the first design partners, and start the Financial World Model
+          research program.
+        </div>
+        <p class="muted" style="margin-top:1em;">Round size, valuation, and terms discussed offline.</p>
+      </section>
+
+      <!-- 16. Close -->
+      <section>
+        <h1>AlphaDev Neo-Lab</h1>
+        <p class="slogan">
+          Backtest any idea. Simulate any scenario.<br />
+          Automate low-value decisions. Keep humans on high-value judgment.
+        </p>
+        <p class="muted" style="margin-top:1.5em;">Let's build it together.</p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      transition: "slide",
+      controls: true,
+      progress: true,
+      slideNumber: "c/t",
+      width: 1280,
+      height: 800,
+      margin: 0.08,
+    });
+  </script>
+</body>
+</html>
