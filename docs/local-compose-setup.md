@@ -166,6 +166,11 @@ All set via `.env` or shell. The justfile loads `.env` automatically.
 | `TELEGRAM_BOT_TOKEN` | — | Telegram bot token |
 | `ANTHROPIC_API_KEY` | — | Anthropic API key for Claude |
 | `CLAUDE_CODE_OAUTH_TOKEN` | — | Alternative: Claude OAuth token |
+| `DEVBOX_AGENT_RUNTIME` | `claude` | Set to `vertex-openai` for the limited Google Cloud GLM chat runtime |
+| `VERTEX_OPENAI_PROJECT_ID` | — | Google Cloud project for `vertex-openai` |
+| `VERTEX_OPENAI_LOCATION` | `global` | Vertex OpenAI-compatible endpoint location |
+| `VERTEX_OPENAI_MODEL` | `zai-org/glm-5-maas` | Vertex OpenAI-compatible GLM model |
+| `GOOGLE_OAUTH_ACCESS_TOKEN` | — | Local-only OAuth token for GLM runtime; prefer workload identity in cloud |
 | `GITHUB_TOKEN` | — | GitHub PAT for private repo cloning |
 
 For GitHub App auth, see `docs/github-app-repo-auth.md`.

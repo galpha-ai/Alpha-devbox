@@ -44,7 +44,8 @@ The **runner** is a Node.js process inside a container that stays alive across m
 
 ### Runner (`container/`)
 
-- `agent-runner/src/index.ts`: In-container entry point. Reads `ContainerInput` from run `input.json`, invokes Claude Code SDK via `query()`, polls IPC for follow-up messages using `MessageStream`, writes ordered run output files and `done.json`, archives transcripts on compaction, and sanitizes Bash tool invocations to strip secrets from subprocess env.
+- `agent-runner/src/index.ts`: In-container entry point. Reads `ContainerInput` from run `input.json`, runs the selected model runtime, polls IPC for follow-up messages, writes ordered run output files and `done.json`, and sanitizes Bash tool invocations to strip secrets from subprocess env. The default runtime invokes Claude Code SDK via `query()`. `DEVBOX_AGENT_RUNTIME=vertex-openai` uses Google Cloud's OpenAI-compatible GLM endpoint as a limited chat runtime without Claude Code tools.
+- `agent-runner/src/vertex-openai.ts`: Google Cloud Vertex OpenAI-compatible chat client. Builds the endpoint, resolves Google OAuth from an explicit token or workload identity metadata, and extracts assistant text from GLM responses.
 - `agent-runner/src/error-logging.ts`: Shared runner helper for secret-safe error serialization and log formatting. Keeps SDK error payload sanitization separate from query loop control flow.
 - `agent-runner/src/ipc-mcp-stdio.ts`: MCP server exposed to Claude Code inside the container. Provides tools for sending messages and scheduling tasks.
 - `entrypoint.sh`: Container initialization. Reads the seed manifest from `/session`, seeds `/workspace` via git clone (gated by `.seeded`), reads seed auth secrets from run `input.json`, persists per-owner GitHub tokens for `gh`, and then launches agent-runner.

@@ -30,6 +30,11 @@ import {
   sanitizeForLogging,
 } from './error-logging.js';
 import { logger } from './logger.js';
+import {
+  callVertexOpenAIChat,
+  isVertexOpenAIRuntime,
+  VertexOpenAIMessage,
+} from './vertex-openai.js';
 
 interface ThinkingConfig {
   type: 'adaptive' | 'enabled' | 'disabled';
@@ -239,6 +244,8 @@ function createPreCompactHook(assistantName?: string): HookCallback {
 const SECRET_ENV_VARS = [
   'ANTHROPIC_API_KEY',
   'CLAUDE_CODE_OAUTH_TOKEN',
+  'GOOGLE_ACCESS_TOKEN',
+  'GOOGLE_OAUTH_ACCESS_TOKEN',
   'DEVBOX_GIT_AUTH_TOKEN',
   'DEVBOX_GIT_AUTH_TOKENS',
   'GITHUB_PAT',
@@ -518,7 +525,9 @@ async function runQuery(
             }
           : undefined,
         ...(containerInput.model ? { model: containerInput.model } : {}),
-        ...(containerInput.thinking ? { thinking: containerInput.thinking } : {}),
+        ...(containerInput.thinking
+          ? { thinking: containerInput.thinking }
+          : {}),
         ...(containerInput.effort ? { effort: containerInput.effort } : {}),
         allowedTools: [
           'Bash',
@@ -612,10 +621,7 @@ async function runQuery(
                   parts.length > 0
                     ? parts.join(' ')
                     : JSON.stringify(input).slice(0, 200);
-                logger.info(
-                  { tool: block.name, input: detail },
-                  'Tool use',
-                );
+                logger.info({ tool: block.name, input: detail }, 'Tool use');
                 break;
               }
               case 'thinking':
@@ -674,10 +680,7 @@ async function runQuery(
         );
         if (m.subtype === 'error_during_execution') {
           sdkErrorResult = sanitizeForLogging(m, secretValues);
-          logger.error(
-            { error: sdkErrorResult },
-            'SDK error during execution',
-          );
+          logger.error({ error: sdkErrorResult }, 'SDK error during execution');
           writeOutput({
             status: 'error',
             result: null,
@@ -700,10 +703,7 @@ async function runQuery(
     // payload, swallow the process-exit error and return normally so
     // main() can write done.json with the correct details.
     if (sdkErrorResult) {
-      logger.warn(
-        { err: loopErr },
-        'SDK process exited after error result',
-      );
+      logger.warn({ err: loopErr }, 'SDK process exited after error result');
     } else {
       throw loopErr;
     }
@@ -720,6 +720,109 @@ async function runQuery(
     'Query done',
   );
   return { newSessionId, lastAssistantUuid, closedDuringQuery, sdkErrorResult };
+}
+
+async function runVertexOpenAILoop(
+  initialPrompt: string,
+  initialSessionId: string | undefined,
+  containerInput: ContainerInput,
+  env: Record<string, string | undefined>,
+): Promise<void> {
+  const sessionId = initialSessionId || createVertexSessionId();
+  const messages: VertexOpenAIMessage[] = [
+    { role: 'system', content: buildVertexOpenAISystemPrompt(containerInput) },
+  ];
+  const maxHistoryMessages = parsePositiveEnvInteger(
+    env.VERTEX_OPENAI_HISTORY_MESSAGES,
+    16,
+  );
+
+  let prompt = initialPrompt;
+  while (true) {
+    messages.push({ role: 'user', content: prompt });
+    trimVertexHistory(messages, maxHistoryMessages);
+
+    logger.info(
+      {
+        sessionId,
+        runtime: 'vertex-openai',
+        promptLength: prompt.length,
+      },
+      'Starting Vertex OpenAI query',
+    );
+
+    const result = await callVertexOpenAIChat(messages, env);
+    messages.push({ role: 'assistant', content: result });
+    trimVertexHistory(messages, maxHistoryMessages);
+
+    writeOutput({
+      status: 'success',
+      result: result || null,
+      newSessionId: sessionId,
+    });
+
+    logger.info(
+      {
+        sessionId,
+        resultLength: result.length,
+      },
+      'Vertex OpenAI query done',
+    );
+
+    const nextMessage = await waitForIpcMessage();
+    if (nextMessage === null) {
+      logger.info('Close sentinel received, exiting Vertex OpenAI runtime');
+      break;
+    }
+    prompt = nextMessage;
+  }
+
+  writeDone({ status: 'success' });
+}
+
+function buildVertexOpenAISystemPrompt(containerInput: ContainerInput): string {
+  const lines = [
+    `You are ${containerInput.assistantName || 'Devbox Agent'}.`,
+    'You are running on the Google Cloud Vertex OpenAI-compatible GLM runtime.',
+    'This cost-controlled runtime does not expose Claude Code built-in tools, shell commands, file edits, MCP tools, subagents, or persistent Claude session state.',
+    'If the user asks for repository edits, command execution, PR creation, deployments, or other tool-dependent work, state that this runtime cannot execute those actions and that the request should be routed to the Claude runtime or a future GLM tool runtime.',
+  ];
+
+  const globalClaudeMdPath = '/workspace/global/CLAUDE.md';
+  if (fs.existsSync(globalClaudeMdPath)) {
+    lines.push(fs.readFileSync(globalClaudeMdPath, 'utf-8'));
+  }
+
+  return lines.join('\n\n');
+}
+
+function createVertexSessionId(): string {
+  const suffix = Math.random().toString(36).slice(2, 10);
+  return `vertex-openai-${Date.now()}-${suffix}`;
+}
+
+function trimVertexHistory(
+  messages: VertexOpenAIMessage[],
+  maxHistoryMessages: number,
+): void {
+  const systemMessage = messages[0];
+  const history = messages.slice(1);
+  if (history.length <= maxHistoryMessages) return;
+  messages.splice(
+    0,
+    messages.length,
+    systemMessage,
+    ...history.slice(history.length - maxHistoryMessages),
+  );
+}
+
+function parsePositiveEnvInteger(
+  value: string | undefined,
+  fallback: number,
+): number {
+  if (!value) return fallback;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
 async function main(): Promise<void> {
@@ -799,6 +902,29 @@ async function main(): Promise<void> {
       'Draining pending IPC messages into initial prompt',
     );
     prompt += '\n' + pending.join('\n');
+  }
+
+  if (isVertexOpenAIRuntime(sdkEnv)) {
+    try {
+      await runVertexOpenAILoop(prompt, sessionId, containerInput, sdkEnv);
+      return;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      const errorDetails = sanitizeForLogging(err, secretValues);
+      logger.error({ err, details: errorDetails }, 'Vertex OpenAI agent error');
+      writeOutput({
+        status: 'error',
+        result: null,
+        newSessionId: sessionId,
+        error: errorMessage,
+      });
+      writeDone({
+        status: 'error',
+        error: errorMessage,
+        details: errorDetails,
+      });
+      process.exit(1);
+    }
   }
 
   // Query loop: run query → wait for IPC message → run new query → repeat

@@ -257,9 +257,17 @@ All supported environment variables, listed in order of precedence (env vars ove
 | Variable | Description |
 |----------|-------------|
 | `DEVBOX_DATA_ROOT` | Root directory for runtime data. Overrides `data_root` in config. |
+| `DEVBOX_AGENT_RUNTIME` | Runner runtime. Defaults to `claude`. Set to `vertex-openai` to use the Google Cloud OpenAI-compatible GLM runtime. |
 | `ANTHROPIC_API_KEY` | Claude API key for the runner to authenticate with the Anthropic API. |
 | `ANTHROPIC_BASE_URL` | Override the Anthropic API base URL (e.g., for proxies or Vertex AI). |
 | `CLAUDE_CODE_OAUTH_TOKEN` | Alternative to API key: Claude Code OAuth token for authentication. |
+| `VERTEX_OPENAI_PROJECT_ID` | Google Cloud project ID for `DEVBOX_AGENT_RUNTIME=vertex-openai`. Falls back to `GOOGLE_CLOUD_PROJECT`, `GCLOUD_PROJECT`, then `ANTHROPIC_VERTEX_PROJECT_ID`. |
+| `VERTEX_OPENAI_LOCATION` | Vertex OpenAI-compatible endpoint location. Defaults to `global`. |
+| `VERTEX_OPENAI_MODEL` | Vertex OpenAI-compatible model. Defaults to `zai-org/glm-5-maas`. |
+| `VERTEX_OPENAI_BASE_URL` | Optional full override for the OpenAI-compatible chat completions endpoint. |
+| `GOOGLE_OAUTH_ACCESS_TOKEN` | Optional local Google OAuth token for `vertex-openai`; cloud deployments should prefer workload identity. |
+
+`vertex-openai` is a cost-controlled chat runtime. It does not provide Claude Code's built-in filesystem tools, shell execution, MCP tools, subagents, compaction, or Claude session resume semantics. Use it only for agents where ordinary chat is acceptable until a GLM tool runtime exists.
 
 ### Telegram
 

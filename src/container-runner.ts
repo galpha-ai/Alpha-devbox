@@ -762,6 +762,8 @@ async function readSecrets(
     'CLOUD_ML_REGION',
     'ANTHROPIC_VERTEX_PROJECT_ID',
     'ANTHROPIC_DEFAULT_SONNET_MODEL',
+    'GOOGLE_ACCESS_TOKEN',
+    'GOOGLE_OAUTH_ACCESS_TOKEN',
   ]) {
     const val = process.env[key];
     if (val) result[key] = val;
@@ -1046,6 +1048,17 @@ export async function runContainerAgent(
 
   // Forward model/API configuration from controller env to runner pods.
   for (const key of [
+    'DEVBOX_AGENT_RUNTIME',
+    'AGENT_RUNTIME',
+    'VERTEX_OPENAI_PROJECT_ID',
+    'VERTEX_OPENAI_LOCATION',
+    'VERTEX_OPENAI_MODEL',
+    'VERTEX_OPENAI_BASE_URL',
+    'VERTEX_OPENAI_MAX_TOKENS',
+    'VERTEX_OPENAI_TEMPERATURE',
+    'VERTEX_OPENAI_HISTORY_MESSAGES',
+    'GOOGLE_CLOUD_PROJECT',
+    'GCLOUD_PROJECT',
     'CLAUDE_CODE_USE_VERTEX',
     'CLOUD_ML_REGION',
     'ANTHROPIC_VERTEX_PROJECT_ID',

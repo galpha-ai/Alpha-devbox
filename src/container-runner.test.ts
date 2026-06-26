@@ -312,6 +312,70 @@ describe('container-runner timeout behavior (file protocol)', () => {
     ).toContain('Workspace instructions');
   });
 
+  it('forwards Vertex OpenAI runtime config and keeps OAuth token in input secrets', async () => {
+    const previousEnv = {
+      DEVBOX_AGENT_RUNTIME: process.env.DEVBOX_AGENT_RUNTIME,
+      VERTEX_OPENAI_PROJECT_ID: process.env.VERTEX_OPENAI_PROJECT_ID,
+      VERTEX_OPENAI_LOCATION: process.env.VERTEX_OPENAI_LOCATION,
+      VERTEX_OPENAI_MODEL: process.env.VERTEX_OPENAI_MODEL,
+      GOOGLE_OAUTH_ACCESS_TOKEN: process.env.GOOGLE_OAUTH_ACCESS_TOKEN,
+    };
+    process.env.DEVBOX_AGENT_RUNTIME = 'vertex-openai';
+    process.env.VERTEX_OPENAI_PROJECT_ID = 'g-alpha-1680510686959';
+    process.env.VERTEX_OPENAI_LOCATION = 'global';
+    process.env.VERTEX_OPENAI_MODEL = 'zai-org/glm-5-maas';
+    process.env.GOOGLE_OAUTH_ACCESS_TOKEN = 'ya29.test-token';
+
+    let spawnConfig: ContainerSpawnConfig | undefined;
+    let inputPayload: any;
+    const runtime = makeRuntime((config) => {
+      spawnConfig = config;
+      const runDir = containerPathToHostPath(config, config.env.DEVBOX_RUN_DIR);
+      inputPayload = JSON.parse(
+        fs.readFileSync(path.join(runDir, 'input.json'), 'utf-8'),
+      );
+      fs.mkdirSync(path.join(runDir, 'out'), { recursive: true });
+      fs.writeFileSync(
+        path.join(runDir, 'done.json'),
+        JSON.stringify({ status: 'success' }),
+      );
+      return {
+        id: 'test-container',
+        waitForExit: async () => ({ code: 0 }),
+        stop: async () => {},
+      };
+    });
+
+    try {
+      const result = await runContainerAgent(
+        runtime,
+        testGroup,
+        testInput,
+        () => {},
+      );
+
+      expect(result.status).toBe('success');
+      expect(spawnConfig?.env.DEVBOX_AGENT_RUNTIME).toBe('vertex-openai');
+      expect(spawnConfig?.env.VERTEX_OPENAI_PROJECT_ID).toBe(
+        'g-alpha-1680510686959',
+      );
+      expect(spawnConfig?.env.VERTEX_OPENAI_LOCATION).toBe('global');
+      expect(spawnConfig?.env.VERTEX_OPENAI_MODEL).toBe('zai-org/glm-5-maas');
+      expect(spawnConfig?.env.GOOGLE_OAUTH_ACCESS_TOKEN).toBeUndefined();
+      expect(inputPayload.secrets.GOOGLE_OAUTH_ACCESS_TOKEN).toBe(
+        'ya29.test-token',
+      );
+    } finally {
+      for (const [key, value] of Object.entries(previousEnv)) {
+        if (value === undefined) {
+          delete process.env[key];
+        } else {
+          process.env[key] = value;
+        }
+      }
+    }
+  });
+
   it('logs resume diagnostics when done.json reports an error', async () => {
     const runtime = makeRuntime((config) => {
       const runDir = containerPathToHostPath(config, config.env.DEVBOX_RUN_DIR);
