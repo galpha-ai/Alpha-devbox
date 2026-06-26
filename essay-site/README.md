@@ -8,8 +8,11 @@ dependencies.
 
 ## Files
 
-- `index.html` — the generated, self-contained page (open it directly in a browser).
-- `build.mjs` — dependency-free generator that converts the source markdown to `index.html`.
+- `index.html` — generated Chinese page (open directly in a browser).
+- `en.html` — generated English page. A 中文 / EN switch sits in each masthead.
+- `build.mjs` — dependency-free generator that converts the source markdown
+  (`physical-intelligence-2030.md` and `physical-intelligence-2030.en.md`)
+  into both pages.
 
 ## Regenerate
 
@@ -27,8 +30,11 @@ This re-reads `docs/essays/physical-intelligence-2030.md` and overwrites
 `index.html` is fully self-contained (CSS inlined, no external requests), so any
 static host works:
 
-- **GitHub Pages** — a workflow at `.github/workflows/essay-site.yml` publishes
-  this folder automatically on pushes to the default branch (enable Pages →
-  "GitHub Actions" in repo settings).
-- **Locally** — just open `essay-site/index.html`, or serve the folder:
-  `python3 -m http.server -d essay-site`.
+- **GitHub Pages** — `.github/workflows/essay-site.yml` publishes this folder
+  automatically. One-time setup: repo **Settings → Pages → Build and deployment
+  → Source: "GitHub Actions"**. After that, every push that touches the essay or
+  site redeploys it. The workflow is wired to run on both `main` and the
+  `claude/robotics-future-essay-18rtk8` branch, so it can go live before the PR
+  is merged. Live URL: `https://galpha-ai.github.io/Alpha-devbox/`.
+- **Locally** — open `essay-site/index.html`, or serve the folder:
+  `python3 -m http.server -d essay-site` then visit `http://localhost:8000`.

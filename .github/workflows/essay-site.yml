@@ -5,10 +5,12 @@ name: Publish essay site
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - claude/robotics-future-essay-18rtk8
     paths:
       - "essay-site/**"
-      - "docs/essays/physical-intelligence-2030.md"
+      - "docs/essays/physical-intelligence-2030*.md"
       - ".github/workflows/essay-site.yml"
   workflow_dispatch:
 
