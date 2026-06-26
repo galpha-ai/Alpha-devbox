@@ -1,13 +1,20 @@
 name: Publish essay site
 
-# Publishes essay-site/ to GitHub Pages.
-# Enable in repo Settings → Pages → Build and deployment → Source: "GitHub Actions".
+# Publishes essay-site/ to GitHub Pages on pushes to main.
+#
+# ONE-TIME SETUP (required once, by a repo admin):
+#   repo Settings → Pages → Build and deployment → Source: "GitHub Actions".
+# The Actions token cannot self-enable Pages under this org's policy, so this
+# toggle must be flipped manually. After that, every push to main that touches
+# the essay or the site redeploys automatically to:
+#   https://galpha-ai.github.io/Alpha-devbox/
+#
+# To deploy from a feature branch before merging, run this workflow manually
+# (Actions → "Publish essay site" → Run workflow → pick the branch).
 
 on:
   push:
-    branches:
-      - main
-      - claude/robotics-future-essay-18rtk8
+    branches: [main]
     paths:
       - "essay-site/**"
       - "docs/essays/physical-intelligence-2030*.md"
@@ -28,11 +35,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Regenerate index.html from source markdown
+      - name: Regenerate pages from source markdown
         run: node essay-site/build.mjs
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: essay-site
