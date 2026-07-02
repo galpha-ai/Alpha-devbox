@@ -2,7 +2,7 @@
 
 ### A roadmap for the robotics decade — from bits to atoms, 2025–2030
 
-*Part I of a series. Section One is the technology; Section Two maps each technical thesis to tradable exposure, ending in tickers. Part II covers new verbs and robots-building-robots; Part III is the case against this article's own timing.*
+*Part I of four. This part is the technology. Part II covers new verbs and robots-building-robots; Part III (the Public-Markets Map) routes each thesis to listed companies and tickers; Part IV is the case against this article's own timing.*
 
 > Over the past decade we taught machines to think. Over the next five years we will let them act. This is a judgment call on how that happens — the architecture, the data bet, the hardware, and the money.
 
@@ -26,8 +26,6 @@ Everything else is in service of that bet, and there are four supporting bets th
 The road is gated by four locks — **architecture, data, hands, and the physical supply chain.** Section One walks them. Section Two prices them.
 
 ---
-
-# SECTION ONE — THE TECHNOLOGY
 
 ## 1. Architecture: two brains, split by time
 
@@ -230,81 +228,14 @@ The endgame is recursion: robots on the line that **assemble** robots (and cars,
 6. **Hardware decides who ships:** magnets, reducers, QDD-vs-tendon, and drive-control know-how — half of this is NdFeB and gearboxes.
 7. **Robots building robots is soft takeoff**, gated at the fab.
 
----
+## 7. Where the value accrues → the Public-Markets Map
 
-# SECTION TWO — THE INVESTMENT MAP
+The technology above dictates the capital structure. If the model layer converges and open-sources, there is **no moat in the brain** — value migrates to the two ends of a **barbell**: the **data & verification** that feeds the recipe, and the **actuator supply-chain choke points** (precision reducers, planetary roller screws, magnets, and the grinding machines behind them) that no software can conjure. Integrators are squeezed in the middle unless a fleet is provably a data asset.
 
-*Not investment advice. Every name below is a tradable proxy for a technical thesis in Section One; sizing, valuation, and timing are yours. Many of the best pure-plays (Figure, Physical Intelligence, Skild, 1X, and Unitree in part) are **private** — I flag where the public market simply has no clean exposure, because that absence is itself a signal.*
+The full, tickered mapping — each thesis in this essay routed to listed companies, a consolidated ticker table, and a quarterly action-linked dashboard — is a companion document:
 
-The rule I use: **map each technical thesis to the layer that captures its economics, and prefer picks-and-shovels where the end-market winner is unknowable.** We don't yet know which humanoid brand wins; we do know they all need magnets, reducers, motor-control silicon, and compute.
-
-## 7. Thesis → exposure, layer by layer
-
-### 7.1 The planner & training compute (§1, §2, §4)
-The planner is a large multimodal model; training it and the world model is a compute story, and inference migrates to the edge.
-- **NVIDIA (NVDA)** — training + the Isaac/Omniverse simulation stack; the double exposure (compute *and* sim).
-- **TSMC (TSM)**, **ASML (ASML)** — the fab and the lithography under every brain; also the literal chip lock of §5.5.
-- **Ambarella (AMBA)** — edge inference SoCs for cameras/robots; a smaller, higher-beta on-body-compute proxy.
-- **Qualcomm (QCOM)**, **Arm (ARM)**, **Broadcom (AVGO)** — on-device inference IP and custom-silicon enablement.
-- *Risk:* compute demand is real but crowded and priced; this is the consensus leg.
-
-### 7.2 The data layer — ego-centric & tactile (§2.1, §5-touch)
-The core bet is a *data* bet, and the cleanest public proxy is **who ships the glasses and the image sensors.**
-- **Meta (META)** — Aria/Ray-Ban glasses are the ego-centric data funnel; strategically, glasses are a Trojan horse for physical-world data.
-- **Sony (SONY / 6758.T)** — dominant CMOS image sensors; the eyes of both glasses and robots.
-- **TE Connectivity (TEL)**, **Amphenol (APH)** — sensors, connectors, and the wiring harness of every robot.
-- *No clean public tactile pure-play exists* — vision-based tactile is startup/private. The absence is the tell: touch is early. Watch for IPOs.
-
-### 7.3 Motors & motion control (§5.1, §5.4)
-The cerebellum needs backdrivable, thermally-honest torque — motors plus the silicon that drives them.
-- **Nidec (NJDCY / 6594.T)** — the world's motor volume leader; direct humanoid-actuator ambition.
-- **Regal Rexnord (RRX)**, **Allient (ALNT)**, **Ametek (AME)**, **Parker Hannifin (PH)**, **Moog (MOG.A)** — motors, drives, and precision motion.
-- **Motor-control silicon:** **Allegro MicroSystems (ALGM)** and **Melexis (MELE.BR)** (magnetic position sensing), **Infineon (IFNNY / IFX.DE)**, **STMicro (STM)**, **Texas Instruments (TXN)** (gate drivers, current sensing, FOC MCUs). This is the §5.4 moat, in silicon.
-- *Risk:* diversified industrials — robotics is a call option on top of an existing business, so exposure is diluted (which also caps downside).
-
-### 7.4 Reducers & precision mechanics (§5.2)
-The quiet oligopoly and a genuine volume constraint on humanoids.
-- **Harmonic Drive Systems (6324.T)** — strain-wave reducers; arguably the *purest* humanoid pick-and-shovel that trades publicly.
-- **Nabtesco (6268.T)** — cycloidal/RV reducers for heavy, high-stiffness joints.
-- *Risk:* Japan-listed, cyclical, and sentiment already runs hot on the humanoid narrative here.
-
-### 7.5 Rare earths & magnets (§5.1)
-The physical lock, and the most geopolitically reflexive leg.
-- **MP Materials (MP)** — the flagship U.S. rare-earth mine + magnet build-out; the Western de-risking trade.
-- **Lynas (LYSCF / LYC.AX)** — the largest ex-China separator.
-- **Energy Fuels (UUUU)**, **Neo Performance Materials (NEO.TO)**, **USA Rare Earth (USAR)** — processing/magnet plays further up the risk curve.
-- **Shin-Etsu Chemical (SHECY / 4063.T)**, **TDK (6762.T)** — incumbent high-performance magnet makers.
-- *Risk:* prices are policy-driven and violently reflexive; theses can be right on demand and still whipsawed on subsidy/tariff headlines.
-
-### 7.6 Batteries & power (§5)
-A humanoid is "an EV that grew hands"; it shares the EV cell and power chain.
-- **CATL (300750.SZ)**, **Panasonic (PCRFY / 6752.T)**, **Samsung SDI (006400.KS)**, **LG Energy (373220.KS)** — cells.
-- **Monolithic Power (MPWR)** — power management for compute and actuation.
-
-### 7.7 Sim, world models & software (§2.3, §2.6)
-The Action Video World Model and sim2real RL are software; public pure-plays are thin.
-- **NVIDIA (NVDA)** again — Isaac Gym / Omniverse is the default sim2real substrate (it appears twice on purpose).
-- **Unity (U)** — simulation/rendering exposure, execution-dependent.
-- **Synopsys (SNPS)** — post-Ansys, owns physics simulation IP.
-- *Most world-model value accrues to private labs* (Physical Intelligence, Skild, Wayve-style) — again, the absence is the signal.
-
-### 7.8 Integrators, OEMs & humanoids (all of §1–§6)
-The end-product bet — highest upside, least knowable winner.
-- **Tesla (TSLA)** — the only mega-cap where a humanoid (Optimus) is a core thesis *and* the EV supply chain and data flywheel are in-house.
-- **Hyundai (HYMTF / 005380.KS)** — owns Boston Dynamics.
-- **Xiaomi (1810.HK)**, **UBTech (9880.HK)** — China humanoid exposure (access/ADR caveats).
-- **ABB (ABB)**, **Rockwell (ROK)**, **Fanuc (FANUY / 6954.T)**, **Yaskawa (YASKY / 6506.T)**, **Estun (002747.SZ)**, **Inovance (300124.SZ)** — the industrial-automation base that humanoids extend.
-- **Intuitive Surgical (ISRG)** — not a humanoid, but the best public proof that *teleoperated dexterity + a razor-and-blades data moat* compounds; a template, not a pure-play.
-- **Symbotic (SYM)**, **Serve Robotics (SERV)** — narrow, deployed embodiments already turning the data flywheel in logistics/delivery.
-- *Risk:* single-name humanoid bets are venture-shaped inside public wrappers — high dispersion, long duration, and (Part III) exposed to a mid-cycle funding winter.
-
-## 8. How to read this map
-
-- **The consensus leg is compute (7.1); the differentiated legs are reducers (7.4), motor-control silicon (7.3), and magnets (7.5)** — the boring physical chokepoints that must scale no matter which brand wins.
-- **The core bet (ego-centric data) has no clean public pure-play** beyond Meta and Sony; its value is being captured privately. If you believe Section One, that is the single most important sentence in Section Two — the market is *underpricing the data layer because it can't buy it.*
-- **Prefer picks-and-shovels while the end-market winner is unknown**, and treat single-name humanoids as convex, small-sized options.
-- Everything here is **long-duration and reflexive**; Part III explains why being directionally right can still lose money for years in the middle.
+**→ [The Public-Markets Map](markets.html)** *(research analysis, not investment advice).*
 
 ---
 
-*Part II: new verbs and robots-building-robots. Part III: the case against this article's timing — the self-driving trap, the reliability chasm, and the funding winter that could bury correct theses on the way up. Written 2026 — a judgment call, not a prophecy.*
+*Part II: new verbs and robots-building-robots. Part III (Markets): the tickered map. Part IV (Critique): the case against this article's timing — the self-driving trap, the reliability chasm, and the funding winter that can bury correct theses on the way up. Written 2026 — a judgment call, not a prophecy.*

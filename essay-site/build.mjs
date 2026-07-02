@@ -261,7 +261,8 @@ footer a{color:var(--link)}
 const SERIES = [
   { file: "index.html", label: "I · Roadmap" },
   { file: "frontiers.html", label: "II · Frontiers" },
-  { file: "critique.html", label: "III · Critique" },
+  { file: "markets.html", label: "III · Markets" },
+  { file: "critique.html", label: "IV · Critique" },
 ];
 
 function seriesNav(currentFile) {
@@ -338,8 +339,8 @@ const PAGES = [
     tocTitle: "Part I · Roadmap",
     kicker: EN_KICKER,
     h1: "The Embodiment Awakening",
-    sub: "A roadmap for the robotics decade — from bits to atoms, 2025–2030. Section One: the technology. Section Two: the investment map.",
-    byline: "Part I of III · 2026 · a judgment call, not a prophecy",
+    sub: "A roadmap for the robotics decade — from bits to atoms, 2025–2030. The technology; the market map and the critique follow as Parts III and IV.",
+    byline: "Part I of IV · 2026 · a judgment call, not a prophecy",
     footer: EN_FOOTER,
   },
   {
@@ -354,7 +355,22 @@ const PAGES = [
     kicker: EN_KICKER,
     h1: "New Verbs and Self-Replication",
     sub: "Two longer-horizon phase transitions: inventing new skills, and robots building robots.",
-    byline: "Part II of III · 2026 · a judgment call, not a prophecy",
+    byline: "Part II of IV · 2026 · a judgment call, not a prophecy",
+    footer: EN_FOOTER,
+  },
+  {
+    file: "markets.html",
+    out: out("markets.html"),
+    src: docs("public-markets-map.md"),
+    htmlLang: "en",
+    title: "The Public-Markets Map · The Embodiment Awakening III",
+    desc:
+      "Part III: each technical thesis mapped to listed companies — a barbell of data/verification and actuator choke points (reducers, roller screws, magnets, grinding machines), a consolidated ticker table, and a quarterly dashboard. Not investment advice.",
+    tocTitle: "Part III · Markets",
+    kicker: EN_KICKER,
+    h1: "The Public-Markets Map",
+    sub: "Each technical thesis mapped to where value accrues — expressed through listed companies. Research analysis, not investment advice.",
+    byline: "Part III of IV · 2026 · research analysis, not investment advice",
     footer: EN_FOOTER,
   },
   {
@@ -365,11 +381,11 @@ const PAGES = [
     title: "The Case Against This Timeline · The Embodiment Awakening III",
     desc:
       "Part III: a red-team of the roadmap — the self-driving analogy, the reliability chasm, an assumption-by-assumption risk table, and the funding winter that can bury correct theses in the middle.",
-    tocTitle: "Part III · Critique",
+    tocTitle: "Part IV · Critique",
     kicker: EN_KICKER,
     h1: "The Case Against This Timeline",
     sub: "A red-team of the roadmap — where the bet goes wrong, especially on timing.",
-    byline: "Part III of III · 2026 · written against Part I",
+    byline: "Part IV of IV · 2026 · written against Part I",
     footer: EN_FOOTER,
   },
   {

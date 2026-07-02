@@ -160,8 +160,16 @@ const PARTS = [
   },
   {
     id: "p3",
-    tab: "III · Critique",
-    eyebrow: "Part III — Critique",
+    tab: "III · Markets",
+    eyebrow: "Part III — Public-Markets Map",
+    h1: "The Public-Markets Map",
+    sub: "Each technical thesis mapped to listed companies. Research analysis, not investment advice.",
+    src: "public-markets-map.md",
+  },
+  {
+    id: "p4",
+    tab: "IV · Critique",
+    eyebrow: "Part IV — Critique",
     h1: "The Case Against This Timeline",
     sub: "A red-team of the roadmap — where the bet goes wrong, especially on timing.",
     src: "robotics-critique-timing-risk.md",

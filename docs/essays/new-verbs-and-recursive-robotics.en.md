@@ -107,4 +107,4 @@ Two natural brakes therefore hold: **new-verb invention is gated by world-model 
 
 They are further away and more profound than 2030. One is about the **openness of intelligence**, the other about the **autonomy of production.** When they finally meet, humanity will face, for the first time, an artifact that can both *figure out how to do a thing* and *build more of itself to do it.* We still have time — and that time is exactly what lithography and world-model fidelity are buying us. Spend it well.
 
-*Part III is the case against this whole timeline. Written 2026 — a judgment call, not a prophecy.*
+*Part III is the Public-Markets Map; Part IV is the case against this whole timeline. Written 2026 — a judgment call, not a prophecy.*
