@@ -229,6 +229,7 @@ header.masthead{border-bottom:1px solid var(--rule);padding-bottom:1.75rem;margi
 .langswitch a{color:var(--muted);text-decoration:none;padding:.1rem .35rem}
 .langswitch a.active{color:var(--fg);font-weight:700;border-bottom:2px solid var(--accent)}
 .langswitch a:hover{color:var(--fg)}
+.langswitch .navsep{color:var(--rule);padding:0 .2rem}
 h1{font-size:2.5rem;line-height:1.18;margin:.2rem 0 .6rem;letter-spacing:-.01em}
 .sub{color:var(--muted);font-size:1.15rem;font-style:italic;margin:0}
 .byline{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;color:var(--muted);margin-top:1.4rem}
@@ -256,13 +257,23 @@ footer a{color:var(--link)}
 ::selection{background:#e9d9c2}
 `;
 
-function langSwitch(current, pages) {
-  return pages
-    .map(
-      (p) =>
-        `<a href="${p.file}"${p.lang === current ? ' class="active"' : ""}>${p.langLabel}</a>`
-    )
-    .join("");
+// Series navigation across the parts, plus a language link.
+const SERIES = [
+  { file: "index.html", label: "I · Roadmap" },
+  { file: "frontiers.html", label: "II · Frontiers" },
+  { file: "critique.html", label: "III · Critique" },
+];
+
+function seriesNav(currentFile) {
+  const parts = SERIES.map(
+    (p) =>
+      `<a href="${p.file}"${p.file === currentFile ? ' class="active"' : ""}>${p.label}</a>`
+  ).join("");
+  const langLink =
+    currentFile === "zh.html"
+      ? `<a href="index.html">EN</a>`
+      : `<a href="zh.html">中文</a>`;
+  return `${parts}<span class="navsep">·</span>${langLink}`;
 }
 
 function page(cfg, pages) {
@@ -295,7 +306,7 @@ function page(cfg, pages) {
 <header class="masthead">
   <div class="topbar">
     <span class="kicker">${cfg.kicker}</span>
-    <span class="langswitch">${langSwitch(cfg.lang, pages)}</span>
+    <span class="langswitch">${seriesNav(cfg.file)}</span>
   </div>
   <h1>${cfg.h1}</h1>
   <p class="sub">${cfg.sub}</p>
@@ -311,40 +322,70 @@ ${html}
 }
 
 // ---- page configs ----
+const EN_KICKER = "The Embodiment Awakening · 2025–2030";
+const EN_FOOTER =
+  "© 2026 · A forward-looking judgment, not a prophecy. Part I · Part II · Part III.";
+
 const PAGES = [
   {
-    lang: "zh",
-    langLabel: "中文",
     file: "index.html",
     out: out("index.html"),
-    src: docs("physical-intelligence-2030.md"),
-    htmlLang: "zh-CN",
-    title: "具身觉醒 · 通往物理智能的未来五年",
-    desc:
-      "一篇 Situational-Awareness 风格的判断书：人类如何在五年内把智能装进身体。模型突破、机器人数据、灵巧手、Scaling Law 与稀土瓶颈。",
-    tocTitle: "目录",
-    kicker: "From Bits to Atoms · 2025–2030",
-    h1: "具身觉醒",
-    sub: "通往物理智能的未来五年 —— 一篇关于人类如何把智能装进身体的判断书",
-    byline: "2026 · 一份判断书，不是预言",
-    footer: "© 2026 · 本文为前瞻性判断，预测会错，方向不会。",
-  },
-  {
-    lang: "en",
-    langLabel: "EN",
-    file: "en.html",
-    out: out("en.html"),
     src: docs("physical-intelligence-2030.en.md"),
     htmlLang: "en",
-    title: "The Embodiment Awakening · The Next Five Years to Physical Intelligence",
+    title: "The Embodiment Awakening · A Roadmap for the Robotics Decade",
     desc:
-      "A Situational-Awareness-style judgment call on how humanity puts intelligence into a body within five years: model breakthroughs, robot data, dexterous hands, scaling laws, and the rare-earth bottleneck.",
-    tocTitle: "Contents",
-    kicker: "From Bits to Atoms · 2025–2030",
+      "A Situational-Awareness-style roadmap for physical intelligence, 2025–2030: the planner→cerebellum architecture, the ego-centric data bet, scaling-law math, robot hardware (motors, reducers, drive control), and a one-to-one investment map with tickers.",
+    tocTitle: "Part I · Roadmap",
+    kicker: EN_KICKER,
     h1: "The Embodiment Awakening",
-    sub: "The Next Five Years to Physical Intelligence — a judgment call on how humanity puts intelligence into a body.",
-    byline: "2026 · A judgment call, not a prophecy",
-    footer: "© 2026 · A forward-looking judgment. Predictions can be wrong; the direction won't be.",
+    sub: "A roadmap for the robotics decade — from bits to atoms, 2025–2030. Section One: the technology. Section Two: the investment map.",
+    byline: "Part I of III · 2026 · a judgment call, not a prophecy",
+    footer: EN_FOOTER,
+  },
+  {
+    file: "frontiers.html",
+    out: out("frontiers.html"),
+    src: docs("new-verbs-and-recursive-robotics.en.md"),
+    htmlLang: "en",
+    title: "New Verbs and Self-Replication · The Embodiment Awakening II",
+    desc:
+      "Part II: when robots learn a genuinely new verb (out-of-distribution tasks) and when robots start building robots — a closure-degree framework, the chip lock, and why physical takeoff is soft.",
+    tocTitle: "Part II · Frontiers",
+    kicker: EN_KICKER,
+    h1: "New Verbs and Self-Replication",
+    sub: "Two longer-horizon phase transitions: inventing new skills, and robots building robots.",
+    byline: "Part II of III · 2026 · a judgment call, not a prophecy",
+    footer: EN_FOOTER,
+  },
+  {
+    file: "critique.html",
+    out: out("critique.html"),
+    src: docs("robotics-critique-timing-risk.md"),
+    htmlLang: "en",
+    title: "The Case Against This Timeline · The Embodiment Awakening III",
+    desc:
+      "Part III: a red-team of the roadmap — the self-driving analogy, the reliability chasm, an assumption-by-assumption risk table, and the funding winter that can bury correct theses in the middle.",
+    tocTitle: "Part III · Critique",
+    kicker: EN_KICKER,
+    h1: "The Case Against This Timeline",
+    sub: "A red-team of the roadmap — where the bet goes wrong, especially on timing.",
+    byline: "Part III of III · 2026 · written against Part I",
+    footer: EN_FOOTER,
+  },
+  {
+    file: "zh.html",
+    out: out("zh.html"),
+    src: docs("physical-intelligence-2030.md"),
+    htmlLang: "zh-CN",
+    title: "具身觉醒 · 通往物理智能的未来五年（中文原版）",
+    desc:
+      "《具身觉醒》中文原版：模型突破、机器人数据、灵巧手、Scaling Law 与稀土瓶颈。",
+    tocTitle: "中文原版 · 目录",
+    kicker: "具身觉醒 · 2025–2030",
+    h1: "具身觉醒",
+    sub: "通往物理智能的未来五年 —— 一篇关于人类如何把智能装进身体的判断书（中文原版，英文系列见 EN）",
+    byline: "中文原版 · 2026 · 一份判断书，不是预言",
+    footer: "© 2026 · 本文为前瞻性判断，预测会错，方向不会。英文系列见 EN。",
   },
 ];
 
