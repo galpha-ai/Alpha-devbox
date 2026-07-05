@@ -40,6 +40,18 @@ const mockedGetMessageHistory = vi.mocked(getMessageHistory);
 const mockedGetReplayLinkById = vi.mocked(getReplayLinkById);
 const mockedSetMessageUiMessageJson = vi.mocked(setMessageUiMessageJson);
 
+const TEST_ACCESS_PASSWORD = 'test-access-password';
+const realFetch = globalThis.fetch;
+
+const fetchWithPassword: typeof fetch = (input, init) =>
+  realFetch(input, {
+    ...init,
+    headers: {
+      'X-Access-Password': TEST_ACCESS_PASSWORD,
+      ...((init?.headers as Record<string, string> | undefined) ?? {}),
+    },
+  });
+
 function makeOpts(
   overrides: Partial<{
     onMessage: OnInboundMessage;
@@ -50,6 +62,7 @@ function makeOpts(
   }> = {},
 ) {
   return {
+    accessPassword: TEST_ACCESS_PASSWORD,
     onMessage: overrides.onMessage ?? vi.fn(),
     onChatMetadata: overrides.onChatMetadata ?? vi.fn(),
     registeredAgents:
@@ -79,10 +92,63 @@ describe('WebChannel', () => {
     channel = new WebChannel(0, makeOpts());
     await channel.connect();
     port = channel.getPort();
+    vi.stubGlobal('fetch', fetchWithPassword);
   });
 
   afterEach(async () => {
+    vi.unstubAllGlobals();
     await channel.disconnect();
+  });
+
+  it('rejects requests with a wrong access password', async () => {
+    const res = await realFetch(
+      `http://localhost:${port}/api/devbox/conversations`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-Id': 'user1',
+          'X-Access-Password': 'wrong-password',
+        },
+        body: JSON.stringify({}),
+      },
+    );
+    expect(res.status).toBe(401);
+    const body = (await res.json()) as { code?: string };
+    expect(body.code).toBe('invalid_access_password');
+  });
+
+  it('rejects requests missing the access password header', async () => {
+    const res = await realFetch(
+      `http://localhost:${port}/api/devbox/conversations`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-User-Id': 'user1' },
+        body: JSON.stringify({}),
+      },
+    );
+    expect(res.status).toBe(401);
+  });
+
+  it('refuses all API requests when no access password is configured', async () => {
+    const bare = new WebChannel(0, {
+      ...makeOpts(),
+      accessPassword: undefined,
+    });
+    await bare.connect();
+    try {
+      const res = await realFetch(
+        `http://localhost:${bare.getPort()}/api/devbox/conversations`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-User-Id': 'user1' },
+          body: JSON.stringify({}),
+        },
+      );
+      expect(res.status).toBe(503);
+    } finally {
+      await bare.disconnect();
+    }
   });
 
   it('ownsJid matches web: prefix', () => {

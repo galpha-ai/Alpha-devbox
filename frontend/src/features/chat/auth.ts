@@ -6,6 +6,33 @@ export const AUTH_STORAGE_KEYS = {
 
 const SEEDED_SESSION_BLOCK_KEY = "thesis_seeded_session_blocked_seed";
 const LOCAL_DEV_USER_ID_STORAGE_KEY = "thesis_local_dev_user_id";
+const ACCESS_PASSWORD_STORAGE_KEY = "devbox_access_password";
+
+export function readAccessPassword(storage: Storage): string | null {
+  const value = storage.getItem(ACCESS_PASSWORD_STORAGE_KEY)?.trim();
+  return value || null;
+}
+
+export function storeAccessPassword(storage: Storage, value: string) {
+  const trimmed = value.trim();
+  if (trimmed) {
+    storage.setItem(ACCESS_PASSWORD_STORAGE_KEY, trimmed);
+  } else {
+    storage.removeItem(ACCESS_PASSWORD_STORAGE_KEY);
+  }
+}
+
+function promptForAccessPassword(storage: Storage): string | null {
+  if (typeof window === "undefined" || typeof window.prompt !== "function") {
+    return null;
+  }
+  const entered = window.prompt("This workspace is password-protected. Enter the access password:");
+  if (!entered?.trim()) {
+    return null;
+  }
+  storeAccessPassword(storage, entered);
+  return entered.trim();
+}
 
 export interface AuthUser {
   id: string;
@@ -308,7 +335,12 @@ export function createAuthClient(options: AuthClientOptions) {
     clearAuthSession(storage);
   }
 
-  async function authFetch(input: string, init?: RequestInit, allowRetry = true): Promise<Response> {
+  async function authFetch(
+    input: string,
+    init?: RequestInit,
+    allowRetry = true,
+    allowPasswordPrompt = true,
+  ): Promise<Response> {
     const session = readAuthSession(storage);
     if (!session.accessToken) {
       throw new Error("Authentication required");
@@ -319,10 +351,29 @@ export function createAuthClient(options: AuthClientOptions) {
       headers["X-User-Id"] = session.user.id;
     }
 
+    const accessPassword = readAccessPassword(storage);
+    if (accessPassword && !headers["X-Access-Password"] && !headers["x-access-password"]) {
+      headers["X-Access-Password"] = accessPassword;
+    }
+
     const response = await fetchImpl(resolveUrl(baseUrl, input), {
       ...init,
       headers,
     });
+
+    if (response.status === 401 && allowPasswordPrompt) {
+      const payload = await response
+        .clone()
+        .json()
+        .catch(() => null);
+      if (payload && typeof payload === "object" && (payload as { code?: string }).code === "invalid_access_password") {
+        const entered = promptForAccessPassword(storage);
+        if (entered) {
+          return authFetch(input, init, allowRetry, false);
+        }
+        return response;
+      }
+    }
 
     if (response.status !== 401 || !allowRetry || isLocalDevAccessToken(session.accessToken)) {
       return response;

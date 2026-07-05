@@ -9,6 +9,7 @@ import {
   SLACK_BOT_TOKEN,
   TELEGRAM_BOT_TOKEN,
   TRIGGER_PATTERN,
+  WEB_ACCESS_PASSWORD,
   WEB_ENABLED,
   WEB_PORT,
   getRegisteredAgents,
@@ -1242,6 +1243,7 @@ async function main(): Promise<void> {
     channels.push(
       new WebChannel(WEB_PORT, {
         ...channelOpts,
+        accessPassword: WEB_ACCESS_PASSWORD,
         getActiveCount: () => queue.getActiveCount(),
         getWaitingCount: () => queue.getWaitingCount(),
       }),

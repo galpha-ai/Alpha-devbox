@@ -12,6 +12,9 @@ container:
 web:
   enabled: true
   port: 18092
+  # Required: web requests are refused until a password is configured.
+  # Override with the WEB_ACCESS_PASSWORD env var in real deployments.
+  access_password: local-dev-password
 
 agents:
   - name: localqa

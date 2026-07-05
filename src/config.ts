@@ -88,6 +88,7 @@ const WebSchema = z
   .object({
     enabled: z.boolean().default(false),
     port: z.number().int().positive().default(8080),
+    access_password: z.string().optional(),
   })
   .optional();
 
@@ -164,6 +165,7 @@ export let IDLE_TIMEOUT = 300000;
 export let MAX_CONCURRENT_CONTAINERS = 2;
 export let WEB_ENABLED = false;
 export let WEB_PORT = 8080;
+export let WEB_ACCESS_PASSWORD: string | undefined;
 export interface RunnerResources {
   cpu: string;
   memory: string;
@@ -411,6 +413,10 @@ export function loadConfig(configPath: string): void {
 
   WEB_ENABLED = config.web?.enabled ?? false;
   WEB_PORT = config.web?.port ?? 8080;
+  WEB_ACCESS_PASSWORD =
+    process.env.WEB_ACCESS_PASSWORD?.trim() ||
+    config.web?.access_password?.trim() ||
+    undefined;
 
   const hasNewConfig = Boolean(config.agents && config.channels);
   const hasLegacyConfig = Boolean(config.groups && config.groups.length > 0);
