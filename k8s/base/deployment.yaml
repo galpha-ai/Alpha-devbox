@@ -62,6 +62,12 @@ spec:
                   name: devbox-agent-secrets
                   key: slack-app-token
                   optional: true
+            - name: WEB_ACCESS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: devbox-agent-secrets
+                  key: web-access-password
+                  optional: true
             - name: ANTHROPIC_API_KEY
               valueFrom:
                 secretKeyRef:

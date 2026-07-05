@@ -30,6 +30,15 @@ container:
   #   service_account: devbox-runner
   #   image_pull_policy: IfNotPresent
 
+# Optional: web channel. When enabled, every /api/devbox/* request must send
+# an X-Access-Password header matching this password. Requests are refused
+# entirely (503) if no password is configured. The WEB_ACCESS_PASSWORD env var
+# takes precedence over this value.
+# web:
+#   enabled: true
+#   port: 8080
+#   access_password: "change-me"
+
 agents:
   - name: example
     path: agents/example

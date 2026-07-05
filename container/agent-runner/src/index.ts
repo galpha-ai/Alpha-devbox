@@ -517,7 +517,9 @@ async function runQuery(
               append: globalClaudeMd,
             }
           : undefined,
-        ...(containerInput.model ? { model: containerInput.model } : {}),
+        // Never fall through to the SDK default model (which can resolve to
+        // Opus) -- default to Sonnet when the agent does not pin a model.
+        model: containerInput.model ?? 'claude-sonnet-5',
         ...(containerInput.thinking ? { thinking: containerInput.thinking } : {}),
         ...(containerInput.effort ? { effort: containerInput.effort } : {}),
         allowedTools: [

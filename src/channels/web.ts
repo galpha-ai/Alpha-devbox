@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomUUID, timingSafeEqual } from 'crypto';
 import http from 'http';
 import {
   createUIMessageStream,
@@ -71,6 +71,7 @@ interface PendingChatStream {
 }
 
 export interface WebChannelOpts {
+  accessPassword?: string;
   onMessage: OnInboundMessage;
   onChatMetadata: OnChatMetadata;
   registeredAgents: () => Record<string, RegisteredAgent>;
@@ -217,6 +218,24 @@ export class WebChannel implements Channel {
         replayId,
         derivedAt: new Date().toISOString(),
         messages,
+      });
+      return;
+    }
+
+    const access = this.checkAccessPassword(req);
+    if (access === 'unconfigured') {
+      logger.error(
+        'Web access password is not configured (set WEB_ACCESS_PASSWORD or web.access_password); refusing web request',
+      );
+      this.jsonResponse(res, 503, {
+        error: 'Web access password is not configured; refusing all requests',
+      });
+      return;
+    }
+    if (access === 'invalid') {
+      this.jsonResponse(res, 401, {
+        error: 'Invalid or missing X-Access-Password header',
+        code: 'invalid_access_password',
       });
       return;
     }
@@ -448,6 +467,28 @@ export class WebChannel implements Channel {
     }
 
     this.jsonResponse(res, 404, { error: 'Not found' });
+  }
+
+  private checkAccessPassword(
+    req: http.IncomingMessage,
+  ): 'ok' | 'invalid' | 'unconfigured' {
+    const expected = this.opts.accessPassword?.trim();
+    if (!expected) {
+      return 'unconfigured';
+    }
+
+    const rawHeader = req.headers['x-access-password'];
+    const provided =
+      (Array.isArray(rawHeader) ? rawHeader[0] : rawHeader) ?? '';
+    const providedBuf = Buffer.from(provided);
+    const expectedBuf = Buffer.from(expected);
+    if (
+      providedBuf.length !== expectedBuf.length ||
+      !timingSafeEqual(providedBuf, expectedBuf)
+    ) {
+      return 'invalid';
+    }
+    return 'ok';
   }
 
   private resolveDeliveryTarget(
