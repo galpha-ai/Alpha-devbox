@@ -15,7 +15,9 @@ on:
 env:
   # Configure these for your container registry
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: ${{ github.repository }}
+  # ghcr.io requires lowercase repository names; github.repository preserves
+  # the repo's original casing (galpha-ai/Alpha-devbox), which breaks buildx.
+  IMAGE_PREFIX: galpha-ai/alpha-devbox
 
 jobs:
   build:
