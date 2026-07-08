@@ -7,6 +7,13 @@ description: Earnings-date-driven fundamental analysis — earnings calendars, E
 
 Everything here is anchored to the **report date + timing (am/pm)**. Getting the timing wrong shifts every "reaction" measurement by a day — establish it first, from a verified source.
 
+## Discipline
+
+- **Point-in-time estimates.** A "surprise" is actual vs the estimate **as of just before the print**. Today's consensus has been revised post-print; using it understates historical surprises. The 8-quarter `eps_estimate` from `get_earnings_results` is the pre-print figure — prefer it over current-consensus sources when scoring past quarters. The same rule applies to explanations: never explain a past quarter's reaction with information disclosed later (the next quarter's results, later guidance cuts). If you invoke later information, label it hindsight.
+- **Decompose apparent contradictions mechanically before narrating.** "Beat but stock fell" has a finite mechanism list — work through it in order: (1) guidance below consensus (check the 8-K/press release), (2) low-quality beat (one-time items, tax rate — run the statement-quality check), (3) whisper numbers / positioning above official consensus (check pre-print run-up in the bars), (4) revenue or margin miss behind the EPS beat, (5) options-market mechanics (IV crush unwinding hedges). Only if none fit should you reach for macro or sector stories, and say the evidence is inconclusive if it is.
+- **Tag what kind of number each figure is**: quoted market data (implied move), computed from history (realized moves, surprise stats — show n), or your assumption (expected move, drift estimate). Never present an assumption as market data, and never fill a missing quarter/estimate with an invented value — mark it missing.
+- **口径**: EPS surprise needs matching bases — GAAP actual vs GAAP estimate, or non-GAAP vs non-GAAP; sources mix these. When surprise numbers look extreme, check the basis before believing them.
+
 ## 1. Discovery: who reports, when
 
 ```
@@ -68,4 +75,4 @@ To turn any of the above into a tested strategy (drift after big surprises, stra
 
 ## Output format
 
-Per **quant-data-science** conventions: one headline ("NVDA reports 8/27 pm; market implies ±7.2%, average realized ±9.1%"), ONE compact numeric table (quarters × surprise/implied/realized), bullets for guidance and statement-quality notes with filing citations, one-sentence bottom line. Flag small sample sizes and unverified dates. This is analysis, not investment advice — say so when the user is deciding a trade.
+Per **quant-data-science** conventions: one headline ("NVDA reports 8/27 pm; market implies ±7.2%, average realized ±9.1%"), ONE compact numeric table (quarters × surprise/implied/realized), bullets for guidance and statement-quality notes with filing citations, one-sentence bottom line. Flag small sample sizes (state n), unverified dates, and any figure that is an assumption rather than data. This is analysis, not investment advice — say so when the user is deciding a trade.

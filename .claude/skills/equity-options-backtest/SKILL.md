@@ -58,6 +58,7 @@ Post-earnings drift / earnings reversal template:
 2. Entry timestamp: `timing == "pm"` → next day's open; `timing == "am"` → same day's open. Getting this wrong is the equity version of the wall-clock-time bug — it leaks the announcement into the entry price.
 3. Surprise = `(eps_actual - eps_estimate) / |eps_estimate|`; bucket into quantiles **using only past events** (expanding window), not the full sample.
 4. Hold N days, exit at open; log events to JSONL; compare surprise buckets on the same symbol set and date range only.
+5. **Point-in-time fundamentals only.** If the signal uses fundamentals or estimates, they must be as-known-then: pre-print estimates (not today's revised consensus), statements gated by their **filing date** (a Q2 number is usable ~4–6 weeks after quarter end, not on the quarter-end date; use FMP `financial-reports-dates` / as-reported statements), and no restated figures. Hindsight contamination in fundamental data is the same bug as price lookahead — it just fails silently.
 
 ## Options strategy backtests
 
