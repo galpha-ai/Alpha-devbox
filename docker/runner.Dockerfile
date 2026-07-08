@@ -65,7 +65,7 @@ ENV LIBCLANG_PATH=/usr/lib/llvm-18/lib
 ENV PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig
 
 USER root
-RUN npm install -g @anthropic-ai/claude-code
+RUN npm install -g @anthropic-ai/claude-code @openai/codex
 WORKDIR /app
 COPY --chown=devbox:devbox container/agent-runner/package*.json ./
 RUN npm ci

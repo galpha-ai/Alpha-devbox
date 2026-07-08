@@ -1,0 +1,21 @@
+# Multi-AI command center agent.
+# Orchestrates codex/chatgpt/claude-code/claude peers via the multi-ai-bridge skill.
+
+# Optional: repos the peers will work on. Add your own:
+# repos:
+#   - name: my-project
+#     source: https://github.com/your-org/your-repo.git
+#     ref: main
+
+# Required for the codex/chatgpt peers: mount the Codex CLI auth file
+# (created by `codex login` on your machine) into the runner container.
+# Docker: hostPath is a path on the controller host.
+# Kubernetes: create a secret and reference it via secretName.
+# secretMounts:
+#   - secretName: codex-auth
+#     hostPath: /path/on/host/codex-auth.json
+#     mountPath: /home/devbox/.codex/auth.json
+
+# Optional tuning:
+# model: sonnet
+# effort: high
