@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Embodiment Awakening · A Roadmap for the Robotics Decade</title>
+<meta name="description" content="A Situational-Awareness-style roadmap for physical intelligence, 2025–2030: the planner→cerebellum architecture, the ego-centric data bet, scaling-law math, robot hardware (motors, reducers, drive control), and a one-to-one investment map with tickers.">
+<style>
+:root{
+  --bg:#faf8f4; --fg:#1c1b19; --muted:#6b6760; --rule:#e4ded3;
+  --accent:#8a5a2b; --link:#9a3b1f; --max:46rem;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font-family:Georgia,"Songti SC","Noto Serif CJK SC",ui-serif,serif;
+  font-size:19px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+.wrap{display:grid;grid-template-columns:1fr;max-width:74rem;margin:0 auto;padding:0 1.25rem}
+@media(min-width:1100px){
+  .wrap{grid-template-columns:16rem minmax(0,var(--max));gap:3.5rem;justify-content:center}
+}
+nav.toc{display:none}
+@media(min-width:1100px){
+  nav.toc{
+    display:block;position:sticky;top:0;align-self:start;
+    height:100vh;overflow-y:auto;padding:3.5rem 0 3rem;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC",sans-serif;
+    font-size:13.5px;line-height:1.5;
+  }
+  nav.toc .toc-title{text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-size:11px;margin-bottom:1rem}
+  nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:.2rem 0;border-left:2px solid transparent;padding-left:.75rem}
+  nav.toc a:hover{color:var(--fg)}
+  nav.toc a.lvl3{padding-left:1.6rem;font-size:12.5px;opacity:.85}
+}
+article{padding:3.5rem 0 6rem;max-width:var(--max)}
+header.masthead{border-bottom:1px solid var(--rule);padding-bottom:1.75rem;margin-bottom:2.5rem}
+.topbar{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1rem;gap:1rem;flex-wrap:wrap}
+.kicker{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;text-transform:uppercase;letter-spacing:.18em;font-size:12px;color:var(--accent)}
+.langswitch{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:12.5px}
+.langswitch a{color:var(--muted);text-decoration:none;padding:.1rem .35rem}
+.langswitch a.active{color:var(--fg);font-weight:700;border-bottom:2px solid var(--accent)}
+.langswitch a:hover{color:var(--fg)}
+.langswitch .navsep{color:var(--rule);padding:0 .2rem}
+h1{font-size:2.5rem;line-height:1.18;margin:.2rem 0 .6rem;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:1.15rem;font-style:italic;margin:0}
+.byline{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;color:var(--muted);margin-top:1.4rem}
+.byline a{color:var(--link)}
+h2{font-size:1.65rem;line-height:1.25;margin:3.2rem 0 1rem;padding-top:1rem;letter-spacing:-.005em}
+h3{font-size:1.25rem;margin:2.2rem 0 .8rem;color:#2c2a26}
+h4{font-size:1.05rem;margin:1.6rem 0 .6rem;color:var(--muted);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+p{margin:1.1rem 0}
+strong{font-weight:700}
+a{color:var(--link);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:.06em}
+hr{border:0;border-top:1px solid var(--rule);margin:3rem 0}
+blockquote{margin:1.8rem 0;padding:.4rem 0 .4rem 1.4rem;border-left:3px solid var(--accent);color:#3a352d;font-style:italic;font-size:1.08rem}
+ul,ol{margin:1.1rem 0;padding-left:1.5rem}
+li{margin:.45rem 0}
+li.cont{list-style:none;margin-left:-.4rem;color:var(--muted);font-size:.96em}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86em;background:#efeae0;padding:.1em .35em;border-radius:3px}
+pre.block{background:#1c1b19;color:#e8e2d6;padding:1.2rem 1.4rem;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.5;margin:1.8rem 0}
+pre.block code{background:none;color:inherit;padding:0;font-size:inherit}
+.tablewrap{overflow-x:auto;margin:1.8rem 0}
+table{border-collapse:collapse;width:100%;font-size:.9rem;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC",sans-serif}
+th,td{text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--accent);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+footer{border-top:1px solid var(--rule);margin-top:4rem;padding-top:1.5rem;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;color:var(--muted)}
+footer a{color:var(--link)}
+::selection{background:#e9d9c2}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc">
+  <div class="toc-title">Part I · Roadmap</div>
+  <a class="lvl3" href="#sec-a-roadmap-for-the-robotics-decade-from-bits-to-atoms-2025-2030-1">A roadmap for the robotics decade — from bits to atoms, 2025–2030</a>
+<a class="lvl2" href="#sec-the-thesis-in-one-page-5">The thesis in one page</a>
+<a class="lvl2" href="#sec-1-architecture-two-brains-split-by-time-18">1. Architecture: two brains, split by time</a>
+<a class="lvl2" href="#sec-2-the-data-curriculum-the-core-bet-in-order-32">2. The data curriculum — the core bet, in order</a>
+<a class="lvl3" href="#sec-2-1-pre-train-ego-centric-first-person-human-video-34">2.1 Pre-train: ego-centric first-person human video</a>
+<a class="lvl3" href="#sec-2-2-middle-ground-teleoperation-and-umi-37">2.2 Middle ground: teleoperation and UMI</a>
+<a class="lvl3" href="#sec-2-3-the-target-an-action-video-world-model-from-ego-centric-data-44">2.3 The target: an Action Video World Model from ego-centric data</a>
+<a class="lvl3" href="#sec-2-4-supporting-bet-how-to-mine-youtube-47">2.4 Supporting bet: how to mine YouTube</a>
+<a class="lvl3" href="#sec-2-5-supporting-bet-the-vlm-planner-cerebellum-interface-55">2.5 Supporting bet: the VLM planner → cerebellum interface</a>
+<a class="lvl3" href="#sec-2-6-supporting-bet-sim-to-real-rl-as-the-unified-cerebellum-trainer-64">2.6 Supporting bet: sim-to-real RL as the unified cerebellum trainer</a>
+<a class="lvl2" href="#sec-3-interlude-the-data-pyramid-as-a-curriculum-67">3. Interlude: the data pyramid as a curriculum</a>
+<a class="lvl2" href="#sec-4-a-scaling-law-for-physical-intelligence-71">4. A scaling law for physical intelligence</a>
+<a class="lvl3" href="#sec-4-1-the-two-curve-law-73">4.1 The two-curve law</a>
+<a class="lvl3" href="#sec-4-2-what-actually-scales-with-video-hours-79">4.2 What actually scales with video hours</a>
+<a class="lvl3" href="#sec-4-3-the-reliability-wall-why-demos-products-85">4.3 The reliability wall — why demos ≠ products</a>
+<a class="lvl3" href="#sec-4-4-emergence-and-the-embodiment-axis-91">4.4 Emergence and the embodiment axis</a>
+<a class="lvl2" href="#sec-5-hardware-the-physical-layer-96">5. Hardware — the physical layer</a>
+<a class="lvl3" href="#sec-5-1-motors-and-the-rare-earth-lock-98">5.1 Motors and the rare-earth lock</a>
+<a class="lvl3" href="#sec-5-2-the-reducer-the-other-bottleneck-nobody-names-100">5.2 The reducer — the other bottleneck nobody names</a>
+<a class="lvl3" href="#sec-5-3-actuation-architecture-direct-vs-quasi-direct-vs-tendon-108">5.3 Actuation architecture — direct vs quasi-direct vs tendon</a>
+<a class="lvl3" href="#sec-5-4-motor-drive-control-the-unglamorous-moat-117">5.4 Motor drive control — the unglamorous moat</a>
+<a class="lvl3" href="#sec-5-5-robots-building-robots-126">5.5 Robots building robots</a>
+<a class="lvl2" href="#sec-6-technical-bottom-line-128">6. Technical bottom line</a>
+<a class="lvl2" href="#sec-7-where-the-value-accrues-the-public-markets-map-138">7. Where the value accrues → the Public-Markets Map</a>
+</nav>
+<article>
+<header class="masthead">
+  <div class="topbar">
+    <span class="kicker">The Embodiment Awakening · 2025–2030</span>
+    <span class="langswitch"><a href="index.html" class="active">I · Roadmap</a><a href="frontiers.html">II · Frontiers</a><a href="markets.html">III · Markets</a><a href="critique.html">IV · Critique</a><span class="navsep">·</span><a href="zh.html">中文</a></span>
+  </div>
+  <h1>The Embodiment Awakening</h1>
+  <p class="sub">A roadmap for the robotics decade — from bits to atoms, 2025–2030. The technology; the market map and the critique follow as Parts III and IV.</p>
+  <div class="byline">Part I of IV · 2026 · a judgment call, not a prophecy</div>
+</header>
+<h1>The Embodiment Awakening</h1>
+<h3 id="sec-a-roadmap-for-the-robotics-decade-from-bits-to-atoms-2025-2030-1">A roadmap for the robotics decade — from bits to atoms, 2025–2030</h3>
+<p><em>Part I of four. This part is the technology. Part II covers new verbs and robots-building-robots; Part III (the Public-Markets Map) routes each thesis to listed companies and tickers; Part IV is the case against this article's own timing.</em></p>
+<blockquote>Over the past decade we taught machines to think. Over the next five years we will let them act. This is a judgment call on how that happens — the architecture, the data bet, the hardware, and the money.</blockquote>
+<hr>
+<h2 id="sec-the-thesis-in-one-page-5">The thesis in one page</h2>
+<p>Robots are at their <strong>GPT-2 moment</strong>. In 2024–2025 we saw the first manipulation policies that <em>generalize</em> — one network that folds unseen laundry, clears an arbitrary table, and turns "put the red cup in the sink" into motion. The prize is larger than language's, because language rearranges <strong>bits</strong> and robots rearrange <strong>atoms</strong>, and most of world GDP is transacted in atoms.</p>
+<p>My central claim about <em>how</em> we get there — the spine of this whole piece — is a bet about <strong>where the data comes from</strong>:</p>
+<blockquote><strong>The data curriculum is the strategy.</strong> Pre-train the robot's brain on <strong>ego-centric first-person human video</strong> — millions of hours of people doing things with their own hands. Use <strong>teleoperation and UMI-style handheld collection</strong> as the middle ground that adds action labels. And converge, in the limit, on an <strong>Action Video World Model learned directly from ego-centric data</strong> — a model that predicts <em>what a pair of hands should do next and what will happen</em> — with the physical robot as a thin actuator underneath it.</blockquote>
+<p>Everything else is in service of that bet, and there are four supporting bets that make it work:</p>
+<ol>
+<li><strong>How to mine YouTube</strong> — turn the internet's passive video into affordances and latent actions the robot can use.</li>
+<li><strong>A high-level VLM planner driving a low-level cerebellum</strong> — a slow reasoning brain that issues subgoals to a fast, local motor policy (the RT-X wiring).</li>
+<li><strong>Sim-to-real RL as the <em>unified</em> trainer for the cerebellum</strong> — the same recipe that already gives Unitree and its peers superhuman balance, parkour, and fighting, extended from legs to hands.</li>
+<li><strong>The physical layer</strong> — rare-earth motors, reducers, and drive control — and the endgame of <strong>robots building robots</strong>.</li>
+</ol>
+<p>The road is gated by four locks — <strong>architecture, data, hands, and the physical supply chain.</strong> Section One walks them. Section Two prices them.</p>
+<hr>
+<h2 id="sec-1-architecture-two-brains-split-by-time-18">1. Architecture: two brains, split by time</h2>
+<p>The most important structural fact about a working robot is that it is <strong>not one model but two</strong>, divided by timescale, mirroring cortex and cerebellum:</p>
+<ul>
+<li><strong>The planner (System 2).</strong> A large vision-language-action or <strong>video-action</strong> model at ~1–10 Hz. It watches, reasons, and emits <em>subgoals</em> — a language step, a target keyframe, an affordance, a latent action code. It answers <strong>"what to do next, and what will happen if I do."</strong></li>
+<li><strong>The cerebellum (System 1).</strong> A small, low-latency motor policy at ~100–1000 Hz on the body, consuming the subgoal plus proprioception and touch, closing the loop on torque. It answers <strong>"how to move, right now, given contact."</strong></li>
+</ul>
+<p>This is where the field has converged: Google's RT-1 → RT-2 (a VLM emitting action tokens) → <strong>RT-X</strong> (one policy trained on pooled cross-embodiment data) → the Gemini-Robotics split of a reasoning backbone from a fast action decoder; Physical Intelligence's π-series; Figure's Helix. <strong>The wiring diagram is settled.</strong> The open questions are the <em>interface</em> between the brains and the <em>data</em> behind each — which is the entire game.</p>
+<p>Why the split is a law of the problem, not a design choice:</p>
+<ol>
+<li><strong>Latency.</strong> Contact goes unstable on the 10 ms scale; a 300 ms hop to a big model cannot catch a slipping egg. Reflex must be small and local.</li>
+<li><strong>Data provenance.</strong> The two brains scale on <strong>different data, from different sources, at different costs</strong> (§3–4). This is the crux.</li>
+<li><strong>Amortization.</strong> A strong planner <em>factorizes</em> a long task into short primitives — which is exactly what lets a small cerebellum succeed, and, per the reliability math, is the difference between a demo and a product.</li>
+</ol>
+<p>Hold this two-brain picture. The rest of Section One is about <strong>what feeds each brain, and how.</strong></p>
+<h2 id="sec-2-the-data-curriculum-the-core-bet-in-order-32">2. The data curriculum — the core bet, in order</h2>
+<p>Language models got a gift: the internet <em>is</em> their training set. Robots got none — <strong>there is no first-person robot-manipulation corpus on the web.</strong> Torques, contact forces, and end-effector trajectories must be gathered frame by frame. This is the <strong>data wall</strong>, higher and earlier than language's, and it is <em>the</em> bottleneck. My bet is that you climb it in a specific order.</p>
+<h3 id="sec-2-1-pre-train-ego-centric-first-person-human-video-34">2.1 Pre-train: ego-centric first-person human video</h3>
+<p>Humans are already the largest fleet of manipulation-data collectors on Earth; they simply haven't been recording. Smart glasses change that. <strong>Ego-centric video — first-person, hand-centric, near-infinite (Aria, Ray-Ban Meta, and their successors)</strong> — is the only source that matches the robot's own sensor geometry: a head-mounted view of two hands acting on the world.</p>
+<p>The reason to pre-train here rather than on third-person video is <em>isomorphism</em>. A robot's egocentric camera and a human's head camera induce the <strong>same visual distribution</strong> — the "first-person eagle view." The affordances (where a mug is grasped), the object permanence, the hand-object contact events, the <em>subgoal grammar</em> of everyday tasks — all transfer. What does <strong>not</strong> come for free is the action label: you see the hand move, not the torque. That is fine, because the pre-train's job is to build the <strong>planner</strong>, not the cerebellum (see the scaling math in §4).</p>
+<h3 id="sec-2-2-middle-ground-teleoperation-and-umi-37">2.2 Middle ground: teleoperation and UMI</h3>
+<p>Ego-centric video lacks action labels; teleop and UMI supply them.</p>
+<ul>
+<li><strong>Teleoperation</strong> is the gold standard — perfectly action-labeled, matched to the embodiment — and the least scalable: one operator, one robot, one hour per hour, at \$20–40/hr. It trades labor <em>linearly</em> for data, the opposite of scaling. It survives as the <strong>calibration layer</strong>, not the workhorse.</li>
+<li><strong>UMI-style handheld collection</strong> decouples data from the expensive robot: a ~\$300 gripper-plus-camera rig lets a human do the task by hand, 5–10× faster, <em>anywhere</em>. It is the ImageNet move — scale by crowdsourcing human labor rather than buying robots. It is also the natural bridge from §2.1, because a UMI rig <em>is</em> an instrumented pair of hands: the same first-person frame, now with a measured gripper action.</li>
+</ul>
+<p>Middle-ground data does two jobs: it <strong>grounds</strong> the planner's affordances into real action, and it <strong>fine-tunes</strong> the cerebellum on the specific embodiment.</p>
+<h3 id="sec-2-3-the-target-an-action-video-world-model-from-ego-centric-data-44">2.3 The target: an Action Video World Model from ego-centric data</h3>
+<p>The endgame is to collapse the pyramid. Instead of a planner (from video) bolted to a controller (from teleop), learn a single <strong>Action Video World Model</strong> directly from ego-centric data: a generative model that, conditioned on the current first-person view and a goal, <em>predicts the video of the hands completing the task</em> — and, because it was trained with UMI/teleop action labels woven in, predicts the <strong>actions</strong> alongside the pixels.</p>
+<p>This is the convergence I bet on: <strong>video generation and robot world models become the same object.</strong> A model that can roll out "what my hands will look like doing this, and what the world will do in response" is simultaneously (i) a planner, (ii) a simulator for rehearsal, and (iii) an evaluator. It is the differentiable, learned physics engine, and it has no sim2real gap <em>by construction</em>, because it was learned from real first-person experience. Whoever ports the <strong>scale</strong> of video generation onto <strong>action-conditioned</strong> ego-centric video owns the physical world's GPT-4 moment.</p>
+<h3 id="sec-2-4-supporting-bet-how-to-mine-youtube-47">2.4 Supporting bet: how to mine YouTube</h3>
+<p>Beneath ego-centric video sits the cheapest layer — the open internet's billions of hours. It is third-person, unlabeled, and messy, but it encodes vast physical common sense (water flows, ropes tangle, tools afford). Three techniques turn it into signal, in rising order of usefulness:</p>
+<ol>
+<li><strong>Hand-pose &amp; contact recovery</strong> — reconstruct 3D hand pose and grasp from ordinary video, <em>mining out</em> pseudo-action labels.</li>
+<li><strong>Latent actions</strong> — don't recover explicit action; learn a self-supervised "what changed between frames" code, and pre-train the planner to predict it. This is the highest-leverage idea, because it needs no labels at all and scales to the whole corpus.</li>
+<li><strong>Affordance &amp; world-model pretraining</strong> — learn where things can be acted on and what follows, feeding §2.3.</li>
+</ol>
+<p>YouTube is the base of the pyramid: it can't teach contact control, but it makes the planner <em>cheap and broad</em> — which, per §4, is what deflates the price of the expensive action data.</p>
+<h3 id="sec-2-5-supporting-bet-the-vlm-planner-cerebellum-interface-55">2.5 Supporting bet: the VLM planner → cerebellum interface</h3>
+<p>The planner is a VLM (or video model) that thinks; the cerebellum is a reflex that acts. <strong>The whole system lives or dies on the interface between them.</strong> The candidate currencies, roughly from coarse to dense:</p>
+<ul>
+<li><strong>language subgoals</strong> ("open the top drawer") — interpretable, but low-bandwidth and ambiguous at contact;</li>
+<li><strong>keyframes / goal images</strong> — the planner <em>draws</em> the next desired state; the cerebellum servos toward it;</li>
+<li><strong>affordances / trajectories</strong> — 2D/3D grasp points and paths;</li>
+<li><strong>latent goal codes</strong> — a learned vector the cerebellum was co-trained to consume — highest bandwidth, least interpretable.</li>
+</ul>
+<p>My read: production systems will use a <strong>hybrid</strong> — language for task structure, keyframes/latents for the contact-rich last centimeter — and the interface will standardize much the way "tokens" standardized NLP. The planner also owns <em>failure detection</em>: when the cerebellum stalls, the planner re-issues a subgoal. That closed loop is not a nicety; §4.3 shows it changes the reliability exponent.</p>
+<h3 id="sec-2-6-supporting-bet-sim-to-real-rl-as-the-unified-cerebellum-trainer-64">2.6 Supporting bet: sim-to-real RL as the unified cerebellum trainer</h3>
+<p>Where does the cerebellum's <em>skill</em> come from, beyond imitation? From <strong>sim-to-real reinforcement learning</strong> — and here the most important existence proof is already shipping in <strong>legged locomotion</strong>. Unitree, Boston Dynamics, and the broader quadruped/humanoid field train whole-body controllers in <strong>massively parallel simulation</strong> (tens of thousands of parallel environments), with domain randomization over mass, friction, latency, and terrain, then transfer zero-shot to hardware. The result is the superhuman balance recovery, parkour, dancing, and sparring you've seen. Locomotion sim2real <em>works</em>.</p>
+<p>The bet is that <strong>the same recipe becomes the unified trainer for the manipulation cerebellum</strong> — one RL-in-sim pipeline that produces both "keep your balance while shoved" and "seat the connector while it binds." The attractions: infinite, cheap, perfectly-labeled interaction; automatic curriculum; and policies that are <em>reactive</em> by construction (they were trained to recover). The honest caveat, which I'll sharpen in Part III: <strong>manipulation sim2real is materially harder than locomotion sim2real</strong>, because rigid-body legged dynamics simulate well while contact-rich, deformable, high-friction manipulation does not. The unifying move is therefore <em>co-dependent</em> on §2.3 — a learned Action Video World Model is what makes "sim" faithful enough for manipulation RL to transfer. <strong>Locomotion proved the method; the world model is what extends it to hands.</strong></p>
+<h2 id="sec-3-interlude-the-data-pyramid-as-a-curriculum-67">3. Interlude: the data pyramid as a curriculum</h2>
+<p>Stack the bets and the pyramid stops being a menu and becomes a <em>training curriculum</em>:</p>
+<pre class="block"><code>   pre-train      ┌──────────────────────────────────────┐
+   (planner)      │ YouTube (latent actions, affordances) │  cheapest, broadest
+                  ├──────────────────────────────────────┤
+                  │ Ego-centric first-person human video  │  ← THE core bet
+   middle ground  ├──────────────────────────────────────┤
+   (grounding)    │ UMI handheld  →  Teleoperation        │  adds action labels
+                  ├──────────────────────────────────────┤
+   skill / target │ Sim-to-real RL  +  Action Video World │  reactive policy +
+                  │ Model (learned from ego-centric data) │  faithful simulator
+                  └──────────────────────────────────────┘</code></pre>
+<p>Read top to bottom, it is exactly the human developmental order: watch, then be guided, then practice. That is the shape of my bet.</p>
+<h2 id="sec-4-a-scaling-law-for-physical-intelligence-71">4. A scaling law for physical intelligence</h2>
+<p>Language scaling is a near-religion because loss falls as a smooth power law you can <em>buy</em>. The right question for robots is <strong>"scaling in what, and does the currency to buy it exist?"</strong></p>
+<h3 id="sec-4-1-the-two-curve-law-73">4.1 The two-curve law</h3>
+<p>Bound the system's failure rate by the <em>worse</em> of its two brains, each on its own data:</p>
+<pre class="block"><code>   E_system ≈ max( E_planner(H_v) , E_cerebellum(H_a) )
+   E(H) ≈ E∞ + c · H^(−α),      α ≈ 0.1–0.4</code></pre>
+<p>where <code>H_v</code> = hours of <strong>passive video</strong> (YouTube + ego-centric) and <code>H_a</code> = hours of <strong>action-labeled interaction</strong> (teleop + UMI + sim). Plug in today's scales:</p>
+<div class="tablewrap"><table><thead><tr><th>Brain</th><th>Data currency</th><th>Available now</th><th>Cost of 10×</th><th>Position on curve</th></tr></thead><tbody><tr><td>Planner</td><td>video hours <code>H_v</code></td><td>10^5–10^7 h</td><td>low, falling</td><td><strong>far along</strong> — near <code>E∞</code></td></tr><tr><td>Cerebellum</td><td>action hours <code>H_a</code></td><td>10^3–10^5 h</td><td>high</td><td><strong>early</strong> — steep part</td></tr></tbody></table></div>
+<p><strong>This table is the strategy in miniature.</strong> The planner's fuel is cheap and abundant; ego-centric + YouTube pretraining pushes it near its floor. The cerebellum's fuel is scarce and dear, so <code>E_cerebellum</code> dominates. The marginal dollar of capability buys <strong>action data</strong>, and the field's true bottleneck is <code>H_a</code>.</p>
+<h3 id="sec-4-2-what-actually-scales-with-video-hours-79">4.2 What actually scales with video hours</h3>
+<p>You asked the precise question: <em>what scales with the hours of video?</em> The answer is <strong>the planner, not the cerebellum</strong> — and that is worth more than it sounds, via a second-order effect.</p>
+<p>Video hours buy the planner (i) an <strong>affordance prior</strong>, (ii) a <strong>predictive world model</strong>, and (iii) a <strong>subgoal vocabulary</strong> — none needing action labels. So a <em>video-action planner trained on ego-centric video, prompting a small RT-X cerebellum, is the right bet</em>: labeled data is spent only on what video cannot teach, closed-loop contact.</p>
+<p>The second-order effect is <strong>amortization</strong>. Let <code>H_a(target)</code> be the action data needed to hit a target reliability:</p>
+<pre class="block"><code>   H_a(target) ≈ k · P^(−β) · (task horizon),     P = planner quality</code></pre>
+<p>Video hours raise <code>P</code>, which <em>lowers the action hours you must buy.</em> The planner doesn't replace the cerebellum's data — it <strong>deflates its price.</strong> The winner maximizes <code>H_v × H_a</code> and uses <code>H_v</code> (via the world model, §2.3) to bend down the cost and improve the fidelity of <code>H_a</code>. That is the entire reason to care about video, made quantitative.</p>
+<h3 id="sec-4-3-the-reliability-wall-why-demos-products-85">4.3 The reliability wall — why demos ≠ products</h3>
+<p>The arithmetic that kills naïve optimism. A useful chore is a long horizon of contact-rich steps; open-loop, a <code>T</code>-step task at per-step success <code>p</code> succeeds with <code>p^T</code>:</p>
+<pre class="block"><code>   T = 20, p = 0.95  →  0.95^20 ≈ 0.36        (fails ~2 of 3 attempts)
+   0.99 end-to-end at T = 20  →  p ≈ 0.99^(1/20) ≈ 0.99950</code></pre>
+<p>Demo-to-product is a <strong>100× cut in per-step failure</strong> — the manipulation twin of self-driving's last 1%, and where timelines die (Part III). The escape is the closed loop: give the cerebellum <code>k</code> reactive attempts per step (detect slip, re-grasp):</p>
+<pre class="block"><code>   p_eff = 1 − (1 − p)^k
+   p = 0.95, k = 3  →  p_eff ≈ 0.99988   →   p_eff^20 ≈ 0.9975</code></pre>
+<p><strong>Reactivity changes the exponent, not just the constant.</strong> The planner→cerebellum split earns its keep here: the planner notices failure and re-prompts, turning a brittle <code>p^T</code> into a robust product. Reliability is <em>architectural</em>, not merely data-driven.</p>
+<h3 id="sec-4-4-emergence-and-the-embodiment-axis-91">4.4 Emergence and the embodiment axis</h3>
+<ul>
+<li><strong>A new axis: embodiments <code>N</code>.</strong> Deployed robots collect data while they work (shadow-mode). Capability scales in fielded units — an axis LLMs lack — binding scaling to <em>deployment</em>: you must sell robots to scale intelligence. First mover into the flywheel compounds. <strong>This, not architecture or hardware, is the moat.</strong></li>
+<li><strong>An emergence threshold.</strong> Expect a phase transition to cross-task generalization once <strong>task-diversity coverage</strong> crosses a threshold — my guess, ~10^7–10^8 quality trajectories for a leading operator, ~2027–2029. Diversity beats depth (10^4 tasks × 10^2 demos ≫ 10^2 × 10^4). This is UMI's deep rationale: it buys breadth cheaply.</li>
+</ul>
+<h2 id="sec-5-hardware-the-physical-layer-96">5. Hardware — the physical layer</h2>
+<p>Software plans; atoms resist. Five hardware truths decide who ships.</p>
+<h3 id="sec-5-1-motors-and-the-rare-earth-lock-98">5.1 Motors and the rare-earth lock</h3>
+<p>High-performance robots use <strong>permanent-magnet synchronous motors</strong> built on <strong>neodymium-iron-boron (NdFeB)</strong>, with dysprosium/terbium for heat tolerance. A humanoid carries 40+ motors and ~2–4 kg of magnet material — hundreds of grams of rare earth. <strong>Scaling humanoids is, materially, a bet on magnets.</strong> The bottleneck isn't reserves (rare earths aren't rare) but <strong>processing and magnet-making</strong>, where China holds ~85–90% of refining and &gt;90% of high-performance NdFeB — near-monopoly in heavy rare earths. It is already a bargaining chip and will be weaponized. Substitutes (ferrite, iron-nitride) lose on power density exactly where humanoids are most sensitive, so <strong>the lock can't be engineered away in five years — only diversified around.</strong></p>
+<h3 id="sec-5-2-the-reducer-the-other-bottleneck-nobody-names-100">5.2 The reducer — the other bottleneck nobody names</h3>
+<p>A motor spins fast and weak; joints need slow and strong. Between them sits the <strong>reducer</strong>, and it is as much a bottleneck as the magnet:</p>
+<ul>
+<li><strong>Harmonic (strain-wave) drives</strong> — near-zero backlash, high ratio, compact; the standard for precise arm joints; hard to manufacture (Harmonic Drive Systems and a few others dominate).</li>
+<li><strong>Cycloidal / RV drives</strong> — high stiffness and shock tolerance for heavy joints (Nabtesco's domain).</li>
+<li><strong>Planetary gears</strong> — cheap, backdrivable, moderate precision; common in legs and QDD actuators.</li>
+</ul>
+<p>Precision reducers are a <strong>quiet oligopoly</strong> with Japanese incumbents, and they are a real supply constraint on humanoid volume. Cost-down here is as decisive as motor cost-down.</p>
+<h3 id="sec-5-3-actuation-architecture-direct-vs-quasi-direct-vs-tendon-108">5.3 Actuation architecture — direct vs quasi-direct vs tendon</h3>
+<p>How you connect motor to joint is a defining design choice:</p>
+<ul>
+<li><strong>Direct drive (DD).</strong> Motor on the joint, no reduction. Perfectly backdrivable and "transparent" (the joint feels forces cleanly), high control bandwidth — but low torque density, heavy, power-hungry. Rare in full humanoids.</li>
+<li><strong>Quasi-direct drive (QDD).</strong> A large-diameter motor + <em>low</em> (≈6–10:1) planetary reduction. The MIT Cheetah lineage. It keeps most of DD's backdrivability and transparency while multiplying torque — ideal for <strong>dynamic, contact-rich, impact-absorbing</strong> joints (legs, and increasingly arms). This is the sweet spot for a reactive cerebellum, because a backdrivable joint makes force control and shock survival natural. My bet: <strong>QDD is the default for the athletic humanoid.</strong></li>
+<li><strong>Tendon / cable drive.</strong> Motors in the forearm/torso pull "tendons" to move distal joints. Puts mass proximally, enabling <strong>light, fast, anthropomorphic fingers</strong> — the leading route to true dexterity. Costs: cable stretch, friction, wear, and harder control (nonlinear, hysteretic). This is why <strong>hands</strong> trend tendon-driven while <strong>limbs</strong> trend QDD.</li>
+<li><strong>Hydraulics.</strong> Unmatched peak power density (old Atlas), but leaks, weight, and efficiency have pushed the field to <strong>electric</strong> for anything meant to be cheap, clean, and mass-produced. Electric won.</li>
+</ul>
+<p>Read the body as a hybrid: <strong>QDD proximal joints for power and reactivity, tendon-driven distal hands for dexterity, all electric.</strong></p>
+<h3 id="sec-5-4-motor-drive-control-the-unglamorous-moat-117">5.4 Motor drive control — the unglamorous moat</h3>
+<p>Between the policy's torque command and the magnet is a control stack that decides whether the robot is smooth and safe or twitchy and dangerous:</p>
+<ul>
+<li><strong>Field-oriented control (FOC)</strong> turns a 3-phase motor into a clean torque source; done well, the joint is a programmable spring.</li>
+<li><strong>Torque/current control with high-bandwidth current loops</strong> (tens of kHz) is what makes backdrivable, compliant, force-sensitive joints — the physical substrate of the reactive cerebellum in §2.6.</li>
+<li><strong>Sensing &amp; thermal limits.</strong> Absolute encoders, current sensing, and thermal models bound <em>continuous</em> torque (motors overheat long before they stall). Much of "how strong is this robot, sustainably" is a thermal-control question, not a peak-torque spec.</li>
+<li><strong>The chips.</strong> Gate drivers, high-side current sensors, and magnetic position encoders (from the analog/power-semi vendors) are a real, investable layer — motor control is silicon as much as software.</li>
+</ul>
+<p>The point: <strong>"how to drive the motor" is a genuine moat.</strong> Backdrivable, thermally-honest, high-bandwidth torque control is hard-won know-how, and it is exactly what a sim-to-real cerebellum needs underneath it.</p>
+<h3 id="sec-5-5-robots-building-robots-126">5.5 Robots building robots</h3>
+<p>The endgame is recursion: robots on the line that <strong>assemble</strong> robots (and cars, and dogs) — Tesla's Optimus-builds-Optimus vision. This is real and near (2027–2029), but measure it by <strong>closure</strong> — the fraction of itself a system can build. Assembling from externally-made motors, reducers, batteries, and chips is ~30–50% closure: valuable for cost-down, but not self-replication. Building the <em>precision mother-machines</em> (reducers, bearings, and above all <strong>lithography</strong>) is the last 10%, and the <strong>chip lock</strong> — a humanoid brain needs advanced silicon, which needs an EUV scanner, the apex of human industry — keeps full closure decades away. That is a <em>feature</em>: it makes physical takeoff <strong>soft, not hard</strong>, leaving humans a control point at the fab. (Part II treats verbs and recursion in depth.)</p>
+<h2 id="sec-6-technical-bottom-line-128">6. Technical bottom line</h2>
+<ol>
+<li><strong>Two brains, two data curves.</strong> A slow VLM/video planner prompts a fast RT-X cerebellum. They scale on different fuels.</li>
+<li><strong>The data curriculum is the strategy.</strong> Ego-centric first-person video to pre-train the planner; UMI/teleop to ground it; sim2real RL + an Action Video World Model to forge a reactive cerebellum. <strong>That is the bet.</strong></li>
+<li><strong>Video deflates the price of action data.</strong> What scales with video hours is the planner — and a better planner lowers the scarce action hours you must buy.</li>
+<li><strong>Reliability is architectural.</strong> <code>p^T</code> kills open-loop; the closed loop changes the exponent.</li>
+<li><strong>Sim2real RL is the unified skill engine</strong> — proven in locomotion, extended to hands by the world model.</li>
+<li><strong>Hardware decides who ships:</strong> magnets, reducers, QDD-vs-tendon, and drive-control know-how — half of this is NdFeB and gearboxes.</li>
+<li><strong>Robots building robots is soft takeoff</strong>, gated at the fab.</li>
+</ol>
+<h2 id="sec-7-where-the-value-accrues-the-public-markets-map-138">7. Where the value accrues → the Public-Markets Map</h2>
+<p>The technology above dictates the capital structure. If the model layer converges and open-sources, there is <strong>no moat in the brain</strong> — value migrates to the two ends of a <strong>barbell</strong>: the <strong>data &amp; verification</strong> that feeds the recipe, and the <strong>actuator supply-chain choke points</strong> (precision reducers, planetary roller screws, magnets, and the grinding machines behind them) that no software can conjure. Integrators are squeezed in the middle unless a fleet is provably a data asset.</p>
+<p>The full, tickered mapping — each thesis in this essay routed to listed companies, a consolidated ticker table, and a quarterly action-linked dashboard — is a companion document:</p>
+<p><strong>→ <a href="markets.html">The Public-Markets Map</a></strong> <em>(research analysis, not investment advice).</em></p>
+<hr>
+<p><em>Part II: new verbs and robots-building-robots. Part III (Markets): the tickered map. Part IV (Critique): the case against this article's timing — the self-driving trap, the reliability chasm, and the funding winter that can bury correct theses on the way up. Written 2026 — a judgment call, not a prophecy.</em></p>
+<footer>© 2026 · A forward-looking judgment, not a prophecy. Part I · Part II · Part III.</footer>
+</article>
+</div>
+</body>
+</html>

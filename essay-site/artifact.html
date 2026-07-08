@@ -1,0 +1,867 @@
+<title>The Embodiment Awakening</title>
+<style>
+:root{
+  --paper:#ECEEEF; --panel:#F4F5F6; --ink:#15181B; --muted:#59626A;
+  --rule:#D3D8DB; --accent:#1B4A6B; --bright:#2E7FB8; --warn:#A63A2A;
+  --term:#14181B; --term-ink:#D8E3E8; --term-dim:#6E8894;
+  --serif:"Charter","Iowan Old Style","Palatino",Georgia,"Times New Roman",ui-serif,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Segoe UI",Roboto,system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono","SFMono-Regular",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+.ea-root{background:var(--paper);color:var(--ink);
+  font-family:var(--serif);font-size:18px;line-height:1.72;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  -webkit-text-size-adjust:100%;}
+.ea-root ::selection{background:#cfe0ec}
+/* progress hairline */
+.ea-progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:60;
+  background:var(--bright);transition:width .06s linear}
+/* top bar */
+.ea-bar{position:sticky;top:0;z-index:50;background:rgba(236,238,239,.92);
+  backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--rule)}
+.ea-bar-in{max-width:44rem;margin:0 auto;padding:.55rem 1.1rem;
+  display:flex;align-items:center;gap:1rem;justify-content:space-between}
+.ea-brand{font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent);white-space:nowrap}
+.ea-tabs{display:flex;gap:.15rem;overflow-x:auto;scrollbar-width:none}
+.ea-tabs::-webkit-scrollbar{display:none}
+.ea-tab{font-family:var(--sans);font-size:12.5px;font-weight:600;
+  color:var(--muted);background:none;border:0;cursor:pointer;
+  padding:.35rem .5rem;border-radius:6px;white-space:nowrap;
+  border-bottom:2px solid transparent}
+.ea-tab:hover{color:var(--ink)}
+.ea-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.ea-tab:focus-visible{outline:2px solid var(--bright);outline-offset:2px}
+/* panels */
+.ea-wrap{max-width:44rem;margin:0 auto;padding:0 1.1rem}
+.ea-panel{display:none;padding:2.4rem 0 5rem;animation:ea-fade .28s ease}
+.ea-panel.active{display:block}
+@media(prefers-reduced-motion:reduce){.ea-panel{animation:none}}
+@keyframes ea-fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+/* masthead */
+.ea-mast{border-bottom:1px solid var(--rule);padding-bottom:1.6rem;
+  margin-bottom:2.2rem;padding-top:1.4rem}
+.ea-eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent);
+  display:inline-block;padding-bottom:.5rem;margin-bottom:.9rem;
+  border-bottom:2px solid var(--accent)}
+.ea-h1{font-family:var(--sans);font-weight:800;letter-spacing:-.021em;
+  font-size:clamp(2rem,7vw,2.9rem);line-height:1.08;margin:.1rem 0 .6rem;
+  text-wrap:balance}
+.ea-sub{font-family:var(--serif);font-style:italic;color:var(--muted);
+  font-size:1.06rem;line-height:1.5;margin:0;max-width:34rem}
+/* article typography */
+.ea-body{max-width:40rem}
+.ea-body h1{display:none}
+.ea-body h2{font-family:var(--sans);font-weight:750;letter-spacing:-.014em;
+  font-size:1.5rem;line-height:1.18;margin:2.9rem 0 .9rem;text-wrap:balance;
+  padding-top:.9rem;border-top:1px solid var(--rule)}
+.ea-body h3{font-family:var(--sans);font-weight:700;font-size:1.16rem;
+  margin:1.9rem 0 .6rem;color:#232a30;letter-spacing:-.01em}
+.ea-body h4{font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;
+  font-size:.82rem;color:var(--muted);margin:1.5rem 0 .5rem}
+.ea-body p{margin:1.05rem 0}
+.ea-body strong{font-weight:700}
+.ea-body em{font-style:italic}
+.ea-body a{color:var(--accent);text-decoration:underline;
+  text-underline-offset:2px;text-decoration-thickness:.06em}
+.ea-body a:hover{color:var(--bright)}
+.ea-body hr{border:0;border-top:1px solid var(--rule);margin:2.6rem 0}
+.ea-body blockquote{margin:1.7rem 0;padding:.5rem 0 .5rem 1.3rem;
+  border-left:3px solid var(--accent);font-style:italic;color:#2b333a;
+  font-size:1.05rem}
+.ea-body ul,.ea-body ol{margin:1.05rem 0;padding-left:1.4rem}
+.ea-body li{margin:.4rem 0}
+.ea-body li.cont{list-style:none;margin-left:-.3rem;color:var(--muted);font-size:.95em}
+.ea-body code{font-family:var(--mono);font-size:.85em;
+  background:#dfe4e7;color:#1c2529;padding:.1em .34em;border-radius:4px}
+/* terminal cards for math/diagrams */
+.ea-body pre.term{font-family:var(--mono);background:var(--term);color:var(--term-ink);
+  font-size:12.5px;line-height:1.55;padding:1.05rem 1.15rem;border-radius:9px;
+  overflow-x:auto;margin:1.7rem 0;border:1px solid #23303a;
+  box-shadow:0 1px 0 rgba(255,255,255,.4)}
+.ea-body pre.term code{background:none;color:inherit;padding:0;font-size:inherit}
+/* data tables */
+.ea-body .tablewrap{overflow-x:auto;margin:1.7rem 0;
+  border:1px solid var(--rule);border-radius:9px}
+.ea-body table{border-collapse:collapse;width:100%;
+  font-family:var(--sans);font-size:.86rem;font-variant-numeric:tabular-nums}
+.ea-body th,.ea-body td{text-align:left;padding:.55rem .7rem;
+  border-bottom:1px solid var(--rule);vertical-align:top}
+.ea-body thead th{background:#e3e7e9;color:var(--accent);
+  font-family:var(--mono);font-size:.72rem;text-transform:uppercase;
+  letter-spacing:.04em;position:sticky;top:0}
+.ea-body tbody tr:last-child td{border-bottom:0}
+.ea-body td code{background:#e7ebed}
+.ea-foot{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;color:var(--muted)}
+/* Part III wears the warning accent */
+.ea-panel.warn{--accent:var(--warn);--bright:#c85a45}
+/* CJK gets a system serif that renders on iOS */
+.ea-panel.zh{--serif:"Songti SC","Noto Serif CJK SC",Georgia,ui-serif,serif}
+</style>
+<div class="ea-root">
+  <div class="ea-progress" id="ea-progress"></div>
+  <div class="ea-bar">
+    <div class="ea-bar-in">
+      <span class="ea-brand">Embodiment&nbsp;Awakening</span>
+      <nav class="ea-tabs" role="tablist" aria-label="Parts"><button class="ea-tab active" role="tab" data-tab="p1" aria-selected="true">I · Roadmap</button><button class="ea-tab" role="tab" data-tab="p2" aria-selected="false">II · Frontiers</button><button class="ea-tab" role="tab" data-tab="p3" aria-selected="false">III · Markets</button><button class="ea-tab" role="tab" data-tab="p4" aria-selected="false">IV · Critique</button><button class="ea-tab" role="tab" data-tab="zh" aria-selected="false">中文</button></nav>
+    </div>
+  </div>
+  <section id="p1" class="ea-panel active" role="tabpanel" aria-label="I · Roadmap">
+  <div class="ea-wrap">
+    <header class="ea-mast">
+      <div class="ea-eyebrow">Part I — Roadmap</div>
+      <h1 class="ea-h1">The Embodiment Awakening</h1>
+      <p class="ea-sub">A roadmap for the robotics decade — from bits to atoms, 2025–2030. Section One is the technology; Section Two maps each thesis to tradable exposure.</p>
+    </header>
+    <div class="ea-body"><h2>The thesis in one page</h2>
+<p>Robots are at their <strong>GPT-2 moment</strong>. In 2024–2025 we saw the first manipulation policies that <em>generalize</em> — one network that folds unseen laundry, clears an arbitrary table, and turns "put the red cup in the sink" into motion. The prize is larger than language's, because language rearranges <strong>bits</strong> and robots rearrange <strong>atoms</strong>, and most of world GDP is transacted in atoms.</p>
+<p>My central claim about <em>how</em> we get there — the spine of this whole piece — is a bet about <strong>where the data comes from</strong>:</p>
+<blockquote><strong>The data curriculum is the strategy.</strong> Pre-train the robot's brain on <strong>ego-centric first-person human video</strong> — millions of hours of people doing things with their own hands. Use <strong>teleoperation and UMI-style handheld collection</strong> as the middle ground that adds action labels. And converge, in the limit, on an <strong>Action Video World Model learned directly from ego-centric data</strong> — a model that predicts <em>what a pair of hands should do next and what will happen</em> — with the physical robot as a thin actuator underneath it.</blockquote>
+<p>Everything else is in service of that bet, and there are four supporting bets that make it work:</p>
+<ol>
+<li><strong>How to mine YouTube</strong> — turn the internet's passive video into affordances and latent actions the robot can use.</li>
+<li><strong>A high-level VLM planner driving a low-level cerebellum</strong> — a slow reasoning brain that issues subgoals to a fast, local motor policy (the RT-X wiring).</li>
+<li><strong>Sim-to-real RL as the <em>unified</em> trainer for the cerebellum</strong> — the same recipe that already gives Unitree and its peers superhuman balance, parkour, and fighting, extended from legs to hands.</li>
+<li><strong>The physical layer</strong> — rare-earth motors, reducers, and drive control — and the endgame of <strong>robots building robots</strong>.</li>
+</ol>
+<p>The road is gated by four locks — <strong>architecture, data, hands, and the physical supply chain.</strong> Section One walks them. Section Two prices them.</p>
+<hr>
+<h2>1. Architecture: two brains, split by time</h2>
+<p>The most important structural fact about a working robot is that it is <strong>not one model but two</strong>, divided by timescale, mirroring cortex and cerebellum:</p>
+<ul>
+<li><strong>The planner (System 2).</strong> A large vision-language-action or <strong>video-action</strong> model at ~1–10 Hz. It watches, reasons, and emits <em>subgoals</em> — a language step, a target keyframe, an affordance, a latent action code. It answers <strong>"what to do next, and what will happen if I do."</strong></li>
+<li><strong>The cerebellum (System 1).</strong> A small, low-latency motor policy at ~100–1000 Hz on the body, consuming the subgoal plus proprioception and touch, closing the loop on torque. It answers <strong>"how to move, right now, given contact."</strong></li>
+</ul>
+<p>This is where the field has converged: Google's RT-1 → RT-2 (a VLM emitting action tokens) → <strong>RT-X</strong> (one policy trained on pooled cross-embodiment data) → the Gemini-Robotics split of a reasoning backbone from a fast action decoder; Physical Intelligence's π-series; Figure's Helix. <strong>The wiring diagram is settled.</strong> The open questions are the <em>interface</em> between the brains and the <em>data</em> behind each — which is the entire game.</p>
+<p>Why the split is a law of the problem, not a design choice:</p>
+<ol>
+<li><strong>Latency.</strong> Contact goes unstable on the 10 ms scale; a 300 ms hop to a big model cannot catch a slipping egg. Reflex must be small and local.</li>
+<li><strong>Data provenance.</strong> The two brains scale on <strong>different data, from different sources, at different costs</strong> (§3–4). This is the crux.</li>
+<li><strong>Amortization.</strong> A strong planner <em>factorizes</em> a long task into short primitives — which is exactly what lets a small cerebellum succeed, and, per the reliability math, is the difference between a demo and a product.</li>
+</ol>
+<p>Hold this two-brain picture. The rest of Section One is about <strong>what feeds each brain, and how.</strong></p>
+<h2>2. The data curriculum — the core bet, in order</h2>
+<p>Language models got a gift: the internet <em>is</em> their training set. Robots got none — <strong>there is no first-person robot-manipulation corpus on the web.</strong> Torques, contact forces, and end-effector trajectories must be gathered frame by frame. This is the <strong>data wall</strong>, higher and earlier than language's, and it is <em>the</em> bottleneck. My bet is that you climb it in a specific order.</p>
+<h3>2.1 Pre-train: ego-centric first-person human video</h3>
+<p>Humans are already the largest fleet of manipulation-data collectors on Earth; they simply haven't been recording. Smart glasses change that. <strong>Ego-centric video — first-person, hand-centric, near-infinite (Aria, Ray-Ban Meta, and their successors)</strong> — is the only source that matches the robot's own sensor geometry: a head-mounted view of two hands acting on the world.</p>
+<p>The reason to pre-train here rather than on third-person video is <em>isomorphism</em>. A robot's egocentric camera and a human's head camera induce the <strong>same visual distribution</strong> — the "first-person eagle view." The affordances (where a mug is grasped), the object permanence, the hand-object contact events, the <em>subgoal grammar</em> of everyday tasks — all transfer. What does <strong>not</strong> come for free is the action label: you see the hand move, not the torque. That is fine, because the pre-train's job is to build the <strong>planner</strong>, not the cerebellum (see the scaling math in §4).</p>
+<h3>2.2 Middle ground: teleoperation and UMI</h3>
+<p>Ego-centric video lacks action labels; teleop and UMI supply them.</p>
+<ul>
+<li><strong>Teleoperation</strong> is the gold standard — perfectly action-labeled, matched to the embodiment — and the least scalable: one operator, one robot, one hour per hour, at \$20–40/hr. It trades labor <em>linearly</em> for data, the opposite of scaling. It survives as the <strong>calibration layer</strong>, not the workhorse.</li>
+<li><strong>UMI-style handheld collection</strong> decouples data from the expensive robot: a ~\$300 gripper-plus-camera rig lets a human do the task by hand, 5–10× faster, <em>anywhere</em>. It is the ImageNet move — scale by crowdsourcing human labor rather than buying robots. It is also the natural bridge from §2.1, because a UMI rig <em>is</em> an instrumented pair of hands: the same first-person frame, now with a measured gripper action.</li>
+</ul>
+<p>Middle-ground data does two jobs: it <strong>grounds</strong> the planner's affordances into real action, and it <strong>fine-tunes</strong> the cerebellum on the specific embodiment.</p>
+<h3>2.3 The target: an Action Video World Model from ego-centric data</h3>
+<p>The endgame is to collapse the pyramid. Instead of a planner (from video) bolted to a controller (from teleop), learn a single <strong>Action Video World Model</strong> directly from ego-centric data: a generative model that, conditioned on the current first-person view and a goal, <em>predicts the video of the hands completing the task</em> — and, because it was trained with UMI/teleop action labels woven in, predicts the <strong>actions</strong> alongside the pixels.</p>
+<p>This is the convergence I bet on: <strong>video generation and robot world models become the same object.</strong> A model that can roll out "what my hands will look like doing this, and what the world will do in response" is simultaneously (i) a planner, (ii) a simulator for rehearsal, and (iii) an evaluator. It is the differentiable, learned physics engine, and it has no sim2real gap <em>by construction</em>, because it was learned from real first-person experience. Whoever ports the <strong>scale</strong> of video generation onto <strong>action-conditioned</strong> ego-centric video owns the physical world's GPT-4 moment.</p>
+<h3>2.4 Supporting bet: how to mine YouTube</h3>
+<p>Beneath ego-centric video sits the cheapest layer — the open internet's billions of hours. It is third-person, unlabeled, and messy, but it encodes vast physical common sense (water flows, ropes tangle, tools afford). Three techniques turn it into signal, in rising order of usefulness:</p>
+<ol>
+<li><strong>Hand-pose &amp; contact recovery</strong> — reconstruct 3D hand pose and grasp from ordinary video, <em>mining out</em> pseudo-action labels.</li>
+<li><strong>Latent actions</strong> — don't recover explicit action; learn a self-supervised "what changed between frames" code, and pre-train the planner to predict it. This is the highest-leverage idea, because it needs no labels at all and scales to the whole corpus.</li>
+<li><strong>Affordance &amp; world-model pretraining</strong> — learn where things can be acted on and what follows, feeding §2.3.</li>
+</ol>
+<p>YouTube is the base of the pyramid: it can't teach contact control, but it makes the planner <em>cheap and broad</em> — which, per §4, is what deflates the price of the expensive action data.</p>
+<h3>2.5 Supporting bet: the VLM planner → cerebellum interface</h3>
+<p>The planner is a VLM (or video model) that thinks; the cerebellum is a reflex that acts. <strong>The whole system lives or dies on the interface between them.</strong> The candidate currencies, roughly from coarse to dense:</p>
+<ul>
+<li><strong>language subgoals</strong> ("open the top drawer") — interpretable, but low-bandwidth and ambiguous at contact;</li>
+<li><strong>keyframes / goal images</strong> — the planner <em>draws</em> the next desired state; the cerebellum servos toward it;</li>
+<li><strong>affordances / trajectories</strong> — 2D/3D grasp points and paths;</li>
+<li><strong>latent goal codes</strong> — a learned vector the cerebellum was co-trained to consume — highest bandwidth, least interpretable.</li>
+</ul>
+<p>My read: production systems will use a <strong>hybrid</strong> — language for task structure, keyframes/latents for the contact-rich last centimeter — and the interface will standardize much the way "tokens" standardized NLP. The planner also owns <em>failure detection</em>: when the cerebellum stalls, the planner re-issues a subgoal. That closed loop is not a nicety; §4.3 shows it changes the reliability exponent.</p>
+<h3>2.6 Supporting bet: sim-to-real RL as the unified cerebellum trainer</h3>
+<p>Where does the cerebellum's <em>skill</em> come from, beyond imitation? From <strong>sim-to-real reinforcement learning</strong> — and here the most important existence proof is already shipping in <strong>legged locomotion</strong>. Unitree, Boston Dynamics, and the broader quadruped/humanoid field train whole-body controllers in <strong>massively parallel simulation</strong> (tens of thousands of parallel environments), with domain randomization over mass, friction, latency, and terrain, then transfer zero-shot to hardware. The result is the superhuman balance recovery, parkour, dancing, and sparring you've seen. Locomotion sim2real <em>works</em>.</p>
+<p>The bet is that <strong>the same recipe becomes the unified trainer for the manipulation cerebellum</strong> — one RL-in-sim pipeline that produces both "keep your balance while shoved" and "seat the connector while it binds." The attractions: infinite, cheap, perfectly-labeled interaction; automatic curriculum; and policies that are <em>reactive</em> by construction (they were trained to recover). The honest caveat, which I'll sharpen in Part III: <strong>manipulation sim2real is materially harder than locomotion sim2real</strong>, because rigid-body legged dynamics simulate well while contact-rich, deformable, high-friction manipulation does not. The unifying move is therefore <em>co-dependent</em> on §2.3 — a learned Action Video World Model is what makes "sim" faithful enough for manipulation RL to transfer. <strong>Locomotion proved the method; the world model is what extends it to hands.</strong></p>
+<h2>3. Interlude: the data pyramid as a curriculum</h2>
+<p>Stack the bets and the pyramid stops being a menu and becomes a <em>training curriculum</em>:</p>
+<pre class="term"><code>   pre-train      ┌──────────────────────────────────────┐
+   (planner)      │ YouTube (latent actions, affordances) │  cheapest, broadest
+                  ├──────────────────────────────────────┤
+                  │ Ego-centric first-person human video  │  ← THE core bet
+   middle ground  ├──────────────────────────────────────┤
+   (grounding)    │ UMI handheld  →  Teleoperation        │  adds action labels
+                  ├──────────────────────────────────────┤
+   skill / target │ Sim-to-real RL  +  Action Video World │  reactive policy +
+                  │ Model (learned from ego-centric data) │  faithful simulator
+                  └──────────────────────────────────────┘</code></pre>
+<p>Read top to bottom, it is exactly the human developmental order: watch, then be guided, then practice. That is the shape of my bet.</p>
+<h2>4. A scaling law for physical intelligence</h2>
+<p>Language scaling is a near-religion because loss falls as a smooth power law you can <em>buy</em>. The right question for robots is <strong>"scaling in what, and does the currency to buy it exist?"</strong></p>
+<h3>4.1 The two-curve law</h3>
+<p>Bound the system's failure rate by the <em>worse</em> of its two brains, each on its own data:</p>
+<pre class="term"><code>   E_system ≈ max( E_planner(H_v) , E_cerebellum(H_a) )
+   E(H) ≈ E∞ + c · H^(−α),      α ≈ 0.1–0.4</code></pre>
+<p>where <code>H_v</code> = hours of <strong>passive video</strong> (YouTube + ego-centric) and <code>H_a</code> = hours of <strong>action-labeled interaction</strong> (teleop + UMI + sim). Plug in today's scales:</p>
+<div class="tablewrap"><table><thead><tr><th>Brain</th><th>Data currency</th><th>Available now</th><th>Cost of 10×</th><th>Position on curve</th></tr></thead><tbody><tr><td>Planner</td><td>video hours <code>H_v</code></td><td>10^5–10^7 h</td><td>low, falling</td><td><strong>far along</strong> — near <code>E∞</code></td></tr><tr><td>Cerebellum</td><td>action hours <code>H_a</code></td><td>10^3–10^5 h</td><td>high</td><td><strong>early</strong> — steep part</td></tr></tbody></table></div>
+<p><strong>This table is the strategy in miniature.</strong> The planner's fuel is cheap and abundant; ego-centric + YouTube pretraining pushes it near its floor. The cerebellum's fuel is scarce and dear, so <code>E_cerebellum</code> dominates. The marginal dollar of capability buys <strong>action data</strong>, and the field's true bottleneck is <code>H_a</code>.</p>
+<h3>4.2 What actually scales with video hours</h3>
+<p>You asked the precise question: <em>what scales with the hours of video?</em> The answer is <strong>the planner, not the cerebellum</strong> — and that is worth more than it sounds, via a second-order effect.</p>
+<p>Video hours buy the planner (i) an <strong>affordance prior</strong>, (ii) a <strong>predictive world model</strong>, and (iii) a <strong>subgoal vocabulary</strong> — none needing action labels. So a <em>video-action planner trained on ego-centric video, prompting a small RT-X cerebellum, is the right bet</em>: labeled data is spent only on what video cannot teach, closed-loop contact.</p>
+<p>The second-order effect is <strong>amortization</strong>. Let <code>H_a(target)</code> be the action data needed to hit a target reliability:</p>
+<pre class="term"><code>   H_a(target) ≈ k · P^(−β) · (task horizon),     P = planner quality</code></pre>
+<p>Video hours raise <code>P</code>, which <em>lowers the action hours you must buy.</em> The planner doesn't replace the cerebellum's data — it <strong>deflates its price.</strong> The winner maximizes <code>H_v × H_a</code> and uses <code>H_v</code> (via the world model, §2.3) to bend down the cost and improve the fidelity of <code>H_a</code>. That is the entire reason to care about video, made quantitative.</p>
+<h3>4.3 The reliability wall — why demos ≠ products</h3>
+<p>The arithmetic that kills naïve optimism. A useful chore is a long horizon of contact-rich steps; open-loop, a <code>T</code>-step task at per-step success <code>p</code> succeeds with <code>p^T</code>:</p>
+<pre class="term"><code>   T = 20, p = 0.95  →  0.95^20 ≈ 0.36        (fails ~2 of 3 attempts)
+   0.99 end-to-end at T = 20  →  p ≈ 0.99^(1/20) ≈ 0.99950</code></pre>
+<p>Demo-to-product is a <strong>100× cut in per-step failure</strong> — the manipulation twin of self-driving's last 1%, and where timelines die (Part III). The escape is the closed loop: give the cerebellum <code>k</code> reactive attempts per step (detect slip, re-grasp):</p>
+<pre class="term"><code>   p_eff = 1 − (1 − p)^k
+   p = 0.95, k = 3  →  p_eff ≈ 0.99988   →   p_eff^20 ≈ 0.9975</code></pre>
+<p><strong>Reactivity changes the exponent, not just the constant.</strong> The planner→cerebellum split earns its keep here: the planner notices failure and re-prompts, turning a brittle <code>p^T</code> into a robust product. Reliability is <em>architectural</em>, not merely data-driven.</p>
+<h3>4.4 Emergence and the embodiment axis</h3>
+<ul>
+<li><strong>A new axis: embodiments <code>N</code>.</strong> Deployed robots collect data while they work (shadow-mode). Capability scales in fielded units — an axis LLMs lack — binding scaling to <em>deployment</em>: you must sell robots to scale intelligence. First mover into the flywheel compounds. <strong>This, not architecture or hardware, is the moat.</strong></li>
+<li><strong>An emergence threshold.</strong> Expect a phase transition to cross-task generalization once <strong>task-diversity coverage</strong> crosses a threshold — my guess, ~10^7–10^8 quality trajectories for a leading operator, ~2027–2029. Diversity beats depth (10^4 tasks × 10^2 demos ≫ 10^2 × 10^4). This is UMI's deep rationale: it buys breadth cheaply.</li>
+</ul>
+<h2>5. Hardware — the physical layer</h2>
+<p>Software plans; atoms resist. Five hardware truths decide who ships.</p>
+<h3>5.1 Motors and the rare-earth lock</h3>
+<p>High-performance robots use <strong>permanent-magnet synchronous motors</strong> built on <strong>neodymium-iron-boron (NdFeB)</strong>, with dysprosium/terbium for heat tolerance. A humanoid carries 40+ motors and ~2–4 kg of magnet material — hundreds of grams of rare earth. <strong>Scaling humanoids is, materially, a bet on magnets.</strong> The bottleneck isn't reserves (rare earths aren't rare) but <strong>processing and magnet-making</strong>, where China holds ~85–90% of refining and &gt;90% of high-performance NdFeB — near-monopoly in heavy rare earths. It is already a bargaining chip and will be weaponized. Substitutes (ferrite, iron-nitride) lose on power density exactly where humanoids are most sensitive, so <strong>the lock can't be engineered away in five years — only diversified around.</strong></p>
+<h3>5.2 The reducer — the other bottleneck nobody names</h3>
+<p>A motor spins fast and weak; joints need slow and strong. Between them sits the <strong>reducer</strong>, and it is as much a bottleneck as the magnet:</p>
+<ul>
+<li><strong>Harmonic (strain-wave) drives</strong> — near-zero backlash, high ratio, compact; the standard for precise arm joints; hard to manufacture (Harmonic Drive Systems and a few others dominate).</li>
+<li><strong>Cycloidal / RV drives</strong> — high stiffness and shock tolerance for heavy joints (Nabtesco's domain).</li>
+<li><strong>Planetary gears</strong> — cheap, backdrivable, moderate precision; common in legs and QDD actuators.</li>
+</ul>
+<p>Precision reducers are a <strong>quiet oligopoly</strong> with Japanese incumbents, and they are a real supply constraint on humanoid volume. Cost-down here is as decisive as motor cost-down.</p>
+<h3>5.3 Actuation architecture — direct vs quasi-direct vs tendon</h3>
+<p>How you connect motor to joint is a defining design choice:</p>
+<ul>
+<li><strong>Direct drive (DD).</strong> Motor on the joint, no reduction. Perfectly backdrivable and "transparent" (the joint feels forces cleanly), high control bandwidth — but low torque density, heavy, power-hungry. Rare in full humanoids.</li>
+<li><strong>Quasi-direct drive (QDD).</strong> A large-diameter motor + <em>low</em> (≈6–10:1) planetary reduction. The MIT Cheetah lineage. It keeps most of DD's backdrivability and transparency while multiplying torque — ideal for <strong>dynamic, contact-rich, impact-absorbing</strong> joints (legs, and increasingly arms). This is the sweet spot for a reactive cerebellum, because a backdrivable joint makes force control and shock survival natural. My bet: <strong>QDD is the default for the athletic humanoid.</strong></li>
+<li><strong>Tendon / cable drive.</strong> Motors in the forearm/torso pull "tendons" to move distal joints. Puts mass proximally, enabling <strong>light, fast, anthropomorphic fingers</strong> — the leading route to true dexterity. Costs: cable stretch, friction, wear, and harder control (nonlinear, hysteretic). This is why <strong>hands</strong> trend tendon-driven while <strong>limbs</strong> trend QDD.</li>
+<li><strong>Hydraulics.</strong> Unmatched peak power density (old Atlas), but leaks, weight, and efficiency have pushed the field to <strong>electric</strong> for anything meant to be cheap, clean, and mass-produced. Electric won.</li>
+</ul>
+<p>Read the body as a hybrid: <strong>QDD proximal joints for power and reactivity, tendon-driven distal hands for dexterity, all electric.</strong></p>
+<h3>5.4 Motor drive control — the unglamorous moat</h3>
+<p>Between the policy's torque command and the magnet is a control stack that decides whether the robot is smooth and safe or twitchy and dangerous:</p>
+<ul>
+<li><strong>Field-oriented control (FOC)</strong> turns a 3-phase motor into a clean torque source; done well, the joint is a programmable spring.</li>
+<li><strong>Torque/current control with high-bandwidth current loops</strong> (tens of kHz) is what makes backdrivable, compliant, force-sensitive joints — the physical substrate of the reactive cerebellum in §2.6.</li>
+<li><strong>Sensing &amp; thermal limits.</strong> Absolute encoders, current sensing, and thermal models bound <em>continuous</em> torque (motors overheat long before they stall). Much of "how strong is this robot, sustainably" is a thermal-control question, not a peak-torque spec.</li>
+<li><strong>The chips.</strong> Gate drivers, high-side current sensors, and magnetic position encoders (from the analog/power-semi vendors) are a real, investable layer — motor control is silicon as much as software.</li>
+</ul>
+<p>The point: <strong>"how to drive the motor" is a genuine moat.</strong> Backdrivable, thermally-honest, high-bandwidth torque control is hard-won know-how, and it is exactly what a sim-to-real cerebellum needs underneath it.</p>
+<h3>5.5 Robots building robots</h3>
+<p>The endgame is recursion: robots on the line that <strong>assemble</strong> robots (and cars, and dogs) — Tesla's Optimus-builds-Optimus vision. This is real and near (2027–2029), but measure it by <strong>closure</strong> — the fraction of itself a system can build. Assembling from externally-made motors, reducers, batteries, and chips is ~30–50% closure: valuable for cost-down, but not self-replication. Building the <em>precision mother-machines</em> (reducers, bearings, and above all <strong>lithography</strong>) is the last 10%, and the <strong>chip lock</strong> — a humanoid brain needs advanced silicon, which needs an EUV scanner, the apex of human industry — keeps full closure decades away. That is a <em>feature</em>: it makes physical takeoff <strong>soft, not hard</strong>, leaving humans a control point at the fab. (Part II treats verbs and recursion in depth.)</p>
+<h2>6. Technical bottom line</h2>
+<ol>
+<li><strong>Two brains, two data curves.</strong> A slow VLM/video planner prompts a fast RT-X cerebellum. They scale on different fuels.</li>
+<li><strong>The data curriculum is the strategy.</strong> Ego-centric first-person video to pre-train the planner; UMI/teleop to ground it; sim2real RL + an Action Video World Model to forge a reactive cerebellum. <strong>That is the bet.</strong></li>
+<li><strong>Video deflates the price of action data.</strong> What scales with video hours is the planner — and a better planner lowers the scarce action hours you must buy.</li>
+<li><strong>Reliability is architectural.</strong> <code>p^T</code> kills open-loop; the closed loop changes the exponent.</li>
+<li><strong>Sim2real RL is the unified skill engine</strong> — proven in locomotion, extended to hands by the world model.</li>
+<li><strong>Hardware decides who ships:</strong> magnets, reducers, QDD-vs-tendon, and drive-control know-how — half of this is NdFeB and gearboxes.</li>
+<li><strong>Robots building robots is soft takeoff</strong>, gated at the fab.</li>
+</ol>
+<h2>7. Where the value accrues → the Public-Markets Map</h2>
+<p>The technology above dictates the capital structure. If the model layer converges and open-sources, there is <strong>no moat in the brain</strong> — value migrates to the two ends of a <strong>barbell</strong>: the <strong>data &amp; verification</strong> that feeds the recipe, and the <strong>actuator supply-chain choke points</strong> (precision reducers, planetary roller screws, magnets, and the grinding machines behind them) that no software can conjure. Integrators are squeezed in the middle unless a fleet is provably a data asset.</p>
+<p>The full, tickered mapping — each thesis in this essay routed to listed companies, a consolidated ticker table, and a quarterly action-linked dashboard — is a companion document:</p>
+<p><strong>→ <a href="markets.html">The Public-Markets Map</a></strong> <em>(research analysis, not investment advice).</em></p>
+<hr>
+<p><em>Part II: new verbs and robots-building-robots. Part III (Markets): the tickered map. Part IV (Critique): the case against this article's timing — the self-driving trap, the reliability chasm, and the funding winter that can bury correct theses on the way up. Written 2026 — a judgment call, not a prophecy.</em></p>
+      <div class="ea-foot">The Embodiment Awakening · 2026 · a judgment call, not a prophecy</div>
+    </div>
+  </div>
+</section>
+<section id="p2" class="ea-panel" role="tabpanel" aria-label="II · Frontiers">
+  <div class="ea-wrap">
+    <header class="ea-mast">
+      <div class="ea-eyebrow">Part II — Frontiers</div>
+      <h1 class="ea-h1">New Verbs and Self-Replication</h1>
+      <p class="ea-sub">Two longer-horizon phase transitions: inventing new skills, and robots building robots.</p>
+    </header>
+    <div class="ea-body"><h2>Part A — The new-verb problem</h2>
+<h3>A.1 Verbs, and the neural interface that calls them</h3>
+<p>Picture a robot's competence as a <strong>dictionary of verbs</strong> — motor primitives: grasp, push, twist, insert, pour, fold, tear. Nouns are objects; verbs are actions; intelligence is the ability to compose a small set of verbs into unbounded behavior. "Cook dinner" is not a verb — it is dozens of verbs (wash, cut, pour, stir, flip) sequenced to context.</p>
+<p>A useful frame for the planner→cerebellum interface of Part I is that the cerebellum <strong>exposes verbs as a callable API</strong>, and the planner calls them — a <em>neural</em> Model-Context-Protocol for the body. The planner says "now <em>twist</em> this cap"; the cerebellum instantiates the closed-loop control. This clarifies the real question: progress splits into <strong>using the verbs you have better</strong>, and <strong>acquiring verbs you don't.</strong> Those two curves peak at very different times.</p>
+<h3>A.2 Three levels, routinely conflated</h3>
+<p>People lump all of this under "generalization." There are three distinct difficulty tiers, and confusing them is the root of most bad forecasting:</p>
+<ul>
+<li><strong>Level 1 — noun generalization.</strong> Same verb, unseen object: <em>grasp</em> a mug you've never seen. Shallow — a vision/geometry problem. <strong>Largely solved, 2025–2026.</strong> Most "generalizing" demos are here. Impressive, but <em>not a new verb.</em></li>
+<li><strong>Level 2 — compositional generalization.</strong> Known verbs, novel arrangement: complete an untrained long task by re-sequencing verbs you already have. <strong>Solved gradually, 2026–2028</strong>, via the System-2 planner. This covers a <em>lot</em> of seemingly-new tasks and is the near-term commercial engine — but it invents nothing; it re-permutes.</li>
+<li><strong>Level 3 — new-verb acquisition.</strong> Learn an action primitive <em>not in the dictionary</em> — face a screw with no demonstration and no "twist" verb, and discover it. <strong>The real frontier; I put a reliable prototype at 2031–2034.</strong></li>
+</ul>
+<p><strong>The headline point:</strong> 99% of what the press calls "OOD generalization" is Levels 1–2. The genuine article, Level 3, is unsolved and is the actual threshold to open-ended physical intelligence. Don't let Level-2 dazzle read as Level-3 arrival.</p>
+<h3>A.3 Where new verbs come from</h3>
+<p>Three sources, arriving in sequence:</p>
+<ul>
+<li><strong>A — Human demonstration transfer (now).</strong> A human does the new action once; the robot learns it from ego-centric video / teleop / UMI (Part I's data curriculum). Not invention but <em>fast imitation</em> — yet the dictionary grows. <strong>The main 2025–2028 source of "new" verbs.</strong></li>
+<li><strong>B — Compositional emergence (~2028).</strong> With a large dictionary and a strong planner, new verbs appear by <strong>interpolating</strong> old ones — "twist" approximated as "rotate + press + maintain contact." This needs the world model of Part I: a differentiable physics intuition lets the robot <em>imagine</em> an unseen action's outcome.</li>
+<li><strong>C — Autonomous invention (2030+).</strong> No demo, no valid composition — the robot <strong>trial-and-errors a new verb</strong> in reality or in the world model. The physical AlphaZero moment: no human playbook, a novel move. Its bottleneck is not the algorithm but the <strong>cost of trial</strong>: real trials are slow, expensive, and break hardware; simulated trials need a faithful world model. <strong>So the timeline for autonomous invention is set by world-model fidelity</strong> — the same keystone the critique in Part III flags.</li>
+</ul>
+<h3>A.4 Timeline</h3>
+<div class="tablewrap"><table><thead><tr><th>Capability</th><th>Form</th><th>Call</th><th>Confidence</th></tr></thead><tbody><tr><td>Noun generalization</td><td>same verb, new object</td><td>2025–2026</td><td>high</td></tr><tr><td>Compositional OOD</td><td>old verbs, new sequence</td><td>2026–2028, commercial engine</td><td>med-high</td></tr><tr><td>Few-shot new verb</td><td>learn from a few demos</td><td>2027–2029</td><td>medium</td></tr><tr><td>Compositional new verb</td><td>extrapolate from old verbs</td><td>2029–2031 prototype</td><td>med-low</td></tr><tr><td>Autonomous invention</td><td>no demo, self-discovered</td><td>2031–2034 prototype</td><td>low (direction sure)</td></tr></tbody></table></div>
+<p><strong>One line:</strong> through 2030, robots get very good at <em>composing known verbs into new tasks</em> (Level 2), which will look like general competence; <em>inventing</em> new verbs (Level 3) waits until after 2030 and gates on world-model fidelity. When Level 3 lands, robots gain physical creativity independent of humans — a transition deeper than GPT-4.</p>
+<hr>
+<h2>Part B — Recursive self-improvement: robots building robots</h2>
+<h3>B.1 The real form: machines making machines</h3>
+<p>Digital "recursive self-improvement" means AI editing its own weights. The physical version is what matters here: <strong>a special-purpose robot that builds robots, up to replicating its own supply chain</strong> — von Neumann's self-replicating machine, NASA's lunar autofac, the science-fiction von Neumann probe. Its allure: once the loop closes, capacity goes from <strong>linear to exponential</strong> — robots build robots, the population doubles on a cycle, and you no longer need a human to build each unit. It is the only route to a physical "hard takeoff."</p>
+<p>The concept most people skip is <strong>closure</strong> — the fraction of itself a system can build.</p>
+<h3>B.2 The closure ladder</h3>
+<p>Closure is the true ruler. 0% = pure human labor; 90% = builds 90% of its own parts, imports the rest; 100% = full self-replication from raw materials and energy. <strong>The last 5–10% is an order of magnitude harder than the first 90%,</strong> because modern robots ride a deep, globally-divided supply chain whose apex — advanced-node chips — is the summit of human industry.</p>
+<p>Climb it, easy to hard:</p>
+<ul>
+<li><strong>Rung 1 — robots assemble robots (2027–2029, ~30–50% closure).</strong> Humanoids on the line torquing bolts, snapping modules together, assembling other robots, cars, dogs. Not hard — assembly is structured. This is Tesla's Optimus-builds-Optimus. But it is <strong>assembly, not manufacture</strong>: the motors, reducers, cells, and chips are still made by external specialists. Huge for cost-down (Part I's cost curve); <em>not</em> self-replication.</li>
+<li><strong>Rung 2 — replicate a mid-tier supply chain (2030–2035, ~60–75%).</strong> Robots also make the <em>coarse</em> parts — structures, housings, harnesses, simple motors, reducer shells. Two hard bones stay outside: <strong>advanced chips</strong>, and <strong>rare-earth magnets</strong> (you can wind a motor, but not smelt the NdFeB — Part I's rare-earth lock, again).</li>
+<li><strong>Rung 3 — build the precision mother-machines (2035–2045, ~80–90%).</strong> Machine tools, precision bearings, optics, sensors. The hardest mother-machine is the <strong>EUV lithography scanner</strong> — the apex of manufacturing complexity, hundreds of thousands of parts and hundreds of top suppliers. Assembling one from finished parts may be possible post-2035; <em>manufacturing</em> its parts is near-impossible to close this century.</li>
+<li><strong>Rung 4 — a lunar TSMC (2045+, or not this century).</strong> Off-world, autonomous, in-situ-resource self-replication of semiconductor fabrication. <strong>Candidly: science fiction on a 5–10-year view.</strong> The realistic near path is a <em>high-but-not-full-closure</em> lunar factory — energy, structure, coarse fabrication (~80%) — while the chips still ship from Earth. Expecting the Moon to self-produce 7 nm silicon is moving humanity's most delicate industrial process to its most hostile environment; it violates the economics.</li>
+</ul>
+<h3>B.3 The chip lock, and why takeoff is soft</h3>
+<p>Across every rung, <strong>advanced-node silicon is the ultimate seal.</strong> A robot's brain needs advanced chips; advanced chips need EUV; EUV is what all of human industry, together, barely builds. The paradox:</p>
+<blockquote>For a robot to fully self-replicate, it must build the lithography that builds its own brain — the one machine our whole industrial civilization was required to produce.</blockquote>
+<p>So my core call: <strong>physical recursive self-improvement stalls, for decades, at "high closure but not full."</strong> Robots will build robot <em>bodies</em> but not robot <em>brains</em>. This is good news — humanity keeps a control point and a safety valve <strong>at the fab.</strong> There is no runaway hard takeoff, because it is gated on lithography, a gate humans hold.</p>
+<h3>B.4 Timeline</h3>
+<div class="tablewrap"><table><thead><tr><th>Stage</th><th>Form</th><th>Closure</th><th>Call</th><th>Confidence</th></tr></thead><tbody><tr><td>Robots assemble robots/cars/dogs</td><td>assembly, parts imported</td><td>30–50%</td><td>2027–2029</td><td>med-high</td></tr><tr><td>Replicate mid-tier chain (Unitree-tier)</td><td>+ coarse parts</td><td>60–75%</td><td>2030–2035</td><td>medium</td></tr><tr><td>Build precision mother-machines</td><td>+ machine tools</td><td>80–90%</td><td>2035–2045</td><td>low</td></tr><tr><td>Lithography / lunar TSMC</td><td>near-full incl. chips</td><td>95–99%</td><td>2045+, likely not this century</td><td>very low</td></tr></tbody></table></div>
+<hr>
+<h2>Part C — Where the two transitions meet</h2>
+<p>Combine the halves:</p>
+<ul>
+<li><strong>New-verb capability</strong> sets how <em>smart the hands</em> are — whether a robot copes with the open world.</li>
+<li><strong>Recursive self-replication</strong> sets how <em>fast the fleet breeds</em> — linear vs exponential capacity.</li>
+</ul>
+<p>A true <strong>physical intelligence explosion</strong> needs both at once: an army that handles any novel task <em>and</em> multiplies itself. But the decisive judgment is that <strong>the two transitions arrive off-cycle, and that staggering is the safety.</strong></p>
+<ul>
+<li>Level-2 "compose known verbs" arrives fast (2026–2028) — huge value, but bounded, controllable.</li>
+<li>Rung-1 "assemble robots" arrives fast (2027–2029) — capacity jumps, but low closure, human-dependent.</li>
+<li>The dangerous pair — <strong>autonomous new-verb invention × full-closure self-replication</strong> — needs <em>both</em> a mature world model <em>and</em> chip-level closure, and neither lands before the late 2030s at the earliest.</li>
+</ul>
+<p>Two natural brakes therefore hold: <strong>new-verb invention is gated by world-model fidelity; full self-replication is gated by lithography.</strong> Both buy humanity time, control, and the option to intervene. They are not failures of technology; they are <strong>gifts of safety.</strong></p>
+<p><strong>The two years to watch, further out than Part I's 2030:</strong></p>
+<ul>
+<li><em>~2031–2034:</em> the first robot that, with no human demonstration, invents a new verb for a novel physical problem — the moment robots gain physical creativity of their own.</li>
+<li><em>~2035+:</em> the first robot-led production line to cross ~80% closure — the moment capacity begins to slip the leash of human labor.</li>
+</ul>
+<p>They are further away and more profound than 2030. One is about the <strong>openness of intelligence</strong>, the other about the <strong>autonomy of production.</strong> When they finally meet, humanity will face, for the first time, an artifact that can both <em>figure out how to do a thing</em> and <em>build more of itself to do it.</em> We still have time — and that time is exactly what lithography and world-model fidelity are buying us. Spend it well.</p>
+<p><em>Part III is the Public-Markets Map; Part IV is the case against this whole timeline. Written 2026 — a judgment call, not a prophecy.</em></p>
+      <div class="ea-foot">The Embodiment Awakening · 2026 · a judgment call, not a prophecy</div>
+    </div>
+  </div>
+</section>
+<section id="p3" class="ea-panel" role="tabpanel" aria-label="III · Markets">
+  <div class="ea-wrap">
+    <header class="ea-mast">
+      <div class="ea-eyebrow">Part III — Public-Markets Map</div>
+      <h1 class="ea-h1">The Public-Markets Map</h1>
+      <p class="ea-sub">Each technical thesis mapped to listed companies. Research analysis, not investment advice.</p>
+    </header>
+    <div class="ea-body"><h2>0. The framework: a barbell, not a home run</h2>
+<p>The technical conclusions force the structure. <strong>Model architectures converge and open-source — no durable moat at the model layer.</strong> Integrators then get squeezed from both sides — component pricing power below, software/data rent above (the Android-OEM margin script). Therefore, build a <strong>barbell</strong>:</p>
+<ul>
+<li><strong>One end — data &amp; verification infrastructure:</strong> the recipe's fuel and its examiner — ego capture, auto-labeling pipelines, force/tactile sensing, machine-vision QC.</li>
+<li><strong>Other end — actuator supply-chain choke points:</strong> precision reducers, planetary roller screws, magnets, and the grinding machines behind them — precision-bound, slow to expand, concentrated.</li>
+<li><strong>The middle — integrators — only by exception,</strong> when a fleet is provably a data asset.</li>
+</ul>
+<p>Two structural notes before the mapping:</p>
+<ol>
+<li><strong>Timing convexity is asymmetric across the barbell.</strong> Component names already have non-robot revenue (industrial robots, EVs, machine tools) and get <em>re-rated</em> by humanoid volume; data/verification names are earlier and more binary.</li>
+<li><strong>Most of the pure-play excellence is listed in Shanghai / Shenzhen / Tokyo, not New York.</strong> The U.S.-listed expression of this thesis is mostly <em>indirect</em> — hyperscalers, semis, sensors.</li>
+</ol>
+<hr>
+<h2>1. Video hours scale the planner and the judge → corpus owners &amp; compute</h2>
+<p>If a million hours of egocentric video buys the planner, the trajectory prior, <em>and</em> the reward model, then the scarce assets are (a) the corpus, (b) the capture device, (c) training/inference compute.</p>
+<ul>
+<li><strong>Alphabet (GOOGL)</strong> — the single most complete vertical stack on earth for this thesis: <strong>YouTube</strong> (the found-data corpus), <strong>Genie/Veo</strong> (world models), <strong>Gemini Robotics + the RT-X lineage</strong> (planner), <strong>TPUs</strong> (compute). The market prices none of it as a robotics-data position. The "Reddit moment" for video licensing is a live catalyst: when video corpora start trading like text corpora did in 2023–24, YouTube is the reserve currency.</li>
+<li><strong>Meta (META)</strong> — the two-sided expression: <strong>Reels</strong> as latent corpus, and <strong>Aria / smart glasses</strong> as the ego-capture instrument. The production finding that <em>one Aria-hour beats one teleop-hour</em> makes the glasses platform a robotics-data asset, not a consumer-gadget bet.</li>
+<li><strong>Apple (AAPL)</strong> — Vision Pro's hand tracking already produced <strong>EgoDex</strong>; the device is a per-frame SE(3) hand-pose recorder as exhaust. Apple's privacy posture makes it a dataset <em>publisher</em> rather than a data merchant; the optionality is in devices (glasses) and on-device models, not data sales.</li>
+<li><strong>NVIDIA (NVDA)</strong> <em>(first of three appearances)</em> — GR00T + Cosmos + Isaac is a bid to own the planner <em>and</em> the gym; ego-scale pretraining is GPU demand of a new flavor.</li>
+</ul>
+<p><strong>Falsifier / monitor:</strong> the ego-pretraining sample-efficiency exponent (α) decaying → de-rate the corpus thesis; the first paid video-licensing deal for robot training → re-rate it.</p>
+<hr>
+<h2>2. Force is the scarce label; the middle layer is force-grounding → sensing</h2>
+<p>The pyramid's only force-observing layer is instrumented interaction. Force/torque and tactile sensing therefore get <strong>double-counted</strong> — once as data infrastructure (the label source), once as hardware content (per-robot BOM).</p>
+<ul>
+<li><strong>Six-axis F/T sensors</strong> — calibration-intensive, low-automation, concentrated supply; a top-risk / high-barrier node. Public pure-plays are scarce: ATI is private under <strong>Novanta (NOVT)</strong> — the cleanest listed route.</li>
+<li><strong>Tactile ("electronic skin")</strong> — a <em>category-creating</em> gap: the largest option value on the entire map and the least mature. Public exposure is mostly indirect today (sensor-material and MEMS suppliers); watch for the first listed pure-play or a major's acquisition as the category legitimizer.</li>
+<li><strong>Encoders / metrology</strong> — <strong>Renishaw (RSW.L)</strong>: precision-metrology content per joint rises with force control (dual-encoder architectures).</li>
+</ul>
+<p><strong>Monitor:</strong> the emergence of a market price for <em>force-labeled data hours</em> — the moment force labels trade at a premium, this layer re-rates.</p>
+<hr>
+<h2>3. The planner–cerebellum split; the interface is the new OS → edge compute &amp; the logging tail</h2>
+<ul>
+<li><strong>NVIDIA (NVDA)</strong> <em>(second appearance)</em> — <strong>Jetson Thor</strong> is the default onboard brain; the S2→S1 interface standard (GR00T's ambition) is the "CUDA position" of robotics.</li>
+<li><strong>Qualcomm (QCOM)</strong> — the power-constrained second source for onboard inference.</li>
+<li><strong>The logging tail — an unpriced cross-link.</strong> A deployed robot is a data recorder — multi-camera + tactile + joint streams. Fleet logging is a new demand curve for NAND: <strong>SanDisk (SNDK)</strong> and <strong>Kioxia (285A.T)</strong> carry a robotics-side argument the market has not modeled.</li>
+<li><strong>Analog content per joint compounds</strong> — gate drivers, current sense, FOC MCUs across ~28+ actuators per humanoid, each a small analog subsystem: <strong>Texas Instruments (TXN)</strong>, <strong>Analog Devices (ADI)</strong>, <strong>Infineon (IFX.DE)</strong>, <strong>Monolithic Power (MPWR)</strong>.</li>
+</ul>
+<hr>
+<h2>4. The world model is the gym; training environments collect rent → the AWS of robot RL</h2>
+<ul>
+<li><strong>NVIDIA (NVDA)</strong> <em>(third appearance)</em> — <strong>Isaac/Newton</strong> (physics), <strong>Omniverse</strong> (scenes), <strong>Cosmos</strong> (neural world models): a near-monopoly on the training environment. Every cerebellum's every training run pays rent here; robot RL consumes GPUs in a different but equally gluttonous pattern than LLM training.</li>
+</ul>
+<p><strong>Falsifier:</strong> open-weight world models reaching closed-source contact fidelity → the rent compresses, and value flows back to <em>private real data</em> (§1–2).</p>
+<hr>
+<h2>5. Actuators are this cycle's HBM → reducers, screws, magnets, machines</h2>
+<p>The hardest-evidence layer: actuators ≈ <strong>56%</strong> of core component cost; reducers <strong>30–50%</strong> of actuator cost; precision-bound capacity meeting step-function demand.</p>
+<ul>
+<li><strong>Harmonic reducers</strong> — <strong>Leaderdrive / 绿的谐波 (688017.SS)</strong>: &gt;60% China share, &gt;35% global, Tesla-qualified, at 40–60% of Japanese pricing — the classic squeeze structure (grinding-bound supply, steep demand). <strong>Harmonic Drive Systems (6324.T)</strong> — the precision/brand incumbent; slower to expand, higher ASP. <strong>Shuanghuan Transmission (002472.SZ)</strong> for planetary/RV.</li>
+<li><strong>Planetary roller screws</strong> — the single most valuable part on the robot (\$1,350–2,700 × ~14 units on Optimus ≈ <strong>19% of cost</strong>; &lt;3 µm thread error). <strong>Wuzhou New Spring (603667.SS)</strong> (~half European pricing), <strong>Hengli Hydraulic (601100.SS)</strong> (heavy-capex entry), Xinjian Transmission (pre-IPO — watch the listing), with <strong>Hiwin (2049.TW)</strong>, <strong>THK (6481.T)</strong>, <strong>NSK (6471.T)</strong>, <strong>Schaeffler / SKF (SKF-B.ST)</strong> as the incumbent screw/guide complex.</li>
+<li><strong>Magnets &amp; rare earths</strong> — <strong>JL MAG (300748.SZ / 6680.HK)</strong>, <strong>Zhongke Sanhuan (000970.SZ)</strong>; ex-China strategic premium: <strong>MP Materials (MP)</strong>, <strong>Lynas (LYC.AX)</strong>, <strong>Energy Fuels (UUUU)</strong>, <strong>Neo Performance (NEO.TO)</strong>. The <strong>November 10, 2026 cliff</strong> is the event catalyst; both branches (extension vs re-tightening) favor ex-China capacity — only the slope differs.</li>
+<li><strong>The meta choke point — grinding machines.</strong> Flexsplines and screws are ground on Swiss/Japanese precision grinders; "the machines that make the machines" are nearly unpriced as a robotics theme. Listed routes: the Japanese machine-tool / abrasives complex — <strong>DMG Mori (6141.T)</strong>, <strong>Okuma (6103.T)</strong>, <strong>Noritake (5331.T)</strong>, <strong>Disco (6146.T)</strong> adjacents; United Grinding is private.</li>
+<li><strong>Modules</strong> — <strong>Sanhua (002050.SZ)</strong>: the \$685M Optimus actuator-module order marks the component→module value migration; <strong>Tuopu (601689.SS)</strong> same pattern, with the customer-concentration risk that implies.</li>
+</ul>
+<p><strong>Monitors:</strong> harmonic/screw lead-time vs ASP divergence (squeeze confirming); Optimus 2026 landing in the <strong>50K–150K</strong> range — the supply chain's master switch.</p>
+<hr>
+<h2>6. The corpus shapes the body; transparency is a data moat → hands &amp; the QDD complex</h2>
+<p>Two original couplings, both investable:</p>
+<ul>
+<li><strong>Transparency premium</strong> — if transparent joints (QDD, tension-sensed tendons) emit force labels <em>for free</em>, fleets built on them compound a data moat. Beneficiaries: high-pole-count frameless motor makers (<strong>Kollmorgen</strong> under <strong>Regal Rexnord (RRX)</strong>; <strong>Moons' (603728.SS)</strong>), joint-torque-sensor content, and — via magnet mass per joint — §5's magnet names again.</li>
+<li><strong>Anthropomorphic hand complex</strong> — if five-finger tendon hands win for <em>data</em> reasons, content shifts to coreless micromotors (<strong>AMETEK (AME)</strong> — global top-3; Maxon and Faulhaber private), micro-screws and tendon conduits, and hand drive modules (<strong>Zhaowei (003021.SZ)</strong>). Tactile appears here a second time (fingertip force is the on-robot force-grounding port) — the double-counted, highest-option-value category on the map.</li>
+</ul>
+<p><strong>Monitor:</strong> the DoF distribution of newly launched hands (five-finger tendon share rising = corpus-shapes-body confirming; two-finger grippers sufficing commercially = de-rate).</p>
+<hr>
+<h2>7. Autonomy's boundary = cheap verification → the verification layer</h2>
+<p>Self-scaling factories' first-order beneficiary is not the integrator — it is <strong>machine-vision QC</strong>, the merchant of "making the world a cheaper verifier."</p>
+<ul>
+<li><strong>Keyence (6861.T)</strong> and <strong>Cognex (CGNX)</strong> — price them as <em>verifiability infrastructure</em>, not cyclical industrials (an explicit divergence from consensus). <strong>Fanuc (6954.T) / Yaskawa (6506.T)</strong> are two-sided (displaced by humanoids vs selling into humanoid lines) — decompose by order book before owning the thesis through them.</li>
+</ul>
+<p><strong>Falsifier:</strong> end-to-end VLAs absorbing QC internally (the robot as its own judge) — itself a maturity reading on the world-model loop.</p>
+<hr>
+<h2>8. Integrators: the exception clause only</h2>
+<p>Default: squeezed (the Android-OEM script). Exception: <strong>fleet = data asset.</strong> Value integrators on <em>force-labeled interaction hours per deployed robot per day × exclusivity</em>, not on hardware gross margin.</p>
+<ul>
+<li><strong>Tesla (TSLA)</strong> — fleet + captive factory scenes + vertical actuators; the hand is the ramp bottleneck and thus the tell.</li>
+<li><strong>Unitree (Shanghai IPO — watch the listing)</strong> — shipments <em>are</em> data volume; the QDD-fleet transparency argument applies to them most directly.</li>
+<li><strong>UBTech (9880.HK)</strong>, <strong>Xiaomi (1810.HK)</strong>, <strong>XPeng (9868.HK)</strong> — optionality-weighted, China-deployment-economics beneficiaries.</li>
+</ul>
+<p><strong>Tell:</strong> the first integrator to disclose <em>fleet-data KPIs</em> (autonomous-hours curves, intervention rates) instead of unit shipments is the one accounting for the right asset.</p>
+<hr>
+<h2>9. Consolidated ticker table</h2>
+<div class="tablewrap"><table><thead><tr><th>Layer</th><th>Company</th><th>Ticker</th><th>Role in thesis</th><th>Key monitor</th></tr></thead><tbody><tr><td>Corpus / compute</td><td>Alphabet</td><td>GOOGL</td><td>YouTube corpus + Genie/Veo + RT-X lineage + TPU</td><td>Video-licensing deals; α replication</td></tr><tr><td>Corpus / capture</td><td>Meta</td><td>META</td><td>Reels corpus + Aria ego-capture platform</td><td>Glasses attach to robot programs</td></tr><tr><td>Corpus / capture</td><td>Apple</td><td>AAPL</td><td>Vision Pro = hand-pose recorder (EgoDex)</td><td>Dataset releases; glasses roadmap</td></tr><tr><td>Compute / gym / edge</td><td>NVIDIA</td><td>NVDA</td><td>Cosmos/Isaac gym rent + Jetson Thor + GR00T interface</td><td>Open-weight world-model parity</td></tr><tr><td>Edge compute</td><td>Qualcomm</td><td>QCOM</td><td>Power-constrained onboard inference</td><td>Design wins</td></tr><tr><td>Storage tail</td><td>SanDisk / Kioxia</td><td>SNDK / 285A.T</td><td>Fleet logging → NAND demand</td><td>Per-robot storage content</td></tr><tr><td>Analog content</td><td>TI / ADI / Infineon / MPS</td><td>TXN / ADI / IFX.DE / MPWR</td><td>Gate drive, current sense, FOC per joint</td><td>Per-robot analog BOM</td></tr><tr><td>Sensing</td><td>Novanta (ATI)</td><td>NOVT</td><td>Six-axis F/T choke point</td><td>F/T ASP and lead times</td></tr><tr><td>Sensing / metrology</td><td>Renishaw</td><td>RSW.L</td><td>Encoders, dual-encoder force control</td><td>Encoder content per joint</td></tr><tr><td>Reducers</td><td>Leaderdrive</td><td>688017.SS</td><td>Harmonic squeeze; Tesla-qualified</td><td>Lead time vs ASP divergence</td></tr><tr><td>Reducers</td><td>Harmonic Drive Systems</td><td>6324.T</td><td>Precision incumbent</td><td>Capacity adds; humanoid mix</td></tr><tr><td>Reducers</td><td>Shuanghuan</td><td>002472.SZ</td><td>Planetary / RV</td><td>Revenue-share</td></tr><tr><td>Screws</td><td>Wuzhou New Spring</td><td>603667.SS</td><td>Roller screws at ~½ EU price</td><td>Optimus qualification news</td></tr><tr><td>Screws / guides</td><td>Hengli / Hiwin / THK / NSK / SKF</td><td>601100.SS / 2049.TW / 6481.T / 6471.T / SKF-B.ST</td><td>Incumbent linear complex</td><td>Screw capacity announcements</td></tr><tr><td>Magnets</td><td>JL MAG / Zhongke Sanhuan</td><td>300748.SZ, 6680.HK / 000970.SZ</td><td>NdFeB with Dy/Tb; Tesla chain</td><td>Export-license flow</td></tr><tr><td>Rare earths ex-China</td><td>MP / Lynas / Energy Fuels / Neo</td><td>MP / LYC.AX / UUUU / NEO.TO</td><td>Strategic-premium optionality</td><td><strong>Nov 10, 2026 cliff</strong></td></tr><tr><td>Machine tools (meta)</td><td>DMG Mori / Okuma / Disco / Noritake</td><td>6141.T / 6103.T / 6146.T / 5331.T</td><td>Grinders/abrasives behind flexsplines &amp; screws</td><td>Grinding capex announcements</td></tr><tr><td>Modules</td><td>Sanhua / Tuopu</td><td>002050.SZ / 601689.SS</td><td>Component→module migration (Optimus orders)</td><td>Order book; customer concentration</td></tr><tr><td>Motors</td><td>Regal Rexnord (Kollmorgen) / Moons'</td><td>RRX / 603728.SS</td><td>Frameless torque motors (QDD complex)</td><td>QDD design-win share</td></tr><tr><td>Hands</td><td>AMETEK / Zhaowei</td><td>AME / 003021.SZ</td><td>Coreless micromotors; hand modules</td><td>Five-finger tendon share</td></tr><tr><td>Verification</td><td>Keyence / Cognex</td><td>6861.T / CGNX</td><td>Verifiability infrastructure re-rate</td><td>Humanoid-line QC orders</td></tr><tr><td>Industrial (two-sided)</td><td>Fanuc / Yaskawa</td><td>6954.T / 6506.T</td><td>Displaced vs supplier — decompose</td><td>Humanoid-related order mix</td></tr><tr><td>Integrator (exception)</td><td>Tesla</td><td>TSLA</td><td>Fleet-as-data-asset; hand = tell</td><td>Hand yield; fleet KPIs</td></tr><tr><td>Integrator (exception)</td><td>UBTech / Xiaomi / XPeng</td><td>9880.HK / 1810.HK / 9868.HK</td><td>China deployment economics</td><td>Deployment-hours disclosures</td></tr><tr><td>Integrator (watch)</td><td>Unitree</td><td>Shanghai IPO</td><td>Transparent QDD fleet = force-data moat</td><td>Listing; shipment→data framing</td></tr></tbody></table></div>
+<hr>
+<h2>10. Dashboard — quarterly, action-linked</h2>
+<ol>
+<li><strong>α (ego sample-efficiency exponent):</strong> strengthens → overweight §1–2; decays → rotate to fleet / real-data assets.</li>
+<li><strong>World-model zero-shot on rigid contact:</strong> &gt;~80% → pull every timeline in; the NVDA gym-rent thesis strengthens.</li>
+<li><strong>Force-labeled data pricing emerges</strong> → the tactile double-count activates.</li>
+<li><strong>Harmonic / screw lead-time vs ASP:</strong> divergence widens → §5 squeeze confirmed; converges → capacity caught up, trim.</li>
+<li><strong>Nov 10, 2026:</strong> extension (gentle slope) vs tightening (steep) → adjust ex-China rare-earth weight; direction unchanged.</li>
+<li><strong>New-design hand morphology:</strong> five-finger tendon share rising → §6 activates.</li>
+<li><strong>Optimus hand yield / 50–150K landing</strong> — the supply chain's master switch.</li>
+<li><strong>First fleet-data KPI disclosure</strong> by an integrator → the exception clause activates for that name.</li>
+</ol>
+<hr>
+<p><em>Analysis, not investment advice. Tickers are exposure identifiers; no view on price or timing is expressed here — the <a href="critique.html">Critique</a> is, in large part, about why <strong>timing</strong> is the dominant risk to every line above.</em></p>
+      <div class="ea-foot">The Embodiment Awakening · 2026 · a judgment call, not a prophecy</div>
+    </div>
+  </div>
+</section>
+<section id="p4" class="ea-panel warn" role="tabpanel" aria-label="IV · Critique">
+  <div class="ea-wrap">
+    <header class="ea-mast">
+      <div class="ea-eyebrow">Part IV — Critique</div>
+      <h1 class="ea-h1">The Case Against This Timeline</h1>
+      <p class="ea-sub">A red-team of the roadmap — where the bet goes wrong, especially on timing.</p>
+    </header>
+    <div class="ea-body"><h2>0. The base rate you should be anchored to</h2>
+<p>Before any object-level critique, the reference class. <strong>Self-driving, 2016:</strong> the architecture had converged (deep perception + planning), the demos were spectacular, the scaling story was coherent ("fleet miles are the corpus"), and the timelines were unanimous — full autonomy by 2019–2021. What actually happened:</p>
+<ul>
+<li><strong>Argo AI</strong>, ~\$3.6B in, shut down (2022).</li>
+<li><strong>Cruise</strong>, ~\$10B+ in, defunded (2024).</li>
+<li><strong>Uber ATG</strong> sold, <strong>Drive.ai</strong> acqui-hired, the trucking SPACs went to approximately zero.</li>
+<li>Cumulative sector investment <strong>north of \$100B for roughly one scaled Western winner</strong> — Waymo, <em>sixteen years</em> from founding to meaningful commercial scale — plus a Chinese cohort that survived on different economics.</li>
+</ul>
+<p>The technology <em>was</em> real. The direction <em>was</em> right. <strong>Nearly everyone who bet on the 2016 timeline was destroyed anyway.</strong></p>
+<p>The uncomfortable structural rhyme: robotics 2026 has converged architecture, spectacular demos, a coherent scaling story ("ego video is the corpus"), unanimous timelines, and <strong>multi-billion-dollar rounds at pre-revenue valuations</strong> (Figure at ~\$39B; Apptronik's \$935M Series A). The roadmap's own forecasts cluster in 2027–2030. The self-driving-adjusted prior says: <strong>add three to seven years to every consumer-facing claim, and assume the capital markets will not wait that long politely.</strong></p>
+<p>The rest of this document works out where the roadmap is most exposed, in descending order of how much of the thesis each failure takes down.</p>
+<hr>
+<h2>1. The log-linear law is a pessimistic law (and the roadmap cites it as good news)</h2>
+<p>The strongest evidence for the ego bet — that each doubling of ego hours yields a <em>constant</em> improvement — deserves a hostile reading, because <strong>log-linear scaling is exponentially expensive.</strong></p>
+<p>If a doubling buys a constant gain <code>δ</code> (in success-rate points, or log-odds), then closing a capability gap <code>Δ</code> requires <code>Δ/δ</code> doublings — a data multiplier of</p>
+<pre class="term"><code>   H_required / H_0  =  2^(Δ/δ)</code></pre>
+<p>Plug in generous numbers. From an ~85% demo-grade operating point to the ~99.9% that <em>unsupervised</em> commercial operation demands is a large <code>Δ</code> in log-odds terms. At <code>δ ≈ 2–3</code> points per doubling near the current operating point — and <code>δ</code> always <em>decays</em> as you climb — you need not one or two more doublings but <strong>five to ten</strong>: <code>10^5</code> hours becoming <code>10^7–10^8</code> hours. Collectible? Perhaps — a million devices × a hundred hours each. But then the second curse activates.</p>
+<p><strong>The double curse of the tail.</strong> The failures that separate demo from product are long-tail <em>contact</em> events — in-hand slip recovery, deformable jams, tolerance-stack surprises. These events are (a) <strong>rare in natural video</strong> — people film cooking, not the 0.1% of cooking where the jar lid cross-threads — and (b) <strong>invisible in video even when present</strong>, because they are <em>force</em> phenomena, which the roadmap itself proves are latent in pixels. So the tail is simultaneously <strong>under-sampled and under-observed</strong>: the effective <code>δ</code> for exactly the capability that matters commercially is far below the headline <code>δ</code> measured on the distribution's body. This is precisely the shape of self-driving's failure — disengagement rates improved log-linearly on fleet miles until the residual failures stopped being i.i.d., and then data scaling became a comically inefficient instrument against structured rare events.</p>
+<p><strong>What this does to the thesis:</strong> it does not falsify the ego bet — it <strong>re-prices</strong> it. Ego video takes you from 60% to 90% cheaply (real, valuable, sufficient for fenced deployments with human fallback). It does <em>not</em> take you from 99% to 99.99%. The roadmap's own planner-overhang prediction is the tell: the overhang is not a transitional curiosity — <strong>it may be the steady state of the decade</strong>, planners that know everything paired with hands that still fumble the tail. If so, the "robot ChatGPT moment ~2029–30 at ~65%" line is the single most likely forecast entry to be wrong, and wrong in the expensive direction.</p>
+<hr>
+<h2>2. The factorization may not factor</h2>
+<p>The mathematical heart of the pyramid is the claim that the transition model factors,</p>
+<pre class="term"><code>   p(s' | s, a)  =  ∫ p(s' | w) · p(w | a, M) dw</code></pre>
+<p>— <em>world-given-contact</em> is embodiment-invariant; <em>contact-given-action</em> is morphology-specific and low-dimensional. The critique: <strong>the human hand may not admit a low-dimensional retargeting map.</strong> Human manipulation exploits continuous compliance (soft finger pads deforming around geometry), skin friction fields, and <em>unconscious sub-perceptual force modulation</em> at millisecond timescales — none of which live in the wrist-pose + MANO-parameter action space that current unified representations use.</p>
+<p>If a meaningful fraction of human competence is smuggled through channels that the retargeting map <code>φ: A_human → A_robot</code> cannot express, then ego pretraining transfers the <strong>plan</strong> and silently drops the <strong>skill</strong> — and the measured <code>α &gt; 0</code> is real but <strong>tops out early</strong>, exactly the saturation the roadmap lists as its own falsifier. The honest status: <strong><code>α</code>'s asymptotic behavior is unmeasured. Everyone is extrapolating from the cheap part of the curve.</strong> (History rhyme: imitation-learning-from-video results in 2018–2022 repeatedly showed early transfer gains that saturated; the field's memory of this is suspiciously short.)</p>
+<p><strong>Second-order version — entanglement.</strong> At <code>10^6+</code> hours, the statistically efficient thing for a large model to do is exploit human-hand-specific visual shortcuts, because they are everywhere in the corpus. Preventing entanglement is a permanent adversarial tax paid in augmentation and architecture — and every point of that tax reduces effective <code>α</code>.</p>
+<hr>
+<h2>3. Force-grounding may never scale — the middle layer as permanent bottleneck</h2>
+<p>The roadmap's own refinement — <em>the middle layer's true job is force-grounding; the KPI is force-labeled hours</em> — is also its soft underbelly. Kinematic ego data scales because a consumer device (Vision Pro, Aria) emits it <strong>as exhaust</strong>. <strong>No consumer device emits force.</strong> Tactile sensors remain fragile, drifty, expensive, and calibration-hungry; instrumented gloves are lab equipment; and the elegant answer — transparent QDD fleets as free force sensors — only produces <em>robot-side</em> force data, which is exactly the scarce, deployment-gated currency the pyramid was designed to economize.</p>
+<p>If force-labeled hours grow <strong>linearly</strong> (ops-limited) while kinematic hours grow <strong>exponentially</strong> (device-limited), the pyramid becomes a very tall structure standing on a very thin middle, and the binding constraint of the entire program is a <strong>sensor-hardware problem the ML community keeps assuming someone else will solve.</strong> The tactile "electronic skin" line in the Public-Markets Map is simultaneously the highest-option-value and the least-mature entry — that combination is a warning as much as an opportunity.</p>
+<hr>
+<h2>4. The world model as gym: the single point of failure, restated adversarially</h2>
+<p>The roadmap flags contact fidelity (call it <strong>F2</strong>) as its "single correlated risk" and then builds the flywheel on it anyway. State the adversarial case plainly:</p>
+<ul>
+<li><strong>The hybrid stack</strong> (splats + physics core + video imagination + force correction) <strong>is a systems-integration bet</strong>, and systems-integration bets in ML have a poor record against bitter-lesson monocultures — <em>but</em> the monoculture (pure video scaling) provably cannot ground force. So the field may spend <strong>2026–2029 caught between an architecture that can't scale (hybrid, engineering-heavy) and a scaler that can't ground (video).</strong> That deadlock <em>is</em> the 1–2 year slip the roadmap prices at the margin; it could be a <strong>4–5 year slip.</strong></li>
+<li><strong>The worse-than-nothing regime.</strong> A world model at <strong>F1.5</strong> — visually convincing, dynamically subtly wrong — used as a gym injects <em>systematic</em> physics bias into every cerebellum trained inside it. Amplification gain goes negative; <strong>the flywheel spins backward while every dashboard shows data volume going up.</strong> Self-driving analog: simulation-validated stacks that fell over on real long-tails. The failure is insidious precisely because synthetic-data pipelines report <em>throughput, not truth.</em></li>
+</ul>
+<hr>
+<h2>5. Unit economics: the safety-driver trap, transposed</h2>
+<p>Self-driving's capability story was ruined less by capability than by <strong>the supervision ratio.</strong> A safety driver per vehicle deletes the economics; the entire commercial question compressed into "when does one remote operator supervise N &gt; 10 vehicles."</p>
+<p>Robotics imports the same trap with new names. Current humanoid deployments run with <strong>teleop fallback and near-1:1 human supervision</strong> — the \$25/robot-hour headline quietly excludes the supervising human, the deployment engineers, and the intervention infrastructure. The commercial crossing is not "the robot works"; it is <strong>interventions-per-hour falling far enough that one operator covers a fleet.</strong> No public deployment discloses this number today, which — per the base rate — is itself the tell (AV companies also stopped publishing disengagement rates when the numbers stopped flattering). Add: <strong>cycle-time parity</strong> (a robot at 0.5× human takt violates line economics even at 99% reliability); <strong>insurance and liability</strong> pricing for mobile manipulators around humans (unpriced; one serious injury event resets the regulatory clock the way Uber–Tempe did for AVs in 2018); and battery/duty-cycle realities. <strong>The roadmap's forecast contains no supervision-ratio line, and it should — that is the variable the entire commercial timeline actually loads on.</strong></p>
+<hr>
+<h2>6. Hardware: cost floors, not cost curves</h2>
+<p>The roadmap treats the BOM as a declining curve. The critique: several terms have <strong>floors.</strong></p>
+<ul>
+<li><strong>Precision grinding</strong> (flexsplines, roller screws at &lt;3 µm) is capex- and skills-bound; harmonic-reducer capacity historically expands at <em>single-digit multiples per half-decade</em>, not the 10–30× a 2028 humanoid ramp implies. The Public-Markets Map's "squeeze confirmation" (lead-time/ASP divergence) is, read differently, <strong>the ramp failing.</strong></li>
+<li><strong>The rare-earth term.</strong> The sub-\$20K humanoid is, by the roadmap's own arithmetic (~\$46K → ~\$131K ex-China), a bet on Chinese magnet policy. The <strong>Nov 10, 2026 cliff</strong> has a ~40% branch where magnet prices spike <em>into</em> the ramp.</li>
+<li><strong>The QDD coupling cuts both ways.</strong> The learning-optimal actuator is the magnet-heaviest one, so any magnet shock <em>specifically taxes the architecture the ML roadmap prefers</em> — a correlated hardware-software risk the market treats as two separate stories.</li>
+</ul>
+<p><strong>Net:</strong> the realistic 2028 BOM may stall in the <strong>\$30–45K band</strong>, which quietly deletes most home-robot and much service-sector TAM math for the rest of the decade, leaving <strong>industrial cells — the segment that least needs a humanoid form factor.</strong></p>
+<hr>
+<h2>7. The timing table: roadmap vs. self-driving-adjusted</h2>
+<div class="tablewrap"><table><thead><tr><th>Capability</th><th>Roadmap</th><th>Bear-but-fair</th><th>SDC-adjusted</th><th>Note</th></tr></thead><tbody><tr><td>Ego-pretraining α replicated</td><td>2026 [high]</td><td>2026</td><td>2026</td><td>Safest claim in the roadmap</td></tr><tr><td>Planner overhang visible</td><td>2027–28</td><td>2027</td><td>2027</td><td>The critique <em>strengthens</em> this one</td></tr><tr><td>World-model gym → production rigid-task cerebella</td><td>2027–28 (~60%)</td><td>2029</td><td>2030–31</td><td>F2-deadlock scenario</td></tr><tr><td>Skill-acquisition cost crossover</td><td>2028 (~55%)</td><td>2030</td><td>2032+</td><td>Gated by §3 + §4 jointly</td></tr><tr><td>Fenced "robot ChatGPT" (warehouse/factory)</td><td>2029–30 (~65%)</td><td>2030–31</td><td>2032–33</td><td>And <em>fenced</em> is doing enormous work</td></tr><tr><td>Fine force-critical dexterity</td><td>not by 2030</td><td>2033+</td><td>2035+</td><td>The self-driving-class problem</td></tr><tr><td>General home robot, unsupervised</td><td>beyond horizon</td><td>2033+</td><td>2036+</td><td>The "full self-driving" of this cycle</td></tr><tr><td>Supervision ratio 1:10+</td><td><em>absent from roadmap</em></td><td>2029</td><td>2031+</td><td><strong>The commercially decisive line</strong></td></tr></tbody></table></div>
+<p><strong>The pattern to internalize:</strong> capability <em>demos</em> will keep arriving on the roadmap's schedule; <em>products</em> will arrive on the right-hand column's schedule; and <strong>the valley between those two schedules is where the capital dies.</strong></p>
+<hr>
+<h2>8. Who burns in the valley</h2>
+<p>If the right-hand column is even half correct, the <strong>2028–2032 middle of the decade is a funding winter</strong> for everyone whose runway assumed the left column. The mortality map, by structural position:</p>
+<ul>
+<li><strong>Pre-revenue integrators without captive deployment scenes</strong> — the Cruise analog. A ~\$39B valuation requires believing the left column; the burn rate is set today, the revenue arrives on the right. Survivors attach to patient balance sheets (a carmaker's factory, a hyperscaler's treasury, a sovereign program) — the Waymo pattern. Expect the Western humanoid field of ~10 credible integrators to resolve to <strong>2–3, with at least one \$1B+ shutdown that resets sector sentiment for 18 months.</strong></li>
+<li><strong>The Chinese integrator cohort</strong> resolves differently but not more gently: dozens of companies + provincial subsidy → a price war that transfers all margin to customers and component makers — the solar/lidar/EV script, where <em>the technology wins and the equity loses.</em> Direction right, returns negative.</li>
+<li><strong>Data-ops companies</strong> ("Scale AI of atoms") get verticalized: once ego capture is device-exhaust (Meta/Apple) and labs run their own UMI fleets, third-party data ops compresses to a services margin. The window is real but <strong>closes by ~2029.</strong></li>
+<li><strong>Teleop-heavy service models</strong> are the safety-driver companies of this cycle: revenue that looks like robotics, costs that look like staffing.</li>
+<li><strong>Component names in the drawdown:</strong> the 2021-SPAC/EV-supplier rhyme — reducer, screw, and magnet equities can trade at ramp-implied multiples in 2026–27, then absorb a <strong>50–70% de-rate in 2028–29</strong> when Optimus lands at the low end of guidance, <em>even though the 2035 end-state demand is fully intact.</em> Being early is indistinguishable from being wrong at the position level; the Map's own "50–150K landing = master switch" monitor is, adversarially read, a confession that a 3× range in the key input is unresolved.</li>
+</ul>
+<p><strong>Who survives regardless:</strong> component makers with existing non-robot revenue (reducers into industrial robots, magnets into EVs, machine tools into everything) — they collect the option without paying the burn; hyperscalers, for whom this is a rounding-error R&amp;D line with corpus ownership attached; and the patient-capital labs. Notably, <strong>this surviving set is approximately the barbell the Public-Markets Map already recommends</strong> — so the critique's amendment is not to the barbell's <em>composition</em> but to its <strong>timing discipline:</strong> stagger entries on the dashboard's catalysts rather than pre-positioning for the left column, hold the pre-revenue end at option-sized weights, and treat <strong>2028–29 as the accumulation window the drawdown will create, not the harvest the roadmap promises.</strong></p>
+<hr>
+<h2>9. Steel-manning back: why this cycle could beat the base rate</h2>
+<p>A red team that only attacks is a mood, not an analysis. Three honest disanalogies to self-driving:</p>
+<ol>
+<li><strong>Fallback is cheap.</strong> An AV failure at 70 mph is a fatality; a manipulation failure is usually a dropped object. Robotics can ship at 95% with human fallback and <strong>earn revenue while climbing the reliability curve</strong> — AVs structurally could not. This is the strongest single reason timelines here compress relative to the AV-adjusted column, and it applies precisely to the fenced deployments the roadmap forecasts first.</li>
+<li><strong>Reward density.</strong> Physical tasks verify locally and immediately (the cup is lifted or it is not); driving verifies globally and rarely (crashes are 10⁻⁶ events). RL compounds where verification is dense — the roadmap's own law — and manipulation sits on the favorable side of that law even though driving did not.</li>
+<li><strong>The environment is negotiable.</strong> AVs had to accept the world as given; factories can be re-fenced, re-lit, re-fixtured around the robot. <strong>Every dollar of environment engineering substitutes for a nine of policy reliability</strong> — a degree of freedom self-driving never had.</li>
+</ol>
+<p>Weighing both directions: <strong>the fenced-industrial claims survive the critique largely intact (perhaps +1–2 years); the open-world, home, and fine-dexterity claims take the full AV adjustment (+4–7 years);</strong> and the <em>financial</em> history rhymes regardless of the technical one, because valuations are set by the left column while cash flows arrive on the right.</p>
+<hr>
+<h2>10. What would falsify this critique</h2>
+<p>Symmetry demands it. This document is wrong — and the roadmap's original timelines stand — if, <strong>by end-2027:</strong></p>
+<ul>
+<li><strong>(a)</strong> a supervision ratio ≥ 1:5 is <em>publicly disclosed and audited</em> at a commercial humanoid deployment;</li>
+<li><strong>(b)</strong> the F2 zero-shot number crosses ~80% on genuinely held-out rigid-contact tasks;</li>
+<li><strong>(c)</strong> measured <code>α</code> holds constant through two further orders of magnitude of ego hours (no saturation through <code>10^7</code>); or</li>
+<li><strong>(d)</strong> a consumer device ships with per-interaction force sensing, collapsing §3.</li>
+</ul>
+<p><strong>Two of these four and the left column re-prices; all four and this document should be deleted.</strong></p>
+<hr>
+<p><em>The purpose of the roadmap is to be right about the destination. The purpose of this document is to keep the portfolio alive long enough to get there. In this asset class those are different skills — and self-driving is the proof.</em></p>
+      <div class="ea-foot">The Embodiment Awakening · 2026 · a judgment call, not a prophecy</div>
+    </div>
+  </div>
+</section>
+<section id="zh" class="ea-panel zh" role="tabpanel" aria-label="中文">
+  <div class="ea-wrap">
+    <header class="ea-mast">
+      <div class="ea-eyebrow">中文原版 — Part I</div>
+      <h1 class="ea-h1">具身觉醒</h1>
+      <p class="ea-sub">通往物理智能的未来五年 —— 一份判断书。英文系列见上方标签页。</p>
+    </header>
+    <div class="ea-body"><h2>序：我们正站在物理世界的 GPT-2 时刻</h2>
+<p>如果你在 2019 年读过 GPT-2 的输出，你会觉得它有趣但不可靠——它能写出语法正确的句子，却经常胡言乱语。三年后，GPT-4 改变了世界。</p>
+<p><strong>今天的机器人，正处在它们的 GPT-2 时刻。</strong></p>
+<p>2024-2025 年，我们第一次看到了"会泛化"的机器人策略：同一个神经网络，能折叠它从未见过的衣物、能从杂乱的桌面上拿起任意物体、能听懂"把红色的杯子放到水槽里"并执行。这不是预编程的工业臂，而是一个<strong>学习出来的、有常识的身体</strong>。</p>
+<p>这件事的意义，和 2020 年 GPT-3 的意义一样大，甚至更大。因为语言模型操纵的是比特（bits），而机器人操纵的是原子（atoms）。世界 GDP 的绝大部分——制造、物流、农业、建筑、护理、家务——都发生在原子层面，至今几乎没有被软件触及。</p>
+<p>这篇文章是我对未来五年的判断：<strong>到 2030 年，通用机器人将从实验室 demo 走向规模化部署，其拐点的清晰度，将不亚于 2020 年我们看清了大语言模型的拐点。</strong> 但通往那里的路，被四道关卡封锁着：<strong>模型、数据、灵巧手、和稀土。</strong> 谁先解开这四道锁，谁就掌握了下一个十年的物理世界。</p>
+<p>让我把这四道锁，一道一道拆给你看。</p>
+<hr>
+<h2>第一章：模型突破 —— 从 LLM 到 VLA，再到世界模型</h2>
+<h3>1.1 三级火箭：语言 → 视觉语言 → 视觉语言动作</h3>
+<p>理解机器人模型的演进，最好的框架是"三级火箭"：</p>
+<ul>
+<li><strong>第一级 LLM（Large Language Model）</strong>：在互联网文本上训练，学会了语言、推理、世界知识。这是大脑的"语义层"。</li>
+<li><strong>第二级 VLM（Vision-Language Model）</strong>：加入图像，学会了"看懂"世界——这是杯子，那是桌子，这个人在微笑。这是大脑的"感知层"。</li>
+<li><strong>第三级 VLA（Vision-Language-Action Model）</strong>：在前两级的基础上，加入<strong>动作</strong>作为新的模态。模型输出的不再是文字，而是关节扭矩、末端执行器位姿、夹爪开合。这是大脑的"运动层"。</li>
+</ul>
+<p>VLA 是过去两年最重要的范式确立。它的精妙之处在于：<strong>机器人不必从零学习世界，它继承了语言模型积累的全部常识。</strong> 当你对机器人说"把会融化的东西放进冰箱"，它知道冰淇淋会融化、钢笔不会——这个知识来自互联网文本，而不是来自机器人自己的试错。</p>
+<p>这就是我所说的 <strong>"语义先验的迁移红利"</strong>：机器人站在了语言模型的肩膀上，跳过了人类婴儿需要几年才能积累的世界常识。</p>
+<h3>1.2 我的判断：未来五年模型层的三个突破</h3>
+<p><strong>突破一：动作 token 化的统一架构（2025-2026 已基本成型）。</strong> 把连续动作离散化为 token，让动作和语言用同一个 Transformer 处理。这意味着机器人可以像 ChatGPT 接续文字一样"接续动作"。下一步是 <strong>flow matching / diffusion 作为动作头</strong>，解决离散化带来的精度损失——这在 2025 年已经成为高精度操作（穿针、插USB）的主流方案。</p>
+<p><strong>突破二：分层架构 System 1 / System 2（2026-2027 成熟）。</strong> 人脑有快慢两个系统：快系统（System 1）负责本能反射，慢系统（System 2）负责深思熟虑。机器人也会分层：</p>
+<ul>
+<li><strong>慢脑</strong>（VLM，5-10Hz）：理解任务、规划步骤、处理意外。"先打开抽屉，再拿出勺子，然后……"</li>
+<li><strong>快脑</strong>（动作专家，100-1000Hz）：执行流畅的实时运动控制。</li>
+</ul>
+<p>这个架构是我最确信的方向。它解决了一个核心矛盾：大模型聪明但慢，实时控制需要快但笨。分层让两者各司其职。<strong>到 2027 年，几乎所有 SOTA 机器人系统都会是这种双系统架构。</strong></p>
+<p><strong>突破三：世界模型成为机器人的"想象力"（2027-2029 改变游戏规则）。</strong> 这是我押注最大、也最被低估的方向。</p>
+<p>世界模型（World Model）是一个能预测"如果我这样做，世界会变成什么样"的神经网络。它本质上是一个<strong>可微分的、神经网络版的物理引擎</strong>。它的颠覆性在于：</p>
+<ol>
+<li><strong>机器人可以在"脑内"演练。</strong> 像 AlphaGo 在脑中推演棋局一样，机器人在执行前，先在世界模型里模拟一千次，挑出最好的动作。这是 model-based RL 的终极形态。</li>
+<li><strong>数据可以被"生成"出来。</strong> 世界模型学会了物理规律后，可以生成无限的、带标注的合成训练数据，部分绕过真实数据采集的瓶颈（这点我在第二章详谈）。</li>
+<li><strong>它是评估器。</strong> 训练机器人最难的不是采集数据，而是评估策略好坏——真机测试又慢又贵。一个好的世界模型可以在数字孪生里以千倍速度评估策略。</li>
+</ol>
+<p><strong>我的预测：到 2028 年，"视频生成模型"和"机器人世界模型"会收敛成同一类技术。</strong> Sora 式的视频生成、自动驾驶的场景预测、机器人的动作规划，背后是同一个东西——<strong>对物理世界时空演化的可学习的预测器</strong>。谁先把视频生成的scale，迁移到带动作条件（action-conditioned）的世界模型上，谁就拥有了物理世界的"GPT-4 时刻"。</p>
+<h3>1.3 一个反直觉的判断</h3>
+<p>很多人认为机器人的瓶颈是"大模型不够聪明"。<strong>我认为恰恰相反——大模型已经足够聪明了，瓶颈在于把智能"接地"（grounding）到身体上。</strong> 一个 GPT-4 级别的大脑，配一个能稳定执行它意图的身体，就足以做绝大部分体力劳动。问题从来不是"想不到"，而是"做不到"。</p>
+<p>而"做不到"，主要卡在后面三章：数据、手、和供应链。</p>
+<hr>
+<h2>第二章：数据 —— 机器人时代的石油，而油田还没被发现</h2>
+<h3>2.1 致命的不对称：互联网上没有机器人数据</h3>
+<p>语言模型有一个巨大的礼物：<strong>整个互联网就是它的训练集。</strong> 几十万亿 token 的文本，免费躺在那里，等着被学习。</p>
+<p>机器人没有这个礼物。<strong>互联网上不存在"机器人第一人称操作数据"。</strong> 没有任何一个网站，记录着"机械臂如何精确地把鸡蛋从 A 移到 B、接触力是多少牛顿、关节角度如何变化"。这类数据必须<strong>从物理世界一帧一帧地采集</strong>，而这极其昂贵、极其缓慢。</p>
+<p>这就是机器人领域的<strong>"数据墙"（Data Wall）</strong>，而且这堵墙比语言模型的数据墙高得多、来得早得多。<strong>数据，而非算法，是未来五年机器人最核心的瓶颈。</strong> 谁解决了数据问题，谁就赢了。</p>
+<p>让我把解决数据问题的路径，按"性价比金字塔"从下到上排列。</p>
+<h3>2.2 数据金字塔：从昂贵到廉价的五种来源</h3>
+<pre class="term"><code>                  ▲ 质量高/成本高
+                  │
+   ┌──────────────────────────────┐
+   │   1. 真机遥操作 (Teleop)       │  ← 黄金数据，但 $$$、慢
+   ├──────────────────────────────┤
+   │   2. 便携采集器 (UMI 类)        │  ← 解耦机器人，10x 提速
+   ├──────────────────────────────┤
+   │   3. 第一人称人类视频 (Egocentric)│  ← 海量、但缺动作标签
+   ├──────────────────────────────┤
+   │   4. 仿真 + 世界模型生成         │  ← 近乎无限、但有 sim2real gap
+   ├──────────────────────────────┤
+   │   5. 互联网视频预训练           │  ← 最廉价、最弱监督
+   └──────────────────────────────┘
+                  │
+                  ▼ 质量低/成本低、数量大</code></pre>
+<p>赢家不会只用一种，而是用一个<strong>数据飞轮</strong>把五层串起来：底层提供海量先验，顶层提供精确校准。下面逐层拆解。</p>
+<h3>2.3 第一层：遥操作（Teleoperation）—— 黄金数据，但贵如黄金</h3>
+<p>遥操作是今天最主流的高质量数据来源：人类操作员通过手柄、VR、或主从设备（leader-follower arm）远程控制机器人，机器人记录下每一刻的视觉输入和动作输出，形成完美对齐的训练样本。</p>
+<p>它的优点是<strong>数据质量最高</strong>——动作天然带标签，且分布与机器人本体完全匹配。</p>
+<p>它的致命缺点是<strong>不可扩展</strong>：</p>
+<ul>
+<li>一个操作员一次只能控制一台机器人，1 小时只能采集 1 小时数据。</li>
+<li>时薪 $20-40 的操作员，采集一个复杂任务的几千条轨迹，成本轻松上万美元。</li>
+<li>这本质上是 <strong>"用人力线性换数据"</strong>，违背了 scaling 的指数本质。</li>
+</ul>
+<p>我的判断：<strong>遥操作不会消失，但会从"主力"退居"校准层"。</strong> 它会被用来做最后一公里的精调（fine-tuning）和困难场景的补充，而不是承担全部数据量。把宝押在纯遥操作上扩张的公司，会被数据成本拖垮。</p>
+<h3>2.4 第二层：UMI 类便携采集器 —— 把数据采集和机器人解耦</h3>
+<p>这是我认为<strong>最被低估、性价比最高</strong>的突破。</p>
+<p>UMI（Universal Manipulation Interface）的核心洞见是：<strong>为什么采数据一定要用机器人？</strong> 它用一个手持的夹爪装置——本质是一个装了 GoPro 和夹爪的"抓取器"——让人类直接用手去完成任务（洗碗、整理、烹饪），同时记录第一人称视觉和夹爪动作。</p>
+<p>这个想法的威力在于：</p>
+<ol>
+<li><strong>解耦了数据采集与昂贵的机器人本体。</strong> 一个 UMI 装置成本几百美元，而一台机器人几万美元。</li>
+<li><strong>采集速度暴增。</strong> 人用手做事，比遥操作机器人快 5-10 倍，且在任何地方都能采——厨房、超市、工厂，而不必把机器人搬过去。</li>
+<li><strong>动作空间对齐。</strong> 通过精心设计夹爪几何，使人手采集的动作能直接映射到机器人夹爪。</li>
+</ol>
+<p><strong>我的预测：2025-2027 年会出现"采集器军团"模式。</strong> 公司会像众包打车一样，给成千上万的普通人发放便携采集器，让他们在日常生活中采集数据，按小时或按轨迹付费。这会把数据采集从"实验室活动"变成"全民众包"，数据量提升 1-2 个数量级。<strong>这是机器人界的 ImageNet 时刻——不是靠一个实验室，而是靠分布式人力把数据规模做上去。</strong></p>
+<p>它的局限是：手持夹爪的形态，限制了能采集的任务类型（比如难以采集需要灵巧手或全身协调的任务）。所以它是金字塔的中坚，而非全部。</p>
+<h3>2.5 第三层：第一人称人类视频（Egocentric / First-Person）—— 沉睡的金矿</h3>
+<p>人类每天用眼睛"采集"着海量的第一人称操作数据。如果能让机器人从<strong>人类的第一视角视频</strong>中学习，数据量将是无穷的。</p>
+<p>这就是 <strong>egocentric video（自我中心视频）</strong> 的价值。智能眼镜（Aria、Ray-Ban Meta 类设备）戴在千百万人头上，记录着人类如何用手与世界交互。这些视频自带"第一人称视角 + 双手动作"，与机器人的感知-动作结构高度同构。</p>
+<p>你提到的 <strong>"first-person eagle view"（第一人称鹰眼视角）</strong> 触及了一个关键的技术点：<strong>视角对齐</strong>。机器人摄像头的安装位置、视场角、与人眼不同，导致直接迁移有 domain gap。解决方案是用统一的、俯视-第一人称结合的视角范式来采集和训练，让人类数据和机器人数据落在同一个视觉分布里。</p>
+<p>挑战在于：<strong>人类视频没有动作标签。</strong> 视频里能看到手在动，但看不到"关节扭矩"。解决方案有三条，会同时推进：</p>
+<ol>
+<li><strong>手部姿态估计</strong>：用视觉算法从视频反推出手的 3D 姿态和接触，把动作标签"挖"出来。</li>
+<li><strong>隐式动作表征</strong>：不显式恢复动作，而是让模型学习"潜动作"（latent action），把视频本身当作弱监督信号做预训练。</li>
+<li><strong>跨形态重定向（retargeting）</strong>：把人手的运动，重映射到机器人手/夹爪。</li>
+</ol>
+<p><strong>我的预测：到 2028 年，"智能眼镜 → 机器人训练数据"会成为一条成熟的产业管线。</strong> 戴眼镜的人越多，机器人学得越快。这会催生一个微妙的飞轮：消费级 AR 设备的普及，反过来喂养了机器人智能。Meta、Google 在 AR 眼镜上的投入，部分逻辑就在这里——<strong>眼镜是采集物理世界数据的特洛伊木马。</strong></p>
+<h3>2.6 第四层：仿真 + 世界模型 —— 趋近无限的合成数据</h3>
+<p>仿真（simulation）能以千倍速度、零边际成本生成数据。在物理引擎里，可以让一万个虚拟机器人同时练习开门，一夜跑完现实中几年的训练量。</p>
+<p>仿真的老问题是 <strong>sim2real gap</strong>：仿真里的物理（尤其是接触、摩擦、柔性体、流体）和现实有差距，在仿真里学会的策略，搬到真机上会"水土不服"。</p>
+<p>未来五年，这道 gap 会被两个方向快速收窄：</p>
+<ol>
+<li><strong>域随机化 + 真实纹理</strong>：在仿真里随机化物理参数和外观，逼模型学到鲁棒的、不依赖具体数值的策略。</li>
+<li><strong>世界模型生成式仿真</strong>（呼应第一章）：与其手写物理引擎，不如让神经网络从真实视频里<strong>学</strong>出一个物理引擎。这种"神经仿真器"天然没有 sim2real gap，因为它本来就是从 real 学出来的。</li>
+</ol>
+<p><strong>我的判断：2027 年后，合成数据占机器人训练数据的比例会超过 50%，并持续上升。</strong> 真实数据的角色，会从"提供数量"转变为"提供校准和真实性锚点"——少量真实数据，用来把海量合成数据"拉回"现实分布。这与今天大语言模型用合成数据的趋势完全一致。</p>
+<h3>2.7 第五层：互联网视频预训练 —— 廉价的世界常识</h3>
+<p>YouTube 上有几十亿小时的视频，记录着人类做一切事情。虽然没有动作标签，但它蕴含了关于"世界如何运作"的海量直觉——水会流、球会滚、绳子会缠。</p>
+<p>用互联网视频做预训练，让模型先建立起对物理世界的"视觉常识"，再用上面四层的高质量数据做微调。这是数据金字塔最廉价的底座。<strong>它给不了精确动作，但能给世界先验。</strong></p>
+<h3>2.8 数据飞轮：真正的护城河</h3>
+<p>把五层串起来，就是<strong>数据飞轮</strong>：</p>
+<blockquote>互联网视频建立世界常识 → 仿真/世界模型生成海量演练 → egocentric 视频补充人类操作先验 → UMI 采集器规模化采集任务数据 → 少量遥操作做精确校准 → <strong>部署机器人本身成为最大的数据采集器</strong> → 更多真实数据回流 → 模型变强 → 部署更多机器人 → ……</blockquote>
+<p>最后一环是关键：<strong>一旦机器人开始大规模部署，它们工作的同时就在采集数据。</strong> 这就是机器人界的"特斯拉影子模式"——每一台卖出去的机器人，都在为下一代模型采集数据。第一个跨过部署门槛、转动这个飞轮的公司，会进入<strong>数据复利的正反馈</strong>，把后来者甩开。</p>
+<p><strong>这才是真正的护城河——不是模型架构（会被复制），不是硬件（会被商品化），而是这个自我强化的数据飞轮。</strong></p>
+<hr>
+<h2>第三章：灵巧手 —— 智能的最后一厘米</h2>
+<h3>3.1 莫拉维克悖论：为什么"手"比"脑"难</h3>
+<p>有一个深刻的悖论叫<strong>莫拉维克悖论（Moravec's Paradox）</strong>：对计算机来说，下棋、做微积分这种"高级"智力任务很容易，而抓握、行走这种两岁小孩都会的"低级"运动技能极难。</p>
+<p>人类的手是进化了数百万年的奇迹：一只手有 27 个自由度、数千个触觉感受器、能在毫秒内调节抓握力——从捏起一根头发，到拧开一个卡死的瓶盖。<strong>机器人智能的"最后一厘米"，卡在指尖上。</strong></p>
+<p>为什么手这么关键？因为世界是为人手设计的。门把手、工具、键盘、瓶盖、衣服扣子——人类环境里的一切，都假设操作者有一双灵巧的手。一个只有夹爪（gripper）的机器人，能做的事被严重限制；只有拥有接近人手的灵巧手，机器人才能真正接管人类的工作。</p>
+<h3>3.2 灵巧手的三道难关</h3>
+<p><strong>难关一：自由度与驱动。</strong> 人手有 ~27 个自由度。要在手掌大小的空间里塞进这么多电机、还要有力气，是极致的机械工程难题。两条技术路线在竞争：</p>
+<ul>
+<li><strong>腱驱动（tendon-driven）</strong>：电机放在前臂，用"肌腱"（钢缆）远程拉动手指。优点是手指轻巧灵活，缺点是钢缆磨损、控制复杂。</li>
+<li><strong>直驱/连杆驱动</strong>：电机直接放在关节。优点是控制精确、耐用，缺点是手指笨重、自由度受限。</li>
+</ul>
+<p><strong>我的判断：未来五年，腱驱动会因其拟人性在"通用灵巧"上胜出，但会大量采用准直驱微型电机降低磨损。</strong> 手的成本会从今天的数万美元，降到 2028 年的几千美元。</p>
+<p><strong>难关二：触觉（Tactile Sensing）—— 被忽视的半个智能。</strong> 这是我认为<strong>整个机器人领域最被低估的方向，没有之一。</strong></p>
+<p>人类闭着眼睛能从口袋里摸出钥匙，靠的是触觉。当你抓一个鸡蛋，你不是靠"看"来调节力度，而是靠指尖感知微小的滑动，在它滑落前的几毫秒收紧。<strong>没有触觉，灵巧操作是不可能的。</strong> 纯视觉在接触发生的那一刻就"瞎"了——手指挡住了视线，而恰恰是接触的瞬间最需要信息。</p>
+<p>未来五年，触觉传感会经历自己的爆发：</p>
+<ul>
+<li><strong>视觉触觉传感器（vision-based tactile）</strong>：在指尖放一个微型摄像头，看一层弹性凝胶的形变，从而以极高分辨率重建接触力和纹理。这是目前最有前景的路线。</li>
+<li><strong>触觉将成为一个新的预训练模态</strong>，和视觉、语言并列。VLA 会变成 <strong>VLTA（Vision-Language-Tactile-Action）</strong>。</li>
+</ul>
+<p><strong>我的预测：2027-2029 年，"触觉基础模型"会成为新热点。</strong> 谁能采集到大规模的触觉数据并预训练，谁就解锁了精细操作的下一个台阶。但触觉数据比视觉更难采集（没有"互联网触觉数据"），这又回到了第二章的数据问题——<strong>触觉的数据墙，比视觉更高。</strong></p>
+<p><strong>难关三：耐用性。</strong> 手是机器人最容易坏的部分。家庭和工厂里的手，每天要做上万次抓取，手指、关节、传感器的磨损是工程噩梦。<strong>灵巧不仅是"能做到"，更是"能重复做十万次不坏"。</strong> 这个无聊但关键的指标（MTBF，平均无故障时间），会是区分 demo 公司和量产公司的分水岭。</p>
+<h3>3.3 一个分叉预测：夹爪先行，灵巧手随后</h3>
+<p>务实地说，未来五年的<strong>商业部署会以"夹爪 + 简单手"为主</strong>——因为很多有经济价值的任务（搬箱子、上下料、分拣）用夹爪就够了，且夹爪便宜、耐用、好控制。</p>
+<p><strong>灵巧手会在 2027 年后，随着触觉成熟和成本下降，逐步进入需要精细操作的场景</strong>（装配、烹饪、护理）。不要被五指手的炫酷 demo 迷惑——<strong>真正赚钱的，初期是那些"看起来很笨"的夹爪。</strong> 灵巧手是星辰大海，但夹爪是先到的现金流。</p>
+<hr>
+<h2>第四章：硬件与 Scaling Law —— 物理世界的摩尔定律</h2>
+<h3>4.1 机器人的"成本下降曲线"</h3>
+<p>任何技术的爆发，都需要一条陡峭的成本下降曲线。太阳能、锂电池、测序、算力，都遵循"产量翻倍，成本下降固定百分比"的学习曲线（Wright's Law）。</p>
+<p>人形机器人正进入这条曲线的陡峭段。今天一台人形机器人的物料成本（BOM）大约在 $5万-15万。我的判断：</p>
+<blockquote><strong>到 2030 年，量产人形机器人的 BOM 成本会降到 $2万-3万，部分简化构型甚至到 $1万级别。</strong></blockquote>
+<p>驱动这个下降的，是规模化带来的三件事：电机/减速器/丝杠的量产降本、供应链成熟、以及和电动车产业链的协同（电池、电机、电控技术高度共享）。<strong>这就是为什么造车的公司纷纷下场造机器人——他们已经拥有了一大半供应链。</strong> 机器人本质上是"长了手的电动车"。</p>
+<p>当一台机器人的价格，等于它替代的一个工人一年的工资时，临界点就到了。在发达国家，这个临界点大约是 $3万-5万——<strong>这正是我预测 2028-2030 年会跨过的线。</strong> 一旦机器人的"年化拥有成本"低于人工，需求会像决堤一样释放。</p>
+<h3>4.2 物理世界的 Scaling Law：它存在吗？</h3>
+<p>这是整篇文章在智识上最关键的问题。</p>
+<p>语言模型的成功，建立在 <strong>Scaling Law（规模定律）</strong> 之上：模型越大、数据越多、算力越多，性能可预测地、平滑地提升。这条经验定律，是过去五年 AI 投资的"信仰基石"。</p>
+<p><strong>机器人/物理智能，存在类似的 Scaling Law 吗？</strong></p>
+<p>我的回答是：<strong>存在，但它的"轴"不一样。</strong></p>
+<p>语言模型的 scaling 轴是 [参数量 × 文本 token × 算力]。 物理智能的 scaling 轴是 <strong>[参数量 × 真实交互数据 × 任务多样性 × 本体数量]</strong>。</p>
+<p>关键的差异和判断：</p>
+<ol>
+<li><strong>数据轴是"具身交互数据"，不是文本。</strong> 而这种数据，如第二章所说，不能从互联网免费获取，必须靠飞轮制造。这意味着物理智能的 scaling，<strong>受制于数据采集的物理速度</strong>——这是它和 LLM 最根本的不同。LLM 的瓶颈是算力，物理智能的瓶颈是数据采集的吞吐量。</li>
+</ol>
+<ol>
+<li><strong>"本体数量"是一个新的、独特的 scaling 维度。</strong> 部署的机器人越多，采集的数据越多，模型越强——这是 LLM 没有的维度。它把 scaling 和"商业部署"绑定在了一起：<strong>你必须先卖出机器人，才能 scale 你的智能。</strong> 这创造了一个先有鸡还是先有蛋的难题，但一旦突破，就是赢家通吃的飞轮。</li>
+</ol>
+<ol>
+<li><strong>泛化的"涌现"会发生，但门槛更高。</strong> 就像 LLM 在某个规模突然"涌现"出推理能力，机器人策略也会在数据和任务多样性足够时，<strong>涌现出跨任务、跨物体、跨场景的泛化</strong>。我判断这个"涌现拐点"，会在某个公司的真实交互数据量跨过 <strong>10^7-10^8 条高质量轨迹</strong> 量级时出现——大约对应 2027-2029 年。<strong>那一刻，机器人会从"会做训练过的任务"跳变到"会做没训练过的任务"，就像 GPT-3 跳变到会 few-shot 学习。</strong></li>
+</ol>
+<ol>
+<li><strong>任务多样性比数据数量更重要。</strong> 在一个任务上采一百万条数据，不如在一万个任务上各采一百条。物理智能的泛化，来自<strong>任务分布的覆盖广度</strong>，而非单任务的深度。这是 UMI 类廉价、广覆盖采集方式的深层价值——它能廉价地铺开任务多样性。</li>
+</ol>
+<p><strong>总结我的核心论点：物理智能的 Scaling Law 存在，但它把竞争从"谁的算力多"，变成了"谁的数据飞轮转得快、任务覆盖广、本体铺得多"。</strong> 这是一场和语言模型规则不同的游戏。</p>
+<h3>4.3 算力的角色</h3>
+<p>算力依然重要，但角色变了。在物理智能里，算力主要消耗在：</p>
+<ul>
+<li><strong>训练</strong>：训练越来越大的 VLA 和世界模型。</li>
+<li><strong>仿真</strong>：世界模型生成数据和评估策略，是算力黑洞。</li>
+<li><strong>车载/机载推理</strong>：机器人需要在本体上实时运行模型（边缘推理），这对低功耗、低延迟芯片提出了新需求。</li>
+</ul>
+<p><strong>机器人本体上的"推理芯片"，会成为一个新的兵家必争之地。</strong> 既要跑得动大模型，又要省电（机器人靠电池），又要便宜。这是和数据中心 GPU 完全不同的约束。</p>
+<hr>
+<h2>第五章：稀土 Bottleneck —— 智能撞上地缘政治</h2>
+<h3>5.1 一台机器人，肚子里装着多少稀土？</h3>
+<p>前面四章都在讲技术。但有一道关卡，无关算法、无关数据，纯粹是物理和地缘的——<strong>稀土。</strong></p>
+<p>机器人靠电机驱动。高性能机器人用的是<strong>永磁同步电机</strong>，它的核心是<strong>钕铁硼永磁体（NdFeB）</strong>，其中的关键元素是<strong>钕（Nd）、镨（Pr）</strong>，以及在高温下保持磁性所必需的<strong>镝（Dy）、铽（Tb）</strong>。</p>
+<p>一台人形机器人有 40+ 个电机（每个关节一个，灵巧手里还有更多）。<strong>每台人形机器人大约需要 2-4 公斤永磁材料</strong>，其中含数百克稀土。机器人越灵巧，电机越多，稀土用量越大。</p>
+<p>这就引出一个被绝大多数 AI 叙事忽略的事实：</p>
+<blockquote><strong>通用机器人的规模化，本质上是一场对稀土永磁体的天量需求。如果 2030 年全球年产千万台人形机器人，仅这一项就会消耗数万吨稀土永磁体——足以重塑全球稀土供需格局。</strong></blockquote>
+<h3>5.2 瓶颈的真相：不是储量，是加工</h3>
+<p>关于稀土有一个常见误解，必须澄清：<strong>稀土并不"稀"。</strong> 它们在地壳里储量不小。真正的瓶颈在于<strong>开采和加工</strong>——尤其是<strong>分离提纯</strong>和<strong>磁体制造</strong>。</p>
+<p>而这恰恰是地缘政治的核心：</p>
+<ul>
+<li><strong>中国控制着全球约 60-70% 的稀土开采，但控制着 85-90% 以上的精炼加工，和超过 90% 的高性能钕铁硼磁体制造。</strong> 重稀土（镝、铽）的加工，中国的份额接近垄断。</li>
+<li>这意味着，即便其他国家挖出稀土矿，<strong>矿石仍要运到中国加工</strong>。加工环节的护城河，是几十年积累的技术、环保处理能力和成本优势，不是几年能复制的。</li>
+</ul>
+<p><strong>我的判断：稀土加工，会成为未来五年机器人产业最硬的、最难绕过的物理瓶颈，并且它会被武器化。</strong></p>
+<h3>5.3 稀土会被"武器化"吗？我的判断：会，而且已经开始</h3>
+<p>2025 年前后，稀土出口管制已经成为大国博弈的筹码。当机器人成为战略产业，控制稀土加工，就等于握住了对手机器人产能的咽喉。</p>
+<p>这会产生几个深远后果：</p>
+<ol>
+<li><strong>机器人供应链的"去风险化"会成为国家战略。</strong> 美国、欧洲、日本会投入巨资重建本土稀土加工和磁体产能，但这需要 5-10 年才能形成规模——<strong>远水难解近渴</strong>。未来五年，西方的机器人野心，会持续暴露在稀土供应风险下。</li>
+</ol>
+<ol>
+<li><strong>"无稀土电机"会从边缘走向主流研发热点。</strong> 为了绕过瓶颈，工程师会被迫创新：</li>
+<li class="cont">- <strong>铁氧体电机 / 感应电机</strong>：不用稀土，但功率密度低、更重。</li>
+<li class="cont">- <strong>轴向磁通电机</strong>：在更少稀土下提升功率密度。</li>
+<li class="cont">- <strong>新磁性材料</strong>：铁氮（Fe16N2）等新材料的研发会加速。</li>
+</ol>
+<p>   <strong>我的预测：2027-2030 年，"无稀土/少稀土电机"会成为一个真实的技术赛道，</strong>但短期内它们在功率密度上仍打不过钕铁硼。在对重量和体积极度敏感的人形机器人和灵巧手上，钕铁硼短期内不可替代。这意味着稀土瓶颈在五年窗口内<strong>无法被技术绕过</strong>，只能被供应链多元化部分缓解。</p>
+<ol>
+<li><strong>谁控制稀土，谁就在机器人竞赛里有结构性优势。</strong> 这是一个残酷但真实的判断：<strong>中国不仅在机器人供应链（电机、减速器、电池、整机制造）上有优势，更在稀土这个上游卡点上有近乎垄断的地位。</strong> 这会让未来五年的机器人竞赛，带上强烈的地缘政治色彩——它不只是 AI 实验室之间的竞赛，更是国家供应链能力之间的竞赛。</li>
+</ol>
+<h3>5.4 把稀土纳入预测，意味着什么</h3>
+<p>很多纯技术乐观主义者，会低估这一章的分量。但我认为：<strong>机器人的未来，一半由神经网络决定，另一半由矿物和工厂决定。</strong> 一个再聪明的 VLA 模型，如果造不出足够便宜的电机来执行它，也只是 GitHub 上的一行代码。</p>
+<p><strong>未来五年，决定机器人格局的，不只是哪个实验室的模型最强，还有哪个国家的供应链最完整。</strong> 这是"Situational Awareness"式叙事里最容易被忽略、却可能最具决定性的变量。</p>
+<hr>
+<h2>第六章：时间线 —— 我对 2025-2030 的逐年预测</h2>
+<p>把以上判断收敛成一条具体的时间线。我会标注每个预测的置信度。</p>
+<h3>2025 —— 范式确立之年（高置信度，正在发生）</h3>
+<ul>
+<li>VLA 成为机器人学习的标准范式，动作 + flow matching 成为高精度操作主流。</li>
+<li>第一批"会泛化"的操作策略出现：能处理没见过的物体和场景，但成功率还不够高（70-90%）。</li>
+<li>UMI 类便携采集器开始被严肃用于规模化采数据。</li>
+<li>人形机器人在工厂里做<strong>结构化、重复性</strong>任务（搬运、上下料）的真实试点铺开。</li>
+<li>稀土出口管制正式成为大国博弈筹码。</li>
+</ul>
+<h3>2026 —— 双系统与数据飞轮启动（高置信度）</h3>
+<ul>
+<li>System 1 / System 2 分层架构成为 SOTA 标配。</li>
+<li>"采集器军团"模式兴起：分布式众包采集第一人称操作数据。</li>
+<li>智能眼镜的 egocentric 数据，开始正式进入机器人训练管线。</li>
+<li>工厂部署从"试点"走向"小规模量产线"，单一场景下机器人开始产生正向 ROI。</li>
+<li>触觉传感开始被认真集成进灵巧手。</li>
+</ul>
+<h3>2027 —— 世界模型改变游戏（中高置信度）</h3>
+<ul>
+<li>Action-conditioned 世界模型成熟，合成数据占训练数据比例突破 50%。</li>
+<li>视频生成与机器人世界模型技术收敛。</li>
+<li>"触觉基础模型"成为新热点，VLTA 范式出现。</li>
+<li>人形机器人 BOM 成本降到 $3万-5万区间。</li>
+<li>第一批机器人在<strong>半结构化</strong>环境（仓库、零售后仓）规模化工作。</li>
+<li>西方启动大规模稀土加工自主化投资（但产能要到 2030 后才显现）。</li>
+</ul>
+<h3>2028 —— 泛化涌现拐点（中置信度，关键之年）</h3>
+<ul>
+<li>领先公司的真实交互数据跨过 ~10^7-10^8 轨迹量级，<strong>机器人涌现出强跨任务泛化</strong>——这是机器人的"GPT-3.5 时刻"。</li>
+<li>灵巧手随触觉成熟进入精细操作场景（装配、简单烹饪）。</li>
+<li>"智能眼镜 → 机器人数据"成为成熟产业管线。</li>
+<li>人形机器人开始进入<strong>受控的商业服务场景</strong>（仓储、清洁、部分零售）。</li>
+<li>数据飞轮领先者拉开与追随者的代际差距。</li>
+</ul>
+<h3>2029 —— 商业化临界点（中置信度）</h3>
+<ul>
+<li>量产人形机器人 BOM 降到 $2万-3万，年化拥有成本逼近人工成本线。</li>
+<li>通用操作策略在多数日常任务上达到可商用可靠性（&gt;95%）。</li>
+<li>机器人开始走出工厂仓库，进入<strong>部分商业和家庭早期场景</strong>（高端家庭、养老护理试点）。</li>
+<li>稀土供应成为制约西方产能扩张的现实硬约束，<strong>无稀土电机进入小批量应用</strong>。</li>
+</ul>
+<h3>2030 —— 物理智能的"GPT-4 时刻"（中低置信度，但方向确信）</h3>
+<ul>
+<li>通用机器人具备<strong>强泛化 + 高可靠 + 可接受成本</strong>三件套，规模化部署成为现实。</li>
+<li>全球人形机器人年产能进入<strong>百万级，并指向千万级</strong>。</li>
+<li>物理世界的劳动力市场，开始感受到第一波真实冲击（先是结构化体力劳动）。</li>
+<li>稀土与供应链，成为决定各国机器人产能上限的<strong>首要约束</strong>。</li>
+<li><strong>回望 2030，我们会像今天回望 2020 看 GPT-3 一样，清晰地看到这是物理智能拐点的年份。</strong></li>
+</ul>
+<hr>
+<h2>第七章：我最高级别的判断（The Bottom Line）</h2>
+<p>如果你只能记住这篇文章的几句话，记住这些：</p>
+<p><strong>1. 这是真的，而且比你想的近。</strong> 通用机器人不是科幻，是一条正在被铺设的工程曲线。2030 年的世界，会有真实的、有用的、买得起的通用机器人。怀疑论者会像 2020 年说"语言模型只是随机鹦鹉"的人一样，被现实打脸。</p>
+<p><strong>2. 瓶颈不在大脑，在身体和供应链。</strong> 模型已经足够聪明。真正的战场在<strong>数据飞轮、灵巧手的触觉、和稀土供应链</strong>。押注算法的人会发现，赢家是那些把数据、硬件、供应链整合起来的人。</p>
+<p><strong>3. 数据是新石油，飞轮是新油田。</strong> 谁先转动"部署→采数→变强→再部署"的飞轮，谁就进入数据复利，赢家通吃。这个飞轮，而非任何单点技术，是真正的护城河。</p>
+<p><strong>4. 触觉是被低估的半个智能。</strong> 智能的最后一厘米在指尖。看好触觉传感和 VLTA 的人，看到了别人没看到的东西。</p>
+<p><strong>5. Scaling Law 在物理世界依然成立，但规则变了。</strong> 竞争从"算力"变成"数据飞轮 × 任务覆盖 × 本体数量"。这是一场新游戏。涌现的拐点，藏在 10^7-10^8 条真实轨迹的某处，大约在 2028 年。</p>
+<p><strong>6. 别忘了矿和电机。</strong> 机器人的未来，一半是神经网络，一半是钕铁硼。稀土加工的近乎垄断，会让这场竞赛带上不可回避的地缘政治色彩。<strong>控制稀土的，握着机器人产能的咽喉。</strong> 这是技术乐观主义叙事里最大的盲点。</p>
+<p><strong>7. 这是一场国家级竞赛，不只是公司级竞赛。</strong> 因为它同时需要顶尖 AI、完整制造业供应链、和稀土加工能力——很少有玩家三者兼备。这决定了未来五年机器人的版图，会沿着"AI 能力 × 供应链完整度"两个轴展开。</p>
+<hr>
+<h2>尾声：把智能装进身体</h2>
+<p>过去十年，人类做的事，是把智能从无到有地创造出来——装进数据中心，让它读完了人类写下的一切。</p>
+<p>接下来五年，人类要做的事，是把这份智能<strong>装进身体</strong>，让它走进物理世界，去搬、去抓、去做、去改变原子的排列。</p>
+<p>这是一件比创造智能本身更重的事。因为一旦智能有了身体，它就不再只是回答问题——它开始<strong>改变世界</strong>。</p>
+<p>我们正站在那个门口。门后面，是一个机器开始大规模承担人类体力劳动的世界。它会创造巨大的丰裕，也会带来深刻的冲击——就业、地缘、安全、和我们对"劳动"本身意义的理解。</p>
+<p>无论你为它兴奋还是忧虑，有一件事是确定的：</p>
+<p><strong>未来五年，决定权不在远方，就在那些此刻正在解决数据、灵巧手、和稀土问题的人手里。</strong></p>
+<p>历史不会等待。具身智能的时代，已经发车了。</p>
+<hr>
+<p><em>写于 2026 年。这是一份判断书，不是预言。预测会错，但方向不会——智能正在获得身体，而这将是我们这代人见证的、继语言模型之后最重要的技术拐点。</em></p>
+      <div class="ea-foot">The Embodiment Awakening · 2026 · a judgment call, not a prophecy</div>
+    </div>
+  </div>
+</section>
+  <script>
+(function(){
+  var root=document.currentScript.closest('.ea-root')||document;
+  var tabs=root.querySelectorAll('.ea-tab');
+  var panels=root.querySelectorAll('.ea-panel');
+  var bar=root.querySelector('.ea-progress');
+  function show(id){
+    panels.forEach(function(p){p.classList.toggle('active',p.id===id);});
+    tabs.forEach(function(t){var on=t.dataset.tab===id;
+      t.classList.toggle('active',on);t.setAttribute('aria-selected',on?'true':'false');});
+    window.scrollTo({top:0,behavior:'instant' in window?'instant':'auto'});
+    if(location.hash.slice(1)!==id) history.replaceState(null,'','#'+id);
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){show(t.dataset.tab);});});
+  function onScroll(){
+    var h=document.documentElement;
+    var max=h.scrollHeight-h.clientHeight;
+    bar.style.width=(max>0?(h.scrollTop/max*100):0)+'%';
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+  var init=location.hash.slice(1);
+  if(init && root.querySelector('#'+CSS.escape(init))) show(init);
+})();
+</script>
+</div>

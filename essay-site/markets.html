@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Public-Markets Map · The Embodiment Awakening III</title>
+<meta name="description" content="Part III: each technical thesis mapped to listed companies — a barbell of data/verification and actuator choke points (reducers, roller screws, magnets, grinding machines), a consolidated ticker table, and a quarterly dashboard. Not investment advice.">
+<style>
+:root{
+  --bg:#faf8f4; --fg:#1c1b19; --muted:#6b6760; --rule:#e4ded3;
+  --accent:#8a5a2b; --link:#9a3b1f; --max:46rem;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font-family:Georgia,"Songti SC","Noto Serif CJK SC",ui-serif,serif;
+  font-size:19px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+.wrap{display:grid;grid-template-columns:1fr;max-width:74rem;margin:0 auto;padding:0 1.25rem}
+@media(min-width:1100px){
+  .wrap{grid-template-columns:16rem minmax(0,var(--max));gap:3.5rem;justify-content:center}
+}
+nav.toc{display:none}
+@media(min-width:1100px){
+  nav.toc{
+    display:block;position:sticky;top:0;align-self:start;
+    height:100vh;overflow-y:auto;padding:3.5rem 0 3rem;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC",sans-serif;
+    font-size:13.5px;line-height:1.5;
+  }
+  nav.toc .toc-title{text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-size:11px;margin-bottom:1rem}
+  nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:.2rem 0;border-left:2px solid transparent;padding-left:.75rem}
+  nav.toc a:hover{color:var(--fg)}
+  nav.toc a.lvl3{padding-left:1.6rem;font-size:12.5px;opacity:.85}
+}
+article{padding:3.5rem 0 6rem;max-width:var(--max)}
+header.masthead{border-bottom:1px solid var(--rule);padding-bottom:1.75rem;margin-bottom:2.5rem}
+.topbar{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1rem;gap:1rem;flex-wrap:wrap}
+.kicker{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;text-transform:uppercase;letter-spacing:.18em;font-size:12px;color:var(--accent)}
+.langswitch{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:12.5px}
+.langswitch a{color:var(--muted);text-decoration:none;padding:.1rem .35rem}
+.langswitch a.active{color:var(--fg);font-weight:700;border-bottom:2px solid var(--accent)}
+.langswitch a:hover{color:var(--fg)}
+.langswitch .navsep{color:var(--rule);padding:0 .2rem}
+h1{font-size:2.5rem;line-height:1.18;margin:.2rem 0 .6rem;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:1.15rem;font-style:italic;margin:0}
+.byline{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;color:var(--muted);margin-top:1.4rem}
+.byline a{color:var(--link)}
+h2{font-size:1.65rem;line-height:1.25;margin:3.2rem 0 1rem;padding-top:1rem;letter-spacing:-.005em}
+h3{font-size:1.25rem;margin:2.2rem 0 .8rem;color:#2c2a26}
+h4{font-size:1.05rem;margin:1.6rem 0 .6rem;color:var(--muted);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+p{margin:1.1rem 0}
+strong{font-weight:700}
+a{color:var(--link);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:.06em}
+hr{border:0;border-top:1px solid var(--rule);margin:3rem 0}
+blockquote{margin:1.8rem 0;padding:.4rem 0 .4rem 1.4rem;border-left:3px solid var(--accent);color:#3a352d;font-style:italic;font-size:1.08rem}
+ul,ol{margin:1.1rem 0;padding-left:1.5rem}
+li{margin:.45rem 0}
+li.cont{list-style:none;margin-left:-.4rem;color:var(--muted);font-size:.96em}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86em;background:#efeae0;padding:.1em .35em;border-radius:3px}
+pre.block{background:#1c1b19;color:#e8e2d6;padding:1.2rem 1.4rem;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.5;margin:1.8rem 0}
+pre.block code{background:none;color:inherit;padding:0;font-size:inherit}
+.tablewrap{overflow-x:auto;margin:1.8rem 0}
+table{border-collapse:collapse;width:100%;font-size:.9rem;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC",sans-serif}
+th,td{text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--accent);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+footer{border-top:1px solid var(--rule);margin-top:4rem;padding-top:1.5rem;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;color:var(--muted)}
+footer a{color:var(--link)}
+::selection{background:#e9d9c2}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc">
+  <div class="toc-title">Part III · Markets</div>
+  <a class="lvl3" href="#sec-each-technical-thesis-mapped-to-where-value-accrues-expressed-through-listed-companies-1">Each technical thesis mapped to where value accrues — expressed through listed companies</a>
+<a class="lvl2" href="#sec-0-the-framework-a-barbell-not-a-home-run-5">0. The framework: a barbell, not a home run</a>
+<a class="lvl2" href="#sec-1-video-hours-scale-the-planner-and-the-judge-corpus-owners-compute-18">1. Video hours scale the planner and the judge → corpus owners &amp; compute</a>
+<a class="lvl2" href="#sec-2-force-is-the-scarce-label-the-middle-layer-is-force-grounding-sensing-28">2. Force is the scarce label; the middle layer is force-grounding → sensing</a>
+<a class="lvl2" href="#sec-3-the-planner-cerebellum-split-the-interface-is-the-new-os-edge-compute-the-logging-tail-37">3. The planner–cerebellum split; the interface is the new OS → edge compute &amp; the logging tail</a>
+<a class="lvl2" href="#sec-4-the-world-model-is-the-gym-training-environments-collect-rent-the-aws-of-robot-rl-45">4. The world model is the gym; training environments collect rent → the AWS of robot RL</a>
+<a class="lvl2" href="#sec-5-actuators-are-this-cycle-s-hbm-reducers-screws-magnets-machines-51">5. Actuators are this cycle's HBM → reducers, screws, magnets, machines</a>
+<a class="lvl2" href="#sec-6-the-corpus-shapes-the-body-transparency-is-a-data-moat-hands-the-qdd-complex-62">6. The corpus shapes the body; transparency is a data moat → hands &amp; the QDD complex</a>
+<a class="lvl2" href="#sec-7-autonomy-s-boundary-cheap-verification-the-verification-layer-70">7. Autonomy's boundary = cheap verification → the verification layer</a>
+<a class="lvl2" href="#sec-8-integrators-the-exception-clause-only-77">8. Integrators: the exception clause only</a>
+<a class="lvl2" href="#sec-9-consolidated-ticker-table-86">9. Consolidated ticker table</a>
+<a class="lvl2" href="#sec-10-dashboard-quarterly-action-linked-89">10. Dashboard — quarterly, action-linked</a>
+</nav>
+<article>
+<header class="masthead">
+  <div class="topbar">
+    <span class="kicker">The Embodiment Awakening · 2025–2030</span>
+    <span class="langswitch"><a href="index.html">I · Roadmap</a><a href="frontiers.html">II · Frontiers</a><a href="markets.html" class="active">III · Markets</a><a href="critique.html">IV · Critique</a><span class="navsep">·</span><a href="zh.html">中文</a></span>
+  </div>
+  <h1>The Public-Markets Map</h1>
+  <p class="sub">Each technical thesis mapped to where value accrues — expressed through listed companies. Research analysis, not investment advice.</p>
+  <div class="byline">Part III of IV · 2026 · research analysis, not investment advice</div>
+</header>
+<h1>The Public-Markets Map</h1>
+<h3 id="sec-each-technical-thesis-mapped-to-where-value-accrues-expressed-through-listed-companies-1">Each technical thesis mapped to where value accrues — expressed through listed companies</h3>
+<p><em>Companion to the roadmap. Public-tradable focus; tickers throughout and consolidated in the final table. This is research analysis, <strong>not investment advice</strong> — names are exposure vectors, not recommendations.</em></p>
+<blockquote>The technology dictates the capital structure. If the model layer converges and open-sources, there is no moat in the brain — the value migrates to the two ends of the barbell: the <strong>data/verification</strong> that feeds the recipe, and the <strong>actuator supply-chain choke points</strong> that no amount of software can conjure. This is the map of those two ends.</blockquote>
+<hr>
+<h2 id="sec-0-the-framework-a-barbell-not-a-home-run-5">0. The framework: a barbell, not a home run</h2>
+<p>The technical conclusions force the structure. <strong>Model architectures converge and open-source — no durable moat at the model layer.</strong> Integrators then get squeezed from both sides — component pricing power below, software/data rent above (the Android-OEM margin script). Therefore, build a <strong>barbell</strong>:</p>
+<ul>
+<li><strong>One end — data &amp; verification infrastructure:</strong> the recipe's fuel and its examiner — ego capture, auto-labeling pipelines, force/tactile sensing, machine-vision QC.</li>
+<li><strong>Other end — actuator supply-chain choke points:</strong> precision reducers, planetary roller screws, magnets, and the grinding machines behind them — precision-bound, slow to expand, concentrated.</li>
+<li><strong>The middle — integrators — only by exception,</strong> when a fleet is provably a data asset.</li>
+</ul>
+<p>Two structural notes before the mapping:</p>
+<ol>
+<li><strong>Timing convexity is asymmetric across the barbell.</strong> Component names already have non-robot revenue (industrial robots, EVs, machine tools) and get <em>re-rated</em> by humanoid volume; data/verification names are earlier and more binary.</li>
+<li><strong>Most of the pure-play excellence is listed in Shanghai / Shenzhen / Tokyo, not New York.</strong> The U.S.-listed expression of this thesis is mostly <em>indirect</em> — hyperscalers, semis, sensors.</li>
+</ol>
+<hr>
+<h2 id="sec-1-video-hours-scale-the-planner-and-the-judge-corpus-owners-compute-18">1. Video hours scale the planner and the judge → corpus owners &amp; compute</h2>
+<p>If a million hours of egocentric video buys the planner, the trajectory prior, <em>and</em> the reward model, then the scarce assets are (a) the corpus, (b) the capture device, (c) training/inference compute.</p>
+<ul>
+<li><strong>Alphabet (GOOGL)</strong> — the single most complete vertical stack on earth for this thesis: <strong>YouTube</strong> (the found-data corpus), <strong>Genie/Veo</strong> (world models), <strong>Gemini Robotics + the RT-X lineage</strong> (planner), <strong>TPUs</strong> (compute). The market prices none of it as a robotics-data position. The "Reddit moment" for video licensing is a live catalyst: when video corpora start trading like text corpora did in 2023–24, YouTube is the reserve currency.</li>
+<li><strong>Meta (META)</strong> — the two-sided expression: <strong>Reels</strong> as latent corpus, and <strong>Aria / smart glasses</strong> as the ego-capture instrument. The production finding that <em>one Aria-hour beats one teleop-hour</em> makes the glasses platform a robotics-data asset, not a consumer-gadget bet.</li>
+<li><strong>Apple (AAPL)</strong> — Vision Pro's hand tracking already produced <strong>EgoDex</strong>; the device is a per-frame SE(3) hand-pose recorder as exhaust. Apple's privacy posture makes it a dataset <em>publisher</em> rather than a data merchant; the optionality is in devices (glasses) and on-device models, not data sales.</li>
+<li><strong>NVIDIA (NVDA)</strong> <em>(first of three appearances)</em> — GR00T + Cosmos + Isaac is a bid to own the planner <em>and</em> the gym; ego-scale pretraining is GPU demand of a new flavor.</li>
+</ul>
+<p><strong>Falsifier / monitor:</strong> the ego-pretraining sample-efficiency exponent (α) decaying → de-rate the corpus thesis; the first paid video-licensing deal for robot training → re-rate it.</p>
+<hr>
+<h2 id="sec-2-force-is-the-scarce-label-the-middle-layer-is-force-grounding-sensing-28">2. Force is the scarce label; the middle layer is force-grounding → sensing</h2>
+<p>The pyramid's only force-observing layer is instrumented interaction. Force/torque and tactile sensing therefore get <strong>double-counted</strong> — once as data infrastructure (the label source), once as hardware content (per-robot BOM).</p>
+<ul>
+<li><strong>Six-axis F/T sensors</strong> — calibration-intensive, low-automation, concentrated supply; a top-risk / high-barrier node. Public pure-plays are scarce: ATI is private under <strong>Novanta (NOVT)</strong> — the cleanest listed route.</li>
+<li><strong>Tactile ("electronic skin")</strong> — a <em>category-creating</em> gap: the largest option value on the entire map and the least mature. Public exposure is mostly indirect today (sensor-material and MEMS suppliers); watch for the first listed pure-play or a major's acquisition as the category legitimizer.</li>
+<li><strong>Encoders / metrology</strong> — <strong>Renishaw (RSW.L)</strong>: precision-metrology content per joint rises with force control (dual-encoder architectures).</li>
+</ul>
+<p><strong>Monitor:</strong> the emergence of a market price for <em>force-labeled data hours</em> — the moment force labels trade at a premium, this layer re-rates.</p>
+<hr>
+<h2 id="sec-3-the-planner-cerebellum-split-the-interface-is-the-new-os-edge-compute-the-logging-tail-37">3. The planner–cerebellum split; the interface is the new OS → edge compute &amp; the logging tail</h2>
+<ul>
+<li><strong>NVIDIA (NVDA)</strong> <em>(second appearance)</em> — <strong>Jetson Thor</strong> is the default onboard brain; the S2→S1 interface standard (GR00T's ambition) is the "CUDA position" of robotics.</li>
+<li><strong>Qualcomm (QCOM)</strong> — the power-constrained second source for onboard inference.</li>
+<li><strong>The logging tail — an unpriced cross-link.</strong> A deployed robot is a data recorder — multi-camera + tactile + joint streams. Fleet logging is a new demand curve for NAND: <strong>SanDisk (SNDK)</strong> and <strong>Kioxia (285A.T)</strong> carry a robotics-side argument the market has not modeled.</li>
+<li><strong>Analog content per joint compounds</strong> — gate drivers, current sense, FOC MCUs across ~28+ actuators per humanoid, each a small analog subsystem: <strong>Texas Instruments (TXN)</strong>, <strong>Analog Devices (ADI)</strong>, <strong>Infineon (IFX.DE)</strong>, <strong>Monolithic Power (MPWR)</strong>.</li>
+</ul>
+<hr>
+<h2 id="sec-4-the-world-model-is-the-gym-training-environments-collect-rent-the-aws-of-robot-rl-45">4. The world model is the gym; training environments collect rent → the AWS of robot RL</h2>
+<ul>
+<li><strong>NVIDIA (NVDA)</strong> <em>(third appearance)</em> — <strong>Isaac/Newton</strong> (physics), <strong>Omniverse</strong> (scenes), <strong>Cosmos</strong> (neural world models): a near-monopoly on the training environment. Every cerebellum's every training run pays rent here; robot RL consumes GPUs in a different but equally gluttonous pattern than LLM training.</li>
+</ul>
+<p><strong>Falsifier:</strong> open-weight world models reaching closed-source contact fidelity → the rent compresses, and value flows back to <em>private real data</em> (§1–2).</p>
+<hr>
+<h2 id="sec-5-actuators-are-this-cycle-s-hbm-reducers-screws-magnets-machines-51">5. Actuators are this cycle's HBM → reducers, screws, magnets, machines</h2>
+<p>The hardest-evidence layer: actuators ≈ <strong>56%</strong> of core component cost; reducers <strong>30–50%</strong> of actuator cost; precision-bound capacity meeting step-function demand.</p>
+<ul>
+<li><strong>Harmonic reducers</strong> — <strong>Leaderdrive / 绿的谐波 (688017.SS)</strong>: &gt;60% China share, &gt;35% global, Tesla-qualified, at 40–60% of Japanese pricing — the classic squeeze structure (grinding-bound supply, steep demand). <strong>Harmonic Drive Systems (6324.T)</strong> — the precision/brand incumbent; slower to expand, higher ASP. <strong>Shuanghuan Transmission (002472.SZ)</strong> for planetary/RV.</li>
+<li><strong>Planetary roller screws</strong> — the single most valuable part on the robot (\$1,350–2,700 × ~14 units on Optimus ≈ <strong>19% of cost</strong>; &lt;3 µm thread error). <strong>Wuzhou New Spring (603667.SS)</strong> (~half European pricing), <strong>Hengli Hydraulic (601100.SS)</strong> (heavy-capex entry), Xinjian Transmission (pre-IPO — watch the listing), with <strong>Hiwin (2049.TW)</strong>, <strong>THK (6481.T)</strong>, <strong>NSK (6471.T)</strong>, <strong>Schaeffler / SKF (SKF-B.ST)</strong> as the incumbent screw/guide complex.</li>
+<li><strong>Magnets &amp; rare earths</strong> — <strong>JL MAG (300748.SZ / 6680.HK)</strong>, <strong>Zhongke Sanhuan (000970.SZ)</strong>; ex-China strategic premium: <strong>MP Materials (MP)</strong>, <strong>Lynas (LYC.AX)</strong>, <strong>Energy Fuels (UUUU)</strong>, <strong>Neo Performance (NEO.TO)</strong>. The <strong>November 10, 2026 cliff</strong> is the event catalyst; both branches (extension vs re-tightening) favor ex-China capacity — only the slope differs.</li>
+<li><strong>The meta choke point — grinding machines.</strong> Flexsplines and screws are ground on Swiss/Japanese precision grinders; "the machines that make the machines" are nearly unpriced as a robotics theme. Listed routes: the Japanese machine-tool / abrasives complex — <strong>DMG Mori (6141.T)</strong>, <strong>Okuma (6103.T)</strong>, <strong>Noritake (5331.T)</strong>, <strong>Disco (6146.T)</strong> adjacents; United Grinding is private.</li>
+<li><strong>Modules</strong> — <strong>Sanhua (002050.SZ)</strong>: the \$685M Optimus actuator-module order marks the component→module value migration; <strong>Tuopu (601689.SS)</strong> same pattern, with the customer-concentration risk that implies.</li>
+</ul>
+<p><strong>Monitors:</strong> harmonic/screw lead-time vs ASP divergence (squeeze confirming); Optimus 2026 landing in the <strong>50K–150K</strong> range — the supply chain's master switch.</p>
+<hr>
+<h2 id="sec-6-the-corpus-shapes-the-body-transparency-is-a-data-moat-hands-the-qdd-complex-62">6. The corpus shapes the body; transparency is a data moat → hands &amp; the QDD complex</h2>
+<p>Two original couplings, both investable:</p>
+<ul>
+<li><strong>Transparency premium</strong> — if transparent joints (QDD, tension-sensed tendons) emit force labels <em>for free</em>, fleets built on them compound a data moat. Beneficiaries: high-pole-count frameless motor makers (<strong>Kollmorgen</strong> under <strong>Regal Rexnord (RRX)</strong>; <strong>Moons' (603728.SS)</strong>), joint-torque-sensor content, and — via magnet mass per joint — §5's magnet names again.</li>
+<li><strong>Anthropomorphic hand complex</strong> — if five-finger tendon hands win for <em>data</em> reasons, content shifts to coreless micromotors (<strong>AMETEK (AME)</strong> — global top-3; Maxon and Faulhaber private), micro-screws and tendon conduits, and hand drive modules (<strong>Zhaowei (003021.SZ)</strong>). Tactile appears here a second time (fingertip force is the on-robot force-grounding port) — the double-counted, highest-option-value category on the map.</li>
+</ul>
+<p><strong>Monitor:</strong> the DoF distribution of newly launched hands (five-finger tendon share rising = corpus-shapes-body confirming; two-finger grippers sufficing commercially = de-rate).</p>
+<hr>
+<h2 id="sec-7-autonomy-s-boundary-cheap-verification-the-verification-layer-70">7. Autonomy's boundary = cheap verification → the verification layer</h2>
+<p>Self-scaling factories' first-order beneficiary is not the integrator — it is <strong>machine-vision QC</strong>, the merchant of "making the world a cheaper verifier."</p>
+<ul>
+<li><strong>Keyence (6861.T)</strong> and <strong>Cognex (CGNX)</strong> — price them as <em>verifiability infrastructure</em>, not cyclical industrials (an explicit divergence from consensus). <strong>Fanuc (6954.T) / Yaskawa (6506.T)</strong> are two-sided (displaced by humanoids vs selling into humanoid lines) — decompose by order book before owning the thesis through them.</li>
+</ul>
+<p><strong>Falsifier:</strong> end-to-end VLAs absorbing QC internally (the robot as its own judge) — itself a maturity reading on the world-model loop.</p>
+<hr>
+<h2 id="sec-8-integrators-the-exception-clause-only-77">8. Integrators: the exception clause only</h2>
+<p>Default: squeezed (the Android-OEM script). Exception: <strong>fleet = data asset.</strong> Value integrators on <em>force-labeled interaction hours per deployed robot per day × exclusivity</em>, not on hardware gross margin.</p>
+<ul>
+<li><strong>Tesla (TSLA)</strong> — fleet + captive factory scenes + vertical actuators; the hand is the ramp bottleneck and thus the tell.</li>
+<li><strong>Unitree (Shanghai IPO — watch the listing)</strong> — shipments <em>are</em> data volume; the QDD-fleet transparency argument applies to them most directly.</li>
+<li><strong>UBTech (9880.HK)</strong>, <strong>Xiaomi (1810.HK)</strong>, <strong>XPeng (9868.HK)</strong> — optionality-weighted, China-deployment-economics beneficiaries.</li>
+</ul>
+<p><strong>Tell:</strong> the first integrator to disclose <em>fleet-data KPIs</em> (autonomous-hours curves, intervention rates) instead of unit shipments is the one accounting for the right asset.</p>
+<hr>
+<h2 id="sec-9-consolidated-ticker-table-86">9. Consolidated ticker table</h2>
+<div class="tablewrap"><table><thead><tr><th>Layer</th><th>Company</th><th>Ticker</th><th>Role in thesis</th><th>Key monitor</th></tr></thead><tbody><tr><td>Corpus / compute</td><td>Alphabet</td><td>GOOGL</td><td>YouTube corpus + Genie/Veo + RT-X lineage + TPU</td><td>Video-licensing deals; α replication</td></tr><tr><td>Corpus / capture</td><td>Meta</td><td>META</td><td>Reels corpus + Aria ego-capture platform</td><td>Glasses attach to robot programs</td></tr><tr><td>Corpus / capture</td><td>Apple</td><td>AAPL</td><td>Vision Pro = hand-pose recorder (EgoDex)</td><td>Dataset releases; glasses roadmap</td></tr><tr><td>Compute / gym / edge</td><td>NVIDIA</td><td>NVDA</td><td>Cosmos/Isaac gym rent + Jetson Thor + GR00T interface</td><td>Open-weight world-model parity</td></tr><tr><td>Edge compute</td><td>Qualcomm</td><td>QCOM</td><td>Power-constrained onboard inference</td><td>Design wins</td></tr><tr><td>Storage tail</td><td>SanDisk / Kioxia</td><td>SNDK / 285A.T</td><td>Fleet logging → NAND demand</td><td>Per-robot storage content</td></tr><tr><td>Analog content</td><td>TI / ADI / Infineon / MPS</td><td>TXN / ADI / IFX.DE / MPWR</td><td>Gate drive, current sense, FOC per joint</td><td>Per-robot analog BOM</td></tr><tr><td>Sensing</td><td>Novanta (ATI)</td><td>NOVT</td><td>Six-axis F/T choke point</td><td>F/T ASP and lead times</td></tr><tr><td>Sensing / metrology</td><td>Renishaw</td><td>RSW.L</td><td>Encoders, dual-encoder force control</td><td>Encoder content per joint</td></tr><tr><td>Reducers</td><td>Leaderdrive</td><td>688017.SS</td><td>Harmonic squeeze; Tesla-qualified</td><td>Lead time vs ASP divergence</td></tr><tr><td>Reducers</td><td>Harmonic Drive Systems</td><td>6324.T</td><td>Precision incumbent</td><td>Capacity adds; humanoid mix</td></tr><tr><td>Reducers</td><td>Shuanghuan</td><td>002472.SZ</td><td>Planetary / RV</td><td>Revenue-share</td></tr><tr><td>Screws</td><td>Wuzhou New Spring</td><td>603667.SS</td><td>Roller screws at ~½ EU price</td><td>Optimus qualification news</td></tr><tr><td>Screws / guides</td><td>Hengli / Hiwin / THK / NSK / SKF</td><td>601100.SS / 2049.TW / 6481.T / 6471.T / SKF-B.ST</td><td>Incumbent linear complex</td><td>Screw capacity announcements</td></tr><tr><td>Magnets</td><td>JL MAG / Zhongke Sanhuan</td><td>300748.SZ, 6680.HK / 000970.SZ</td><td>NdFeB with Dy/Tb; Tesla chain</td><td>Export-license flow</td></tr><tr><td>Rare earths ex-China</td><td>MP / Lynas / Energy Fuels / Neo</td><td>MP / LYC.AX / UUUU / NEO.TO</td><td>Strategic-premium optionality</td><td><strong>Nov 10, 2026 cliff</strong></td></tr><tr><td>Machine tools (meta)</td><td>DMG Mori / Okuma / Disco / Noritake</td><td>6141.T / 6103.T / 6146.T / 5331.T</td><td>Grinders/abrasives behind flexsplines &amp; screws</td><td>Grinding capex announcements</td></tr><tr><td>Modules</td><td>Sanhua / Tuopu</td><td>002050.SZ / 601689.SS</td><td>Component→module migration (Optimus orders)</td><td>Order book; customer concentration</td></tr><tr><td>Motors</td><td>Regal Rexnord (Kollmorgen) / Moons'</td><td>RRX / 603728.SS</td><td>Frameless torque motors (QDD complex)</td><td>QDD design-win share</td></tr><tr><td>Hands</td><td>AMETEK / Zhaowei</td><td>AME / 003021.SZ</td><td>Coreless micromotors; hand modules</td><td>Five-finger tendon share</td></tr><tr><td>Verification</td><td>Keyence / Cognex</td><td>6861.T / CGNX</td><td>Verifiability infrastructure re-rate</td><td>Humanoid-line QC orders</td></tr><tr><td>Industrial (two-sided)</td><td>Fanuc / Yaskawa</td><td>6954.T / 6506.T</td><td>Displaced vs supplier — decompose</td><td>Humanoid-related order mix</td></tr><tr><td>Integrator (exception)</td><td>Tesla</td><td>TSLA</td><td>Fleet-as-data-asset; hand = tell</td><td>Hand yield; fleet KPIs</td></tr><tr><td>Integrator (exception)</td><td>UBTech / Xiaomi / XPeng</td><td>9880.HK / 1810.HK / 9868.HK</td><td>China deployment economics</td><td>Deployment-hours disclosures</td></tr><tr><td>Integrator (watch)</td><td>Unitree</td><td>Shanghai IPO</td><td>Transparent QDD fleet = force-data moat</td><td>Listing; shipment→data framing</td></tr></tbody></table></div>
+<hr>
+<h2 id="sec-10-dashboard-quarterly-action-linked-89">10. Dashboard — quarterly, action-linked</h2>
+<ol>
+<li><strong>α (ego sample-efficiency exponent):</strong> strengthens → overweight §1–2; decays → rotate to fleet / real-data assets.</li>
+<li><strong>World-model zero-shot on rigid contact:</strong> &gt;~80% → pull every timeline in; the NVDA gym-rent thesis strengthens.</li>
+<li><strong>Force-labeled data pricing emerges</strong> → the tactile double-count activates.</li>
+<li><strong>Harmonic / screw lead-time vs ASP:</strong> divergence widens → §5 squeeze confirmed; converges → capacity caught up, trim.</li>
+<li><strong>Nov 10, 2026:</strong> extension (gentle slope) vs tightening (steep) → adjust ex-China rare-earth weight; direction unchanged.</li>
+<li><strong>New-design hand morphology:</strong> five-finger tendon share rising → §6 activates.</li>
+<li><strong>Optimus hand yield / 50–150K landing</strong> — the supply chain's master switch.</li>
+<li><strong>First fleet-data KPI disclosure</strong> by an integrator → the exception clause activates for that name.</li>
+</ol>
+<hr>
+<p><em>Analysis, not investment advice. Tickers are exposure identifiers; no view on price or timing is expressed here — the <a href="critique.html">Critique</a> is, in large part, about why <strong>timing</strong> is the dominant risk to every line above.</em></p>
+<footer>© 2026 · A forward-looking judgment, not a prophecy. Part I · Part II · Part III.</footer>
+</article>
+</div>
+</body>
+</html>

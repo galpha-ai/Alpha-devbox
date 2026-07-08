@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Case Against This Timeline · The Embodiment Awakening III</title>
+<meta name="description" content="Part III: a red-team of the roadmap — the self-driving analogy, the reliability chasm, an assumption-by-assumption risk table, and the funding winter that can bury correct theses in the middle.">
+<style>
+:root{
+  --bg:#faf8f4; --fg:#1c1b19; --muted:#6b6760; --rule:#e4ded3;
+  --accent:#8a5a2b; --link:#9a3b1f; --max:46rem;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font-family:Georgia,"Songti SC","Noto Serif CJK SC",ui-serif,serif;
+  font-size:19px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+.wrap{display:grid;grid-template-columns:1fr;max-width:74rem;margin:0 auto;padding:0 1.25rem}
+@media(min-width:1100px){
+  .wrap{grid-template-columns:16rem minmax(0,var(--max));gap:3.5rem;justify-content:center}
+}
+nav.toc{display:none}
+@media(min-width:1100px){
+  nav.toc{
+    display:block;position:sticky;top:0;align-self:start;
+    height:100vh;overflow-y:auto;padding:3.5rem 0 3rem;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC",sans-serif;
+    font-size:13.5px;line-height:1.5;
+  }
+  nav.toc .toc-title{text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-size:11px;margin-bottom:1rem}
+  nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:.2rem 0;border-left:2px solid transparent;padding-left:.75rem}
+  nav.toc a:hover{color:var(--fg)}
+  nav.toc a.lvl3{padding-left:1.6rem;font-size:12.5px;opacity:.85}
+}
+article{padding:3.5rem 0 6rem;max-width:var(--max)}
+header.masthead{border-bottom:1px solid var(--rule);padding-bottom:1.75rem;margin-bottom:2.5rem}
+.topbar{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1rem;gap:1rem;flex-wrap:wrap}
+.kicker{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;text-transform:uppercase;letter-spacing:.18em;font-size:12px;color:var(--accent)}
+.langswitch{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:12.5px}
+.langswitch a{color:var(--muted);text-decoration:none;padding:.1rem .35rem}
+.langswitch a.active{color:var(--fg);font-weight:700;border-bottom:2px solid var(--accent)}
+.langswitch a:hover{color:var(--fg)}
+.langswitch .navsep{color:var(--rule);padding:0 .2rem}
+h1{font-size:2.5rem;line-height:1.18;margin:.2rem 0 .6rem;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:1.15rem;font-style:italic;margin:0}
+.byline{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;color:var(--muted);margin-top:1.4rem}
+.byline a{color:var(--link)}
+h2{font-size:1.65rem;line-height:1.25;margin:3.2rem 0 1rem;padding-top:1rem;letter-spacing:-.005em}
+h3{font-size:1.25rem;margin:2.2rem 0 .8rem;color:#2c2a26}
+h4{font-size:1.05rem;margin:1.6rem 0 .6rem;color:var(--muted);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+p{margin:1.1rem 0}
+strong{font-weight:700}
+a{color:var(--link);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:.06em}
+hr{border:0;border-top:1px solid var(--rule);margin:3rem 0}
+blockquote{margin:1.8rem 0;padding:.4rem 0 .4rem 1.4rem;border-left:3px solid var(--accent);color:#3a352d;font-style:italic;font-size:1.08rem}
+ul,ol{margin:1.1rem 0;padding-left:1.5rem}
+li{margin:.45rem 0}
+li.cont{list-style:none;margin-left:-.4rem;color:var(--muted);font-size:.96em}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86em;background:#efeae0;padding:.1em .35em;border-radius:3px}
+pre.block{background:#1c1b19;color:#e8e2d6;padding:1.2rem 1.4rem;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.5;margin:1.8rem 0}
+pre.block code{background:none;color:inherit;padding:0;font-size:inherit}
+.tablewrap{overflow-x:auto;margin:1.8rem 0}
+table{border-collapse:collapse;width:100%;font-size:.9rem;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC",sans-serif}
+th,td{text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--accent);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+footer{border-top:1px solid var(--rule);margin-top:4rem;padding-top:1.5rem;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;color:var(--muted)}
+footer a{color:var(--link)}
+::selection{background:#e9d9c2}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc">
+  <div class="toc-title">Part IV · Critique</div>
+  <a class="lvl3" href="#sec-the-assumptions-most-likely-to-fail-the-timelines-most-likely-to-slip-and-the-self-driving-shaped-hole-in-the-middle-of-the-decade-1">The assumptions most likely to fail, the timelines most likely to slip, and the self-driving-shaped hole in the middle of the decade</a>
+<a class="lvl2" href="#sec-0-the-base-rate-you-should-be-anchored-to-4">0. The base rate you should be anchored to</a>
+<a class="lvl2" href="#sec-1-the-log-linear-law-is-a-pessimistic-law-and-the-roadmap-cites-it-as-good-news-16">1. The log-linear law is a pessimistic law (and the roadmap cites it as good news)</a>
+<a class="lvl2" href="#sec-2-the-factorization-may-not-factor-24">2. The factorization may not factor</a>
+<a class="lvl2" href="#sec-3-force-grounding-may-never-scale-the-middle-layer-as-permanent-bottleneck-31">3. Force-grounding may never scale — the middle layer as permanent bottleneck</a>
+<a class="lvl2" href="#sec-4-the-world-model-as-gym-the-single-point-of-failure-restated-adversarially-35">4. The world model as gym: the single point of failure, restated adversarially</a>
+<a class="lvl2" href="#sec-5-unit-economics-the-safety-driver-trap-transposed-42">5. Unit economics: the safety-driver trap, transposed</a>
+<a class="lvl2" href="#sec-6-hardware-cost-floors-not-cost-curves-46">6. Hardware: cost floors, not cost curves</a>
+<a class="lvl2" href="#sec-7-the-timing-table-roadmap-vs-self-driving-adjusted-55">7. The timing table: roadmap vs. self-driving-adjusted</a>
+<a class="lvl2" href="#sec-8-who-burns-in-the-valley-59">8. Who burns in the valley</a>
+<a class="lvl2" href="#sec-9-steel-manning-back-why-this-cycle-could-beat-the-base-rate-70">9. Steel-manning back: why this cycle could beat the base rate</a>
+<a class="lvl2" href="#sec-10-what-would-falsify-this-critique-79">10. What would falsify this critique</a>
+</nav>
+<article>
+<header class="masthead">
+  <div class="topbar">
+    <span class="kicker">The Embodiment Awakening · 2025–2030</span>
+    <span class="langswitch"><a href="index.html">I · Roadmap</a><a href="frontiers.html">II · Frontiers</a><a href="markets.html">III · Markets</a><a href="critique.html" class="active">IV · Critique</a><span class="navsep">·</span><a href="zh.html">中文</a></span>
+  </div>
+  <h1>The Case Against This Timeline</h1>
+  <p class="sub">A red-team of the roadmap — where the bet goes wrong, especially on timing.</p>
+  <div class="byline">Part IV of IV · 2026 · written against Part I</div>
+</header>
+<h1>Red Team: What Breaks, What's Late, Who Burns</h1>
+<h3 id="sec-the-assumptions-most-likely-to-fail-the-timelines-most-likely-to-slip-and-the-self-driving-shaped-hole-in-the-middle-of-the-decade-1">The assumptions most likely to fail, the timelines most likely to slip, and the self-driving-shaped hole in the middle of the decade</h3>
+<p><em>Part IV of the series — a standalone companion whose job is to argue against the other three. Where the roadmap says "probably," this document asks "what if not, and who dies while we find out."</em></p>
+<hr>
+<h2 id="sec-0-the-base-rate-you-should-be-anchored-to-4">0. The base rate you should be anchored to</h2>
+<p>Before any object-level critique, the reference class. <strong>Self-driving, 2016:</strong> the architecture had converged (deep perception + planning), the demos were spectacular, the scaling story was coherent ("fleet miles are the corpus"), and the timelines were unanimous — full autonomy by 2019–2021. What actually happened:</p>
+<ul>
+<li><strong>Argo AI</strong>, ~\$3.6B in, shut down (2022).</li>
+<li><strong>Cruise</strong>, ~\$10B+ in, defunded (2024).</li>
+<li><strong>Uber ATG</strong> sold, <strong>Drive.ai</strong> acqui-hired, the trucking SPACs went to approximately zero.</li>
+<li>Cumulative sector investment <strong>north of \$100B for roughly one scaled Western winner</strong> — Waymo, <em>sixteen years</em> from founding to meaningful commercial scale — plus a Chinese cohort that survived on different economics.</li>
+</ul>
+<p>The technology <em>was</em> real. The direction <em>was</em> right. <strong>Nearly everyone who bet on the 2016 timeline was destroyed anyway.</strong></p>
+<p>The uncomfortable structural rhyme: robotics 2026 has converged architecture, spectacular demos, a coherent scaling story ("ego video is the corpus"), unanimous timelines, and <strong>multi-billion-dollar rounds at pre-revenue valuations</strong> (Figure at ~\$39B; Apptronik's \$935M Series A). The roadmap's own forecasts cluster in 2027–2030. The self-driving-adjusted prior says: <strong>add three to seven years to every consumer-facing claim, and assume the capital markets will not wait that long politely.</strong></p>
+<p>The rest of this document works out where the roadmap is most exposed, in descending order of how much of the thesis each failure takes down.</p>
+<hr>
+<h2 id="sec-1-the-log-linear-law-is-a-pessimistic-law-and-the-roadmap-cites-it-as-good-news-16">1. The log-linear law is a pessimistic law (and the roadmap cites it as good news)</h2>
+<p>The strongest evidence for the ego bet — that each doubling of ego hours yields a <em>constant</em> improvement — deserves a hostile reading, because <strong>log-linear scaling is exponentially expensive.</strong></p>
+<p>If a doubling buys a constant gain <code>δ</code> (in success-rate points, or log-odds), then closing a capability gap <code>Δ</code> requires <code>Δ/δ</code> doublings — a data multiplier of</p>
+<pre class="block"><code>   H_required / H_0  =  2^(Δ/δ)</code></pre>
+<p>Plug in generous numbers. From an ~85% demo-grade operating point to the ~99.9% that <em>unsupervised</em> commercial operation demands is a large <code>Δ</code> in log-odds terms. At <code>δ ≈ 2–3</code> points per doubling near the current operating point — and <code>δ</code> always <em>decays</em> as you climb — you need not one or two more doublings but <strong>five to ten</strong>: <code>10^5</code> hours becoming <code>10^7–10^8</code> hours. Collectible? Perhaps — a million devices × a hundred hours each. But then the second curse activates.</p>
+<p><strong>The double curse of the tail.</strong> The failures that separate demo from product are long-tail <em>contact</em> events — in-hand slip recovery, deformable jams, tolerance-stack surprises. These events are (a) <strong>rare in natural video</strong> — people film cooking, not the 0.1% of cooking where the jar lid cross-threads — and (b) <strong>invisible in video even when present</strong>, because they are <em>force</em> phenomena, which the roadmap itself proves are latent in pixels. So the tail is simultaneously <strong>under-sampled and under-observed</strong>: the effective <code>δ</code> for exactly the capability that matters commercially is far below the headline <code>δ</code> measured on the distribution's body. This is precisely the shape of self-driving's failure — disengagement rates improved log-linearly on fleet miles until the residual failures stopped being i.i.d., and then data scaling became a comically inefficient instrument against structured rare events.</p>
+<p><strong>What this does to the thesis:</strong> it does not falsify the ego bet — it <strong>re-prices</strong> it. Ego video takes you from 60% to 90% cheaply (real, valuable, sufficient for fenced deployments with human fallback). It does <em>not</em> take you from 99% to 99.99%. The roadmap's own planner-overhang prediction is the tell: the overhang is not a transitional curiosity — <strong>it may be the steady state of the decade</strong>, planners that know everything paired with hands that still fumble the tail. If so, the "robot ChatGPT moment ~2029–30 at ~65%" line is the single most likely forecast entry to be wrong, and wrong in the expensive direction.</p>
+<hr>
+<h2 id="sec-2-the-factorization-may-not-factor-24">2. The factorization may not factor</h2>
+<p>The mathematical heart of the pyramid is the claim that the transition model factors,</p>
+<pre class="block"><code>   p(s' | s, a)  =  ∫ p(s' | w) · p(w | a, M) dw</code></pre>
+<p>— <em>world-given-contact</em> is embodiment-invariant; <em>contact-given-action</em> is morphology-specific and low-dimensional. The critique: <strong>the human hand may not admit a low-dimensional retargeting map.</strong> Human manipulation exploits continuous compliance (soft finger pads deforming around geometry), skin friction fields, and <em>unconscious sub-perceptual force modulation</em> at millisecond timescales — none of which live in the wrist-pose + MANO-parameter action space that current unified representations use.</p>
+<p>If a meaningful fraction of human competence is smuggled through channels that the retargeting map <code>φ: A_human → A_robot</code> cannot express, then ego pretraining transfers the <strong>plan</strong> and silently drops the <strong>skill</strong> — and the measured <code>α &gt; 0</code> is real but <strong>tops out early</strong>, exactly the saturation the roadmap lists as its own falsifier. The honest status: <strong><code>α</code>'s asymptotic behavior is unmeasured. Everyone is extrapolating from the cheap part of the curve.</strong> (History rhyme: imitation-learning-from-video results in 2018–2022 repeatedly showed early transfer gains that saturated; the field's memory of this is suspiciously short.)</p>
+<p><strong>Second-order version — entanglement.</strong> At <code>10^6+</code> hours, the statistically efficient thing for a large model to do is exploit human-hand-specific visual shortcuts, because they are everywhere in the corpus. Preventing entanglement is a permanent adversarial tax paid in augmentation and architecture — and every point of that tax reduces effective <code>α</code>.</p>
+<hr>
+<h2 id="sec-3-force-grounding-may-never-scale-the-middle-layer-as-permanent-bottleneck-31">3. Force-grounding may never scale — the middle layer as permanent bottleneck</h2>
+<p>The roadmap's own refinement — <em>the middle layer's true job is force-grounding; the KPI is force-labeled hours</em> — is also its soft underbelly. Kinematic ego data scales because a consumer device (Vision Pro, Aria) emits it <strong>as exhaust</strong>. <strong>No consumer device emits force.</strong> Tactile sensors remain fragile, drifty, expensive, and calibration-hungry; instrumented gloves are lab equipment; and the elegant answer — transparent QDD fleets as free force sensors — only produces <em>robot-side</em> force data, which is exactly the scarce, deployment-gated currency the pyramid was designed to economize.</p>
+<p>If force-labeled hours grow <strong>linearly</strong> (ops-limited) while kinematic hours grow <strong>exponentially</strong> (device-limited), the pyramid becomes a very tall structure standing on a very thin middle, and the binding constraint of the entire program is a <strong>sensor-hardware problem the ML community keeps assuming someone else will solve.</strong> The tactile "electronic skin" line in the Public-Markets Map is simultaneously the highest-option-value and the least-mature entry — that combination is a warning as much as an opportunity.</p>
+<hr>
+<h2 id="sec-4-the-world-model-as-gym-the-single-point-of-failure-restated-adversarially-35">4. The world model as gym: the single point of failure, restated adversarially</h2>
+<p>The roadmap flags contact fidelity (call it <strong>F2</strong>) as its "single correlated risk" and then builds the flywheel on it anyway. State the adversarial case plainly:</p>
+<ul>
+<li><strong>The hybrid stack</strong> (splats + physics core + video imagination + force correction) <strong>is a systems-integration bet</strong>, and systems-integration bets in ML have a poor record against bitter-lesson monocultures — <em>but</em> the monoculture (pure video scaling) provably cannot ground force. So the field may spend <strong>2026–2029 caught between an architecture that can't scale (hybrid, engineering-heavy) and a scaler that can't ground (video).</strong> That deadlock <em>is</em> the 1–2 year slip the roadmap prices at the margin; it could be a <strong>4–5 year slip.</strong></li>
+<li><strong>The worse-than-nothing regime.</strong> A world model at <strong>F1.5</strong> — visually convincing, dynamically subtly wrong — used as a gym injects <em>systematic</em> physics bias into every cerebellum trained inside it. Amplification gain goes negative; <strong>the flywheel spins backward while every dashboard shows data volume going up.</strong> Self-driving analog: simulation-validated stacks that fell over on real long-tails. The failure is insidious precisely because synthetic-data pipelines report <em>throughput, not truth.</em></li>
+</ul>
+<hr>
+<h2 id="sec-5-unit-economics-the-safety-driver-trap-transposed-42">5. Unit economics: the safety-driver trap, transposed</h2>
+<p>Self-driving's capability story was ruined less by capability than by <strong>the supervision ratio.</strong> A safety driver per vehicle deletes the economics; the entire commercial question compressed into "when does one remote operator supervise N &gt; 10 vehicles."</p>
+<p>Robotics imports the same trap with new names. Current humanoid deployments run with <strong>teleop fallback and near-1:1 human supervision</strong> — the \$25/robot-hour headline quietly excludes the supervising human, the deployment engineers, and the intervention infrastructure. The commercial crossing is not "the robot works"; it is <strong>interventions-per-hour falling far enough that one operator covers a fleet.</strong> No public deployment discloses this number today, which — per the base rate — is itself the tell (AV companies also stopped publishing disengagement rates when the numbers stopped flattering). Add: <strong>cycle-time parity</strong> (a robot at 0.5× human takt violates line economics even at 99% reliability); <strong>insurance and liability</strong> pricing for mobile manipulators around humans (unpriced; one serious injury event resets the regulatory clock the way Uber–Tempe did for AVs in 2018); and battery/duty-cycle realities. <strong>The roadmap's forecast contains no supervision-ratio line, and it should — that is the variable the entire commercial timeline actually loads on.</strong></p>
+<hr>
+<h2 id="sec-6-hardware-cost-floors-not-cost-curves-46">6. Hardware: cost floors, not cost curves</h2>
+<p>The roadmap treats the BOM as a declining curve. The critique: several terms have <strong>floors.</strong></p>
+<ul>
+<li><strong>Precision grinding</strong> (flexsplines, roller screws at &lt;3 µm) is capex- and skills-bound; harmonic-reducer capacity historically expands at <em>single-digit multiples per half-decade</em>, not the 10–30× a 2028 humanoid ramp implies. The Public-Markets Map's "squeeze confirmation" (lead-time/ASP divergence) is, read differently, <strong>the ramp failing.</strong></li>
+<li><strong>The rare-earth term.</strong> The sub-\$20K humanoid is, by the roadmap's own arithmetic (~\$46K → ~\$131K ex-China), a bet on Chinese magnet policy. The <strong>Nov 10, 2026 cliff</strong> has a ~40% branch where magnet prices spike <em>into</em> the ramp.</li>
+<li><strong>The QDD coupling cuts both ways.</strong> The learning-optimal actuator is the magnet-heaviest one, so any magnet shock <em>specifically taxes the architecture the ML roadmap prefers</em> — a correlated hardware-software risk the market treats as two separate stories.</li>
+</ul>
+<p><strong>Net:</strong> the realistic 2028 BOM may stall in the <strong>\$30–45K band</strong>, which quietly deletes most home-robot and much service-sector TAM math for the rest of the decade, leaving <strong>industrial cells — the segment that least needs a humanoid form factor.</strong></p>
+<hr>
+<h2 id="sec-7-the-timing-table-roadmap-vs-self-driving-adjusted-55">7. The timing table: roadmap vs. self-driving-adjusted</h2>
+<div class="tablewrap"><table><thead><tr><th>Capability</th><th>Roadmap</th><th>Bear-but-fair</th><th>SDC-adjusted</th><th>Note</th></tr></thead><tbody><tr><td>Ego-pretraining α replicated</td><td>2026 [high]</td><td>2026</td><td>2026</td><td>Safest claim in the roadmap</td></tr><tr><td>Planner overhang visible</td><td>2027–28</td><td>2027</td><td>2027</td><td>The critique <em>strengthens</em> this one</td></tr><tr><td>World-model gym → production rigid-task cerebella</td><td>2027–28 (~60%)</td><td>2029</td><td>2030–31</td><td>F2-deadlock scenario</td></tr><tr><td>Skill-acquisition cost crossover</td><td>2028 (~55%)</td><td>2030</td><td>2032+</td><td>Gated by §3 + §4 jointly</td></tr><tr><td>Fenced "robot ChatGPT" (warehouse/factory)</td><td>2029–30 (~65%)</td><td>2030–31</td><td>2032–33</td><td>And <em>fenced</em> is doing enormous work</td></tr><tr><td>Fine force-critical dexterity</td><td>not by 2030</td><td>2033+</td><td>2035+</td><td>The self-driving-class problem</td></tr><tr><td>General home robot, unsupervised</td><td>beyond horizon</td><td>2033+</td><td>2036+</td><td>The "full self-driving" of this cycle</td></tr><tr><td>Supervision ratio 1:10+</td><td><em>absent from roadmap</em></td><td>2029</td><td>2031+</td><td><strong>The commercially decisive line</strong></td></tr></tbody></table></div>
+<p><strong>The pattern to internalize:</strong> capability <em>demos</em> will keep arriving on the roadmap's schedule; <em>products</em> will arrive on the right-hand column's schedule; and <strong>the valley between those two schedules is where the capital dies.</strong></p>
+<hr>
+<h2 id="sec-8-who-burns-in-the-valley-59">8. Who burns in the valley</h2>
+<p>If the right-hand column is even half correct, the <strong>2028–2032 middle of the decade is a funding winter</strong> for everyone whose runway assumed the left column. The mortality map, by structural position:</p>
+<ul>
+<li><strong>Pre-revenue integrators without captive deployment scenes</strong> — the Cruise analog. A ~\$39B valuation requires believing the left column; the burn rate is set today, the revenue arrives on the right. Survivors attach to patient balance sheets (a carmaker's factory, a hyperscaler's treasury, a sovereign program) — the Waymo pattern. Expect the Western humanoid field of ~10 credible integrators to resolve to <strong>2–3, with at least one \$1B+ shutdown that resets sector sentiment for 18 months.</strong></li>
+<li><strong>The Chinese integrator cohort</strong> resolves differently but not more gently: dozens of companies + provincial subsidy → a price war that transfers all margin to customers and component makers — the solar/lidar/EV script, where <em>the technology wins and the equity loses.</em> Direction right, returns negative.</li>
+<li><strong>Data-ops companies</strong> ("Scale AI of atoms") get verticalized: once ego capture is device-exhaust (Meta/Apple) and labs run their own UMI fleets, third-party data ops compresses to a services margin. The window is real but <strong>closes by ~2029.</strong></li>
+<li><strong>Teleop-heavy service models</strong> are the safety-driver companies of this cycle: revenue that looks like robotics, costs that look like staffing.</li>
+<li><strong>Component names in the drawdown:</strong> the 2021-SPAC/EV-supplier rhyme — reducer, screw, and magnet equities can trade at ramp-implied multiples in 2026–27, then absorb a <strong>50–70% de-rate in 2028–29</strong> when Optimus lands at the low end of guidance, <em>even though the 2035 end-state demand is fully intact.</em> Being early is indistinguishable from being wrong at the position level; the Map's own "50–150K landing = master switch" monitor is, adversarially read, a confession that a 3× range in the key input is unresolved.</li>
+</ul>
+<p><strong>Who survives regardless:</strong> component makers with existing non-robot revenue (reducers into industrial robots, magnets into EVs, machine tools into everything) — they collect the option without paying the burn; hyperscalers, for whom this is a rounding-error R&amp;D line with corpus ownership attached; and the patient-capital labs. Notably, <strong>this surviving set is approximately the barbell the Public-Markets Map already recommends</strong> — so the critique's amendment is not to the barbell's <em>composition</em> but to its <strong>timing discipline:</strong> stagger entries on the dashboard's catalysts rather than pre-positioning for the left column, hold the pre-revenue end at option-sized weights, and treat <strong>2028–29 as the accumulation window the drawdown will create, not the harvest the roadmap promises.</strong></p>
+<hr>
+<h2 id="sec-9-steel-manning-back-why-this-cycle-could-beat-the-base-rate-70">9. Steel-manning back: why this cycle could beat the base rate</h2>
+<p>A red team that only attacks is a mood, not an analysis. Three honest disanalogies to self-driving:</p>
+<ol>
+<li><strong>Fallback is cheap.</strong> An AV failure at 70 mph is a fatality; a manipulation failure is usually a dropped object. Robotics can ship at 95% with human fallback and <strong>earn revenue while climbing the reliability curve</strong> — AVs structurally could not. This is the strongest single reason timelines here compress relative to the AV-adjusted column, and it applies precisely to the fenced deployments the roadmap forecasts first.</li>
+<li><strong>Reward density.</strong> Physical tasks verify locally and immediately (the cup is lifted or it is not); driving verifies globally and rarely (crashes are 10⁻⁶ events). RL compounds where verification is dense — the roadmap's own law — and manipulation sits on the favorable side of that law even though driving did not.</li>
+<li><strong>The environment is negotiable.</strong> AVs had to accept the world as given; factories can be re-fenced, re-lit, re-fixtured around the robot. <strong>Every dollar of environment engineering substitutes for a nine of policy reliability</strong> — a degree of freedom self-driving never had.</li>
+</ol>
+<p>Weighing both directions: <strong>the fenced-industrial claims survive the critique largely intact (perhaps +1–2 years); the open-world, home, and fine-dexterity claims take the full AV adjustment (+4–7 years);</strong> and the <em>financial</em> history rhymes regardless of the technical one, because valuations are set by the left column while cash flows arrive on the right.</p>
+<hr>
+<h2 id="sec-10-what-would-falsify-this-critique-79">10. What would falsify this critique</h2>
+<p>Symmetry demands it. This document is wrong — and the roadmap's original timelines stand — if, <strong>by end-2027:</strong></p>
+<ul>
+<li><strong>(a)</strong> a supervision ratio ≥ 1:5 is <em>publicly disclosed and audited</em> at a commercial humanoid deployment;</li>
+<li><strong>(b)</strong> the F2 zero-shot number crosses ~80% on genuinely held-out rigid-contact tasks;</li>
+<li><strong>(c)</strong> measured <code>α</code> holds constant through two further orders of magnitude of ego hours (no saturation through <code>10^7</code>); or</li>
+<li><strong>(d)</strong> a consumer device ships with per-interaction force sensing, collapsing §3.</li>
+</ul>
+<p><strong>Two of these four and the left column re-prices; all four and this document should be deleted.</strong></p>
+<hr>
+<p><em>The purpose of the roadmap is to be right about the destination. The purpose of this document is to keep the portfolio alive long enough to get there. In this asset class those are different skills — and self-driving is the proof.</em></p>
+<footer>© 2026 · A forward-looking judgment, not a prophecy. Part I · Part II · Part III.</footer>
+</article>
+</div>
+</body>
+</html>
