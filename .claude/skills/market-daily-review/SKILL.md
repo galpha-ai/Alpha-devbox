@@ -21,34 +21,55 @@ Produces the PODAAI-style TMT daily review: one screen that tells a portfolio ma
 北京时间 … / 美东时间 … | 数据来源: FMP + Robinhood + Web
 大标题: 一句话主线（谁流入谁流出、什么叙事驱动）
 
-#1 市场概览
-   主线: 2–3 句资金流向叙事
-   | 指数 | 昨收 | 今收/现价 | 变动 |  ← S&P 500, NASDAQ, SOXX(半导体), VIX
+#1 市场概览 + 全球指数联动
+   主线: 2–3 句资金流向叙事（写清与昨日主线的延续/反转）
+   全球联动表: | 地区 | 指数/标的 | 收盘 | 变动 | 备注 |
+   ← 美股: S&P 500, NASDAQ, SOXX, VIX；亚洲半导体链: 韩国 KOSPI/SK海力士/
+     三星, 日本 Nikkei/东京电子/Lasertec/Kioxia/软银, 台湾 TSMC, 中国 SMIC;
+     欧洲: ASML。亚洲时段是美股半导体的前置信号——大跌/熔断要进重大事件
 
 #2 涨跌幅排行（watchlist 内）
    涨幅前 10–12: | 排名 | 标的 | 涨跌幅 | 收盘价 | 催化剂 |
    跌幅前 10–20: 同列。催化剂一列必须诚实：查不到就写"无明确催化剂"
+   盘后(AH)/盘前时段 Top 5–12: 财报日和大新闻日必列（batch-aftermarket-quote），
+   注明是 AH/盘前价而非收盘价
 
-#3 今日重大事件（5–8 条，按重要度排序）
+#3 盘后财报与重磅活动专题（条件板块：watchlist 公司财报日/Investor Day 必写）
+   每家一节：
+   - 核心数字表: | 指标 | Actual | Cons | Beat/Miss | YoY/QoQ |
+     ← 营收 / Non-GAAP EPS / 毛利率 / 分部收入（如 DRAM/NAND、数据中心）
+   - 下季指引表: guide vs 一致预期（guide 比本季 beat/miss 更能定价）
+   - 财报要点 + 电话会要点: 管理层原话加引号并标注（用 earnings-analysis skill
+     拉 transcript；拿不到就用 PR/8-K 并注明）
+   - 股价反应: AH 涨跌 + 时间线（盘中→AH→电话会后）
+   - 对板块的传导 (read-across): 逐票列关联标的方向与逻辑
+     （如 MU beat → SK海力士/三星/WDC/STX 存储链、AVGO HBM 配套…）
+
+#4 今日重大事件（5–8 条，按重要度排序）
    事件N - 一句话标题 [重要度 X/10]
    数据: 事实 + 数字 + 来源（CNBC/Bloomberg/8-K/公司PR，给出处）
    市场解读: 与数据分开写，是推断就说是推断
 
-#4 板块逻辑（多空对照，2+2）
+#5 板块逻辑（多空对照，2+2）
    视角 A/B - Bull: …（各一段，含关键数字）
    视角 C/D - Bear: …
 
-#5 明日/今日关注点
+#6 明日/今日关注点
    5–8 条 bullet：财报（含盘前/盘后）、宏观数据、国债拍卖、产业会议、
-   期权到期、前日事件的后续确认点
+   期权到期、前日事件的后续确认点。
+   明日有 watchlist 财报时写财报前瞻: 一致预期数字（营收/EPS/关键分部 cons）+
+   市场关注的 2–3 个问题 + 期权隐含波动（earnings-analysis 的 implied move 流程）
 ```
 
 ## Data sourcing
 
 ```
-# Indexes & VIX
-mcp__FMP__indexes {endpoint: "index-quote", symbol: "^GSPC"}   # 同理 ^IXIC ^VIX
+# Indexes & VIX + 全球联动
+mcp__FMP__indexes {endpoint: "index-quote", symbol: "^GSPC"}   # 同理 ^IXIC ^VIX ^KS11(KOSPI) ^N225(Nikkei) ^TWII(台湾加权)
 mcp__FMP__quote {endpoint: "batch-quote", symbols: ["SOXX","SMH","QQQ","SPY"]}
+# 亚欧个股用 ADR/美股代码: TSM ASML SONY，或当地代码 000660.KS(SK海力士)
+# 005930.KS(三星) 8035.T(东京电子) 6920.T(Lasertec) 0981.HK(SMIC) 9984.T(软银)
+mcp__FMP__quote {endpoint: "batch-quote", symbols: ["TSM","ASML","000660.KS","8035.T", ...]}
 
 # Watchlist quotes + movers
 mcp__FMP__quote {endpoint: "batch-quote", symbols: [<watchlist>]}      # 涨跌幅排行的原料
