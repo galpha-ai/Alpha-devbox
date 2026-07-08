@@ -1,0 +1,21 @@
+[project]
+name = "quantlab"
+version = "0.1.0"
+description = "Time-series data science layer for the agentic-investing system (Polars-first)"
+requires-python = ">=3.11"
+dependencies = ["polars>=1.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+ml = ["scikit-learn>=1.4", "lightgbm>=4"]
+fm = []  # chronos-forecasting / timesfm pinned per-environment; see inv-foundation-models
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["quantlab*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

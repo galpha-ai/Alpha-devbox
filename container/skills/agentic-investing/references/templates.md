@@ -96,3 +96,33 @@ Lessons → process/lessons.md: <process-level, or "none">
 
 - 2026-07-08 (from D12): <recurring bias or workflow fix, one line>
 ```
+
+## research/monitors/<name>.md
+
+```markdown
+# Monitor: <name>
+
+Created: 2026-07-08 | For: <decision D<n> / thesis in beliefs/<entity>.md>
+Watches: <dataset + condition, e.g. "MU short interest % float crosses 8%,
+         or call OI at $130 strike doubles">
+Cadence: <daily post-close / biweekly on SI publication / quarterly>
+Data source: <inv-* skill + lake path>
+Alert action: append to events/log.md + <notify user / re-run projection>
+Retire when: <condition — every monitor has an expiry or it becomes noise>
+
+## Firing log (append-only)
+- 2026-07-15: fired — <what was observed> → <action taken / noise>
+```
+
+## Driver tree (inside beliefs/<entity>.md, for fundamental names)
+
+```markdown
+## Revenue driver tree (as of 2026-07-08, sources in lake)
+Total revenue
+├── Segment A (62% of rev, filed 10-Q) = units × ASP
+│   ├── units ← <leading indicator + lake path>  [filed/derived/assumed]
+│   └── ASP   ← <contract price series / mgmt comment>  [tag]
+└── Segment B (38%) = ...
+Forecast next Q: <point + range>, consensus <x> (as-of <date>), variant <±y%>
+Verifies on: <earnings date> — logged in calibration file
+```

@@ -10,6 +10,12 @@ store/
 data/
 logs/
 
+# quantlab build artifacts
+quantlab/rust/target/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+
 # Runtime agent state (agent definitions in agents/ are tracked)
 agents/*/workspace/
 agents/*/logs/

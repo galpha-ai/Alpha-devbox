@@ -1,0 +1,45 @@
+{
+  "tasks": [
+    {
+      "id": "l1-plan-earnings",
+      "layer": "L1",
+      "objective": "Expand the earnings-season slice of the campaign into concrete sub-problems",
+      "exec_cmd": "echo 'writing L1 plan doc'",
+      "verify_cmd": "true",
+      "depends_on": []
+    },
+    {
+      "id": "l2-download-prices",
+      "layer": "L2",
+      "objective": "Download daily prices for the watchlist",
+      "exec_cmd": "echo 'downloading prices'",
+      "verify_cmd": "true",
+      "depends_on": ["l1-plan-earnings"]
+    },
+    {
+      "id": "l2-download-filings",
+      "layer": "L2",
+      "objective": "Download the latest 10-Q filings",
+      "exec_cmd": "echo 'downloading filings'",
+      "verify_cmd": "true",
+      "depends_on": ["l1-plan-earnings"]
+    },
+    {
+      "id": "l3-event-study",
+      "layer": "L3",
+      "objective": "Run the per-ticker earnings event study",
+      "exec_cmd": "echo 'running event study'",
+      "verify_cmd": "true",
+      "max_attempts": 3,
+      "depends_on": ["l2-download-prices", "l2-download-filings"]
+    },
+    {
+      "id": "l4-verify-event-study",
+      "layer": "L4",
+      "objective": "Adversarially verify the event study: point-in-time audit, recompute headline numbers",
+      "exec_cmd": "echo 'verifying'",
+      "verify_cmd": "true",
+      "depends_on": ["l3-event-study"]
+    }
+  ]
+}

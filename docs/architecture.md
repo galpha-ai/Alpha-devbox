@@ -51,7 +51,7 @@ The **runner** is a Node.js process inside a container that stays alive across m
 - `agent-runner/src/ipc-mcp-stdio.ts`: MCP server exposed to Claude Code inside the container. Provides tools for sending messages and scheduling tasks.
 - `entrypoint.sh`: Container initialization. Reads the seed manifest from `/session`, seeds `/workspace` via git clone (gated by `.seeded`), reads seed auth secrets from run `input.json`, persists per-owner GitHub tokens for `gh`, and then launches agent-runner.
 - `gh-wrapper.sh`: Wrapper installed as `/usr/local/bin/gh`. Resolves the target repo owner from `--repo`, `GH_REPO`, or `git remote origin`, swaps in the matching GitHub App token, and delegates to the packaged GitHub CLI.
-- `skills/`: Shared Claude Code skills available to all agents, copied into each agent's `.claude/skills/` on container setup.
+- `skills/`: Shared Claude Code skills available to all agents, copied into each agent's `.claude/skills/` on container setup. Includes the `agentic-investing` decision-layer skill plus its `inv-*` data/model sub-skills; their engineering counterpart is the top-level `quantlab/` (Rust feed parsers, Polars data-science layer with no-lookahead benchmark construction, Go plan-loop orchestrator — blueprint and acceptance inspection in `quantlab/BLUEPRINT.md`, design whitepaper in `docs/whitepaper/agentic-investing-system.md`).
 
 ### Agent Definitions (`agents/`)
 
