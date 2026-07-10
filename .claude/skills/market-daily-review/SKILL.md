@@ -54,7 +54,17 @@ Produces the PODAAI-style TMT daily review: one screen that tells a portfolio ma
    视角 A/B - Bull: …（各一段，含关键数字）
    视角 C/D - Bear: …
 
-#6 明日/今日关注点
+#6 藤本信号（固定板块）
+   按 fujimoto-intraday-signal skill 对固定清单（SNDK/AMD/MRVL/INTC/TSM/
+   2330.TW/000660.KS/285A.T/005930.KS）跑 signals.py，贴信号表：
+   | 标的 | 信号 | 分值 | 触发规则 | 覆盖 | 距财报 |
+   盘前变体给美股"今日开盘"信号（缺口代理）+ 亚洲票"下一交易日"信号；
+   收盘变体用当日 30min 线复核早盘规则并生成明晨 R2 候选。
+   与上次信号的翻转（如 买入倾向→锁利）单独点名。
+   每次运行把各票当日 OHLC 追加到 reports/signals/history/<ticker>.jsonl
+   （亚洲票历史积累的唯一来源，勿省略）。
+
+#7 明日/今日关注点
    5–8 条 bullet：财报（含盘前/盘后）、宏观数据、国债拍卖、产业会议、
    期权到期、前日事件的后续确认点。
    明日有 watchlist 财报时写财报前瞻: 一致预期数字（营收/EPS/关键分部 cons）+
