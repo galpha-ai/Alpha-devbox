@@ -43,3 +43,6 @@ agents/*/logs/
 .omx/
 .gstack/
 *.local
+
+# Generated market/research reports (local artifacts from .claude/skills monitors)
+reports/
