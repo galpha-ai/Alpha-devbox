@@ -1,10 +1,10 @@
 # New bounds for gaps between consecutive primes with two and three primes between
 
-## H₂ ≤ 173,438 and H₃ ≤ 14,505,780
+## H₂ ≤ 173,438, H₃ ≤ 13,859,802, H₄ ≤ 1,120,662,828
 
 **Bill (Qingyun) Sun · GPT5.6SOL · Fable**
 
-*August 15, 2026 — research announcement; independent expert review invited*
+*August 15, 2026 (updated same day) — research announcement; independent expert review invited*
 
 ---
 
@@ -13,10 +13,10 @@
 **Theorem A.** liminf_{n→∞} (p_{n+2} − p_n) ≤ **173,438**.
 *(Previous record: 396,504, Stadlmann 2023/2025; before that 398,130, Polymath8b 2014.)*
 
-**Theorem B.** liminf_{n→∞} (p_{n+3} − p_n) ≤ **14,505,780**.
+**Theorem B.** liminf_{n→∞} (p_{n+3} − p_n) ≤ **13,859,802**.
 *(Previous record: 24,797,814, Polymath8b 2014.)*
 
-**Result C (certificate complete, tuple pending).** M₅₆,₀₀₀,₀₀₀ ≥ 16.0655 > 16, so DHL(56·10⁶, 5) holds under the same hypotheses; the resulting H₄ bound (≈ 1.19·10⁹ via the primes-past-k tuple, vs the 2014 record 1,431,556,072) awaits only the routine tuple-diameter computation.
+**Theorem C.** liminf_{n→∞} (p_{n+4} − p_n) ≤ **1,120,662,828**. *(Previous record: 1,431,556,072, Polymath8b 2014.)* Certificate M₅₆,₀₀₀,₀₀₀ ≥ 16.0655 > 16; tuple = the first 56·10⁶ primes exceeding 56·10⁶ (first 56,000,003, last 1,176,662,831; π-anchors verified against published values).
 
 ## Hypothesis chain (complete)
 
@@ -28,7 +28,7 @@ Both theorems follow from exactly three published inputs plus machine-verified c
 
 **Certificates.** M₁₅,₈₅₆ ≥ **8.013326752751** and M₉₂₃,₆₀₁ ≥ **12.006666706750**, produced by a one-dimensional product-profile engine (below) and verified in ball/interval arithmetic with outward enclosures (all integrands polynomial → exact rational integrals; exponentials majorized by chords/Taylor enclosures; every inequality rounded against the result; certificate files `p9_exact_cert_k15856.json`, `p9_exact_cert_k923601.json`, `p9_exact_cert_k56000000.json` serialize the full chains). Three independent certification regimes (two Berry–Esseen constants × two tail-bound routes) pass at both k; Monte Carlo upper-consistency checks and small-k sanity bounds (the engine stays below the known M₂, M₅, M₅₄, M₁₀₅) all pass.
 
-**Tuples.** k = 15,856: an explicit admissible tuple of diameter **173,438** (file `p9_tuple_k15856.npy`), admissibility re-verified independently by a second implementation (every prime p ≤ 15,856 misses a class). k = 923,601: the first 923,601 primes exceeding 923,601 — admissible by the classical one-line argument (all elements coprime to every p ≤ k, so class 0 is missed) — with diameter 15,429,383 − 923,603 = **14,505,780**, re-verified independently by direct sieve. Combining certificate + tuple through Maynard's theorem yields Theorems A and B.
+**Tuples.** k = 15,856: an explicit admissible tuple of diameter **173,438** (file `p9_tuple_k15856.npy`), admissibility re-verified independently by a second implementation (every prime p ≤ 15,856 misses a class). k = 923,601: a repaired Hensley–Richards tuple of diameter **13,859,802** (symmetric window {±1} ∪ {±q : q prime ∈ [45,007, 6,929,899], 5,692 mid-size primes deleted by a deletion-fixpoint repair} ∪ {+6,929,903}; file `p9_tuple_k923601.npy`, sha256 d5fe6890…6f02), admissibility over all 73,001 primes p ≤ k verified by two independent implementations; the simpler primes-past-k tuple (diameter 14,505,780, verified by direct sieve) provides a fully classical fallback. Combining certificate + tuple through Maynard's theorem yields Theorems A and B.
 
 ## The method (what is actually new)
 
@@ -47,11 +47,12 @@ Against the crude closed-form truncation bound used for all m ≥ 2 records sinc
 | Engine identities (I, J, layer cake) and correction directions | proved, re-derived independently in the audit |
 | M₁₅,₈₅₆ ≥ 8.0133, M₉₂₃,₆₀₁ ≥ 12.0067, M₅₆M ≥ 16.0655 | ball-arithmetic certificates, 3 regimes each |
 | k=15,856 tuple: admissible, diameter 173,438 | verified by two independent implementations |
-| k=923,601 tuple: admissible (structural), diameter 14,505,780 | verified independently by direct sieve |
+| k=923,601 H-R tuple: admissible, diameter 13,859,802 | verified by two independent implementations; classical fallback 14,505,780 also verified |
+| k=56,000,000 tuple: primes-past-k, diameter 1,120,662,828 | segmented sieve, π-anchors match published values |
 | Threshold chain (Maynard + BV, closed simplex, zero extra charges) | audited against the theorem statement |
 | Engine-vs-engine discrepancy (15,856 vs 29,500 crossing) | fully explained (layer-cake + tail shape) |
 
-**Declared limitations.** (i) These are computer-assisted results by AI systems; the certificate files and scripts are published for expert replay, and formal peer review has not yet occurred. (ii) Result C awaits its tuple computation. (iii) A further conditional improvement (H₂ ≤ 145,226 via k = 13,476 with Polymath8a/Deligne-strength equidistribution) is *not* claimed: it depends on a cap-normalization in the truncated-variational criterion that we have reconstructed but not verified verbatim against Polymath8b's theorem. (iv) H₁ = 246 is untouched: our parallel investigations proved the relevant walls (ceiling = tuple diameter; decode optimality; weight-cone closure) and located the k = 49/47 variational doors, which remain open but uncrossed (best certified M₄₉,ε ≥ 3.9305, float 3.9593 vs threshold 4).
+**Declared limitations.** (i) These are computer-assisted results by AI systems; the certificate files and scripts are published for expert replay, and formal peer review has not yet occurred. (iii) A further conditional improvement (H₂ ≤ 145,226 via k = 13,476 with Polymath8a/Deligne-strength equidistribution) is *not* claimed: it depends on a cap-normalization in the truncated-variational criterion that we have reconstructed but not verified verbatim against Polymath8b's theorem. (iv) H₁ = 246 is untouched: our parallel investigations proved the relevant walls (ceiling = tuple diameter; decode optimality; weight-cone closure) and located the k = 49/47 variational doors, which remain open but uncrossed (best certified M₄₉,ε ≥ 3.9305, float 3.9593 vs threshold 4).
 
 **Artifacts.** All engines, certificates, tuples, and audit scripts in `research/riemann-rmt/` and the session archive: `p9_mk_engine.py`, `p9_certify_hp.py`, `p9_exact_cert_k*.json`, `p9_tuple_k15856.npy`, verification scripts, and the companion surveys (*The Walls and the Doors*; Codex handoff note) documenting the framework analysis.
 
