@@ -1,0 +1,587 @@
+# Stopping Times See What Moments Cannot
+
+## Prime gaps, signed sieves, and a dynamic separation of CUE from the alternative hypothesis
+
+**Bill (Qingyun) Sun · GPT5.6SOL · Fable**
+
+*August 2026*
+
+---
+
+## Abstract
+
+We report on a research programme carried out by a human mathematician working with several
+large language models in a tight adversarial loop. Three groups of results are described.
+
+**(1) Prime gaps.** New unconditional bounds for gaps containing several primes:
+liminf(p_{n+2} − p_n) ≤ 173,438, liminf(p_{n+3} − p_n) ≤ 13,859,802, and
+liminf(p_{n+4} − p_n) ≤ 1,120,662,828, improving the previous records 396,504 / 24,797,814 /
+1,431,556,072 by factors 2.3 / 1.8 / 1.3. The gain is purely variational: the records since 2014
+had upgraded the arithmetic input while retaining a crude closed-form bound on the Maynard–Tao
+functional. We also give a no-go map for H₁ = 246 with five proved walls, and price the two doors
+that remain open.
+
+**(2) Signed sieves.** A one-line pointwise identity shows that the signed (indefinite) enlargement
+of the Maynard–Tao variational problem is *empty*: with the decode debt charged at face value,
+every signed weight is dominated by its own positive part. This closes the variational side of a
+programme suggested by Zhang's Landau–Siegel work and by Iwaniec's well-factorable weights, and
+—more usefully—shows that everything of value in the signed route is arithmetic, not variational.
+We give the precise missing estimate (E_θ) for each level θ ∈ {4/7, 7/12, 3/5, 5/8} together with
+the conditional price list it would buy (H₁ ≤ 130, 114, 94, 80).
+
+**(3) A dynamic separation.** Tao's alternative hypothesis ensemble ACUE matches CUE on every
+low-order statistic that bandwidth-limited detectors can see. We show that a *stopping time* —
+the finite de Bruijn–Newman depth Λ, the first collision time of the zeros under backwards heat
+flow — separates them at the level of universality class: −Λ^CUE ≍ N^{−8/3} against
+−Λ^ACUE ≍ N^{−2}. More generally, for the circular β-ensembles we find and confirm
+−Λ ≍ N^{−2−2/(β+1)} for β = 1, 2, 4, with the rigid lattice as the β = ∞ endpoint. The
+separation survives inside the mimicker fibre, where all balanced moments of degree ≤ N are frozen
+along the entire flow. The methodological content is a slogan:
+
+> **moment matching does not imply stopping-time matching.**
+
+---
+
+## 1. What this paper is about
+
+Three problems, three walls, and one way through.
+
+The first wall is the bounded gaps problem. Since Zhang, Maynard and Polymath8, the record
+liminf(p_{n+1} − p_n) ≤ 246 has stood for twelve years. We did not move it, and we explain in
+§3 why we now believe it is protected by a specific and provable structure rather than by a lack
+of effort. But the same analysis showed that the *higher* records — two, three, four primes in a
+bounded window — were protected by nothing at all, and those we did move.
+
+The second wall is positivity. Maynard–Tao weights are squares. Everybody who has worked with them
+has wondered what happens if you drop the square; Zhang's Landau–Siegel programme is built around
+exactly this, and Iwaniec's linear-sieve weights λ^± are signed and consume levels of distribution
+that squares cannot reach. We settle the variational half of that question completely, in the
+negative, by an identity that fits on one line.
+
+The third wall is the alternative hypothesis. Tao's ACUE ensemble is a lattice-supported measure on
+unitary spectra that reproduces CUE's pair correlation and, as we and others have verified, an
+entire algebra of low-degree statistics. The programme of "find a moment ACUE cannot fake" has
+been running for years and keeps hitting the same obstruction: the fibre of measures matching a
+given set of moments is large, and adding one more moment enlarges the search rather than ending
+it. Our contribution is to stop adding moments. A *stopping time* is not a polynomial statistic,
+and the fibre's freedom does not protect it.
+
+The paper is written to be read by mathematicians, not by machines; but the last section describes
+how the work was actually done, because the method is part of the result.
+
+---
+
+## 2. Prime gaps: what moved and why
+
+### 2.1 The framework in one paragraph
+
+Fix an admissible k-tuple H = {h₁, …, h_k} (admissible: for each prime p, the h_i do not cover all
+residues mod p). Maynard's method attaches to each n a weight w(n) = (Σ_d λ_d)² built from divisor
+sums, and compares S₁ = Σ w(n) with S₂ = Σ w(n)·#{i : n + h_i prime}. If the primes have level of
+distribution θ and the variational constant
+
+  M_k = sup_F k·J(F)/I(F),  I(F) = ∫_{R_k} F², J(F) = ∫_{R_{k−1}} (∫₀^{1−Σ} F dt_k)²,
+
+taken over symmetric F on the simplex R_k = {t ∈ [0,∞)^k : Σt_i ≤ 1}, exceeds 2m/θ, then every
+admissible k-tuple contains m+1 primes infinitely often, and hence H_m := liminf(p_{n+m} − p_n) is
+at most the diameter H(k) of the narrowest admissible k-tuple. Bombieri–Vinogradov gives θ = 1/2
+unconditionally, so the criterion is M_k > 4m.
+
+Two quantities therefore control everything: the analytic constant M_k, and the combinatorial
+constant H(k). The record H₁ = 246 comes from k = 50 and a variant of M_k tuned by an ε-trick.
+
+### 2.2 The observation
+
+For m = 1, k is small (50) and M_k has been computed to death. For m ≥ 2, k is large — tens of
+thousands to millions — and there M_k has never been computed at all. Every record since 2014 has
+used the same crude closed-form lower bound, essentially M_k ≥ log k − C with an explicit but
+generous C, obtained by truncating a product test function hard at the simplex boundary. The
+improvements of 2023–2025 raised θ, not M_k.
+
+The deficit in that bound is between 2.3 and 2.9 units of log k, and about 1.1 of those units are
+recoverable by elementary means. Since M_k ≈ log k, recovering 1.1 units is a factor e^{1.1} ≈ 3
+in k, and H(k) ≈ k(log k + 0.77) is nearly linear in k, so a factor 3 in k is close to a factor 3
+in H_m.
+
+### 2.3 The engine
+
+Take F(t) = ∏_i g(t_i) · 1[Σt_i ≤ k] (working on the dilated simplex). Let X_i be i.i.d. with
+density g²/c₂ where c₂ = ∫g², write S_j for partial sums, and G(u) = ∫₀^u g. Then exactly
+
+  I(F) = k^{−k} c₂^k · P(S_k ≤ k),  J(F) = k^{−(k+1)} c₂^{k−1} · E[G((k − S_{k−1})₊)²].
+
+The simplex truncation, which the classical treatment handles by throwing it away, is now a genuine
+probability, and the second factor is unwrapped by the **layer-cake identity**
+
+  E[G((k − S)₊)²] = ∫ 2G(u) g(u) · P(S_{k−1} < k − u) du,
+
+turning it into an integral of true lower-tail probabilities. Each of those is bounded below
+rigorously (chord-majorised Chernoff, one-big-jump, Berry–Esseen with the safe non-i.i.d. constant
+0.56); because the bounds use only monotonicity of the true tail, discretisation cannot invalidate
+them. Finally, replacing the hard truncation by **shaped subexponential tails**
+g(t) = e^{−(t/T₁)^κ}/(1 + At) on a long support recovers the rest.
+
+Exact accounting of the truncation contributes +0.12 units, tail shaping +0.49, and the remainder
+comes from optimising the shape parameters — about 1.1 units in total, as predicted.
+
+### 2.4 The results
+
+| | bound | k | previous |
+|---|---|---|---|
+| H₂ = liminf(p_{n+2} − p_n) | **173,438** | 15,856 | 396,504 (Stadlmann 2023/25) |
+| H₃ | **13,859,802** | 923,601 | 24,797,814 (Polymath8b 2014) |
+| H₄ | **1,120,662,828** | 56,000,000 | 1,431,556,072 (Polymath8b 2014) |
+
+The certificates M₁₅,₈₅₆ ≥ 8.013326752751, M₉₂₃,₆₀₁ ≥ 12.006666706750 and M₅₆·₁₀⁶ ≥ 16.065482942
+are verified in ball arithmetic with outward rounding at every step; three independent
+certification regimes (two Berry–Esseen constants × two tail routes) pass at each k. The tuples are
+explicit: for k = 15,856 an admissible tuple of diameter 173,438 verified by two independent
+implementations; for k = 923,601 a repaired Hensley–Richards tuple of diameter 13,859,802 (with a
+fully classical fallback of diameter 14,505,780 from the primes past k); for k = 5.6·10⁷ the
+primes-past-k tuple, its endpoints checked against published values of π(x).
+
+These are computer-assisted results produced by AI systems and have not been refereed. All
+certificates and scripts are published for replay. A further conditional improvement
+(H₂ ≤ 145,226 via Polymath8a/Deligne-strength equidistribution) is deliberately **not** claimed:
+it depends on a cap normalisation we reconstructed but could not verify verbatim.
+
+### 2.5 Why 246 did not move: five walls
+
+We spent a comparable effort on H₁ and failed, but the failure is informative. Five statements,
+each proved during this work, close five different escape routes.
+
+1. **The ceiling is the tuple diameter.** No post-processing of Maynard–Tao output can produce a
+   bound below H(k_min). In particular, pair-correlation constants of the Wu/Lichtman type — which
+   look like they should help — cannot lower H₁ at all.
+2. **Scalar decoding is exactly optimal.** One might hope to replace "S₂ − mS₁ > 0" by a matrix,
+   inertia, or higher-moment decode. A two-point counterfeit construction, ordered by convex order,
+   defeats every such decode; the scalar threshold f(m) = 2m/θ is final.
+3. **The weight cone is closed.** Enlarging squares to arbitrary PSD quadratic forms Q gains
+   nothing: rank-r sums of squares decouple by subadditivity, so the supremum is attained at rank
+   one. The copositive relaxation is flat as well, certified by an explicit nine-pattern dual with
+   residual 1.3·10⁻¹⁴.
+4. **Parity, made combinatorial.** A parity (Liouville) twist kills a set of pair-conclusions if
+   and only if the associated *kill-graph* is bipartite; odd-cycle facets of the cut polytope are
+   exactly the obstructions. This yields the floors H₁ ≥ 6 and k ≥ 2m + 1 for the whole method
+   class.
+5. **The usable arithmetic frontier is not the published frontier.** The post-2014 levels θ = 4/7
+   (Bombieri–Friedlander–Iwaniec), 3/5 (Maynard II) and 5/8 (Pascadi) are *well-factorable* or
+   *fixed-residue*. Maynard–Tao needs uniformity over a CRT-structured system of residues varying
+   with the modulus, which none of them provides. The usable frontier is Maynard III's 11/21 with
+   a shell truncation, Stadlmann's 1/2 + 1/40, and Pascadi's minorant 10/19 — all shell-restricted.
+
+What remains open is narrow and precisely priced. The k = 49 door needs M₄₉-variant > 4; the pure
+constant is M₄₉ ∈ [3.891258, 3.97290] (lower bound exact-rational), and the best certified ε-variant
+is M₄₉,₁/₃₅ ≥ 3.930490592 with float optimum 3.959325169. Known upper-bound technology closes the
+door only for ε ≤ 0.00682, so the door is open, exactly as Polymath left it. Crossing it would give
+H₁ ≤ 240; k = 47 would give 226.
+
+---
+
+## 3. The signed sieve: a one-line no-go
+
+### 3.1 The question
+
+Since Maynard–Tao weights are squares, and since Chen's theorem and Iwaniec's λ^± are both built
+from *signed* objects, it is natural to ask what a signed sieve would buy. Zhang's Landau–Siegel
+programme is organised around removing the square. The hope is a variational phase invisible to the
+positive family.
+
+For signed w the decode fails: the positive excess can be manufactured by w(n) < 0 at prime-poor n.
+It is repaired by paying the **debt**
+
+  D(w) = Σ_{n : w(n) < 0} |w(n)| · (m − ν(n))₊,  ν(n) = #{i : n + h_i prime},
+
+after which S₂ − mS₁ − D > 0 does imply that some n has ν(n) ≥ m + 1. So the honest experiment is
+to optimise Φ(w) − βD(w) with β = 1 the true price, and look for a phase transition.
+
+### 3.2 The identity
+
+For every integer ν ≥ 0 and every m ≥ 1,
+
+  (ν − m) + (m − ν)₊ = (ν − m)₊,
+
+both sides being ν − m when ν ≥ m and 0 otherwise. Writing w = w₊ − w₋ with w₊, w₋ ≥ 0 of disjoint
+support and substituting:
+
+> **Theorem (Signed No-Gain).**
+>   S₂ − mS₁ − D(w) = Σ_n w₊(n)(ν(n) − m) − Σ_n w₋(n)(ν(n) − m)₊ ≤ Σ_n w₊(n)(ν(n) − m).
+
+Since w₋ ≥ 0 and (ν − m)₊ ≥ 0, the negative part is pure loss, and the loss is exactly the
+overshoot mass Σ w₋(ν − m)₊ sitting on the negative support.
+
+**Corollary.** Any DHL(k, m+1) conclusion obtainable from a signed weight w with the debt charged
+at face value is already obtainable from the nonnegative weight w₊. The signed class is redundant.
+
+The statement is pointwise, so it holds for every k, m, tuple and weight class at once, needs no
+asymptotics, and subsumes the weaker fact that the naked ratio sup Tr(BQ)/Tr(AQ) over indefinite Q
+equals the PSD value by rank-one extremality.
+
+### 3.3 What the numerics had been showing
+
+We found the identity only after a substantial LP campaign on a finite arithmetic microcosm
+(n uniform on ℤ_W, ν the coprimality count on the tuple, weights in the span of level-L features,
+everything in exact rational arithmetic). Three phenomena had looked like a phase structure; all
+three are corollaries.
+
+- **A critical price.** The value of max{Φ − βD : S₁ = 1} is *exactly* the classical positive
+  optimum for β above a sharp β\*, and acquires a signed optimiser below it. In the base model
+  (k = 3, features {2,3,5,7}) the classical value is 0.338489109…, the signed vertex has
+  Φ = 1.20828…, D = 0.41472…, hence β\* = 2.09732…, with 85% of the optimiser's mass negative. The
+  theorem explains why β\* > 1 always: at the true price the signed class is dominated.
+- **An apparent linear gain.** Imposing ‖w‖₁ ≤ A gives λ(1) = λ_positive exactly (for w ≥ 0 the
+  normalisation S₁ = 1 *is* the ℓ¹ norm) and then a strictly positive slope 0.32–0.89 per unit of
+  budget. This is not a gain: the decode is scale-invariant, and what grows with A is the mass of
+  w₊, not the truth of the conclusion.
+- **Unboundedness at β = 1.** In all eight model variants. Same cause. This exposes a second,
+  usually unremarked, job that positivity performs in Maynard–Tao: *it makes the variational
+  problem bounded*, by tying the ℓ¹ norm to the normalisation. Remove it and boundedness must be
+  re-imposed by hand — and by the theorem, no choice of norm bound creates a gain.
+
+### 3.4 Where the door actually is
+
+The theorem has exactly two hypotheses, hence exactly two escapes, and neither is variational.
+
+**(i) Charge the debt below face value.** This needs arithmetic information bounding (m − ν)₊ on a
+*designed* negative support by strictly less than the truth — that is, an input asserting that
+primes are anomalously common on a prescribed set. This is precisely the exceptional-character
+mechanism. By the theorem, Zhang's programme is not one route among several; it is the only route
+that changes the variational picture at all.
+
+**(ii) Keep w evaluable while w₊ is not.** The theorem compares w with w₊, presuming both usable.
+Arithmetically they are not interchangeable: the positive part of a divisor-sum quadratic is not a
+divisor-sum quadratic, so a signed well-factorable λ can be evaluable at θ = 4/7, 3/5, 5/8 while its
+positive part is evaluable at no level beyond 1/2. **The signed route's entire value is which
+weights the arithmetic can evaluate, never the shape of the optimum.**
+
+An independent argument from the switching side reaches the same conclusion. Switching is a
+re-indexing bijection: it lowers the anatomical depth of one linear form but never the number r of
+exact-primality conditions in a debt term. Chen's debt has r = 1 and is payable by an upper sieve
+(parity-free). Every DHL(k, m+1) conclusion with m ≥ 1 forces residual debt with r ≥ 2; a two-vertex
+kill-graph is an edge, hence bipartite, hence parity-blocked for every input class admitting
+Liouville twists. The escape is not a cleverer switch but an input class in which the twist is
+inadmissible — the exceptional-character regime again. Two disjoint analyses, one door.
+
+### 3.5 The price list
+
+If the debt is paid at level θ, the consequences are fully computed; all eight m = 1 crossings carry
+exact-rational certificates, and H(k) is Engelsma-exact.
+
+| θ | 2/θ | k pure (certified M_k) | k with ε | H₁ ≤ pure / ε |
+|---|---|---|---|---|
+| 1/2 (Bombieri–Vinogradov) | 4 | 54 | 50 | 270 / **246** (unconditional) |
+| 4/7 (BFI) | 3.5 | 31 (3.502015…) | 29 (3.519881…) | 140 / **130** |
+| 7/12 (Maynard II, linear sieve) | 24/7 | 29 (3.443305…) | 26 (3.433616…) | 130 / **114** |
+| 3/5 (Maynard II) | 10/3 | 26 (3.350647…) | 23 (3.334616…) | 114 / **94** |
+| 5/8 (Pascadi) | 3.2 | 22 (3.207656…) | 20 (3.222666…) | 90 / **80** |
+| 1 (Elliott–Halberstam) | 2 | 5 (M₅ = 2.007080) | — | **12** |
+
+The missing statement, in the form we would want to see proved:
+
+> **(E_θ).** Fix an admissible tuple H, an index i, and A, ε > 0. For coefficient systems c_q(a)
+> jointly well-factorable with the residue selection — for every factorisation q = q₁q₂ (resp.
+> q₁q₂q₃) with ∏Q_j = x^{θ−ε} one can write c_q(a) = ∏_j γ_j(q_j, a mod q_j) with |γ_j| ≤ 1 and
+> a mod p ∈ {h_i − h_j mod p : j ≠ i} for all p | q — one has
+>   Σ_{q ≤ x^{θ−ε}} Σ_{a ∈ A_i(q)} c_q(a) · E(x; q, a) ≪_{H,A,ε} x (log x)^{−A}.
+
+(E_{4/7}) is "BFI Theorem 10, uniform over the CRT residue system of a fixed tuple polynomial".
+Polymath8a's MPZ[ϖ,δ] is its absolute-value cousin, proved by the same dispersion-plus-Deligne
+technology but only to level ≈ 0.5286 and for densely divisible moduli, so (E_θ) interpolates two
+proved endpoints rather than crossing a parity barrier.
+
+---
+
+## 4. Stopping times: the finite de Bruijn–Newman depth
+
+### 4.1 The obstruction we were trying to get around
+
+The Riemann ξ function has a canonical heat deformation ξ_t, and de Bruijn and Newman showed there
+is a constant Λ with ξ_t having only real zeros exactly when t ≥ Λ. The Riemann hypothesis is
+Λ ≤ 0; Rodgers and Tao proved Λ ≥ 0. So RH, if true, is *barely* true — ξ sits exactly on the
+boundary of heat stability. Newman's phrase for this was that the Riemann hypothesis, if true, is
+only just true.
+
+Separately, Tao introduced the **alternative hypothesis ensemble** ACUE: the measure on N-point
+configurations supported on the 2N-th roots of unity, weighted by |Δ(C)|², which reproduces CUE's
+pair correlation. It is the standing obstruction to proving that zeta zeros are GUE-distributed: a
+great many statistics cannot tell CUE from ACUE. During this project we verified how severe this is.
+Writing the characteristic polynomial as P(z) = det(I − zU) = Σ a_j z^j and defining the flow
+
+  P_r(z) = Σ_j a_j r^{j(N−j)} z^j,  t = log r,
+
+which is the finite analogue of the de Bruijn–Newman deformation, the flow is *diagonal in the
+coefficients*. Consequently every balanced moment of degree ≤ N is frozen not only at t = 0 but
+along the entire trajectory. Adding one more moment, or evolving the moments you have, is provably
+futile.
+
+### 4.2 The observable
+
+Define the **finite depth**
+
+  −Λ(U) = t\*, the first time (going backwards, t < 0) at which the discriminant of P_t vanishes,
+
+i.e. the first collision of two zeros. Because the flowed polynomial stays self-inversive, a simple
+zero cannot leave the unit circle without first colliding, so this is well defined. Equivalently the
+zeros move by the attracting circular Coulomb dynamics
+
+  θ̇_j = −Σ_{k ≠ j} cot((θ_j − θ_k)/2),
+
+derived from ∂_t P = (ND − D²)P with D = z d/dz. The right way to think of −Λ is geometric:
+
+> **−Λ(P) is the distance from P to the discriminant hypersurface along the canonical heat ray.**
+
+Static moments are coordinates *along* the mimicker fibre; Λ is a coordinate *transverse* to it,
+pointing at the boundary. It is not a polynomial statistic of any degree — it is a first-passage
+time — and that is exactly why the fibre's freedom does not protect it.
+
+### 4.3 The separation
+
+Two independent computations, one exact and one Monte Carlo, settle the scaling.
+
+**ACUE (exact).** Complete enumeration of all rotation orbits for N = 3, …, 10 — 13,132 orbits,
+184,756 configurations at N = 10 — with exact Vandermonde masses, validated to 40 digits.
+
+- P(clock) = 2^{1−N} **exactly**. By Cauchy–Binet, Σ_{|C|=N} |Δ(C)|² = det(AA\*) = (2N)^N for the
+  DFT matrix A, while each of the two clock configurations has |Δ|² = N^N. Clock polynomials are
+  1 − cz^N, hence flow-invariant, hence have Λ = −∞: they are the exact stationary atoms.
+- For every non-clock configuration the minimal gap is exactly π/N (pigeonhole: all gaps ≥ 2π/N
+  forces the clock).
+- −Λ^ACUE ≍ N^{−2}, with fitted exponent **−2.0009**; N²(−Λ) is supported in ≈[1.31, 1.99]. The
+  alternative N^{−8/3} is decisively excluded.
+- In all 13,130 non-clock orbits the first collision occurs at a pair that was already adjacent at
+  t = 0 — zero exceptions.
+
+**CUE (Monte Carlo, N up to 256).** −Λ^CUE ≍ N^{−8/3}, fitted exponent −2.678 ± 0.016. More than
+the exponent, the *law* is parameter-free:
+
+  8N^{8/3}(−Λ) ⟹ G², where P(G > x) = exp(−x³/72π)
+
+is the sine-kernel smallest-gap law. The constant 72π was derived from the kernel, not fitted;
+measured 229–236 against 226.2, with KS distances 0.035–0.041 and median 29.6–30.5 against the
+prediction (72π ln 2)^{2/3} = 29.08.
+
+The ratio of depths therefore grows like N^{2/3} — the two hypotheses do not merely differ, they
+sit in **different universality classes of subcriticality**. The 10× separation point is N\* ≈ 165,
+matching an a-priori estimate of ≈160.
+
+The interpretation is the striking part. ACUE's defect is not that it is fragile in some direction;
+it is that it is **too robust**. CUE is barely stable under reverse heat flow, in exactly Newman's
+sense; ACUE is over-equilibrated, sitting far from the discriminant because its lattice rigidity
+forbids the rare very close pairs (δ_min ≍ N^{−4/3}) that CUE produces. A fake RH universe survives
+too long under a natural deformation.
+
+### 4.4 A universality law
+
+The mechanism suggests, and the data confirm, a general law. If the normalised nearest-neighbour
+gap density behaves like p(s) ∼ c s^β as s → 0, then the smallest of ≈N gaps is of order
+N^{−1/(β+1)}, the physical gap is N^{−1−1/(β+1)}, and since an isolated pair collides in time
+δ²/8 + o(δ²),
+
+> **Dynamic Newman universality.**  −Λ_N ≍ N^{−2−2/(β+1)}.
+
+| ensemble | β | predicted | measured |
+|---|---|---|---|
+| COE | 1 | −3 | −3.064 (local slopes −3.03 … −3.10) |
+| CUE | 2 | −8/3 = −2.667 | −2.678 ± 0.016 (N ≤ 256) |
+| CSE | 4 | −12/5 = −2.4 | −2.510 (N ≤ 64, still drifting) |
+| ACUE lattice | ∞ | −2 | −2.0009 (exact) |
+
+All measured slopes are slightly steeper than predicted, in the direction and of the size of the
+finite-N drift independently calibrated at β = 2, where the larger N range shows the local slope
+converging to the prediction from below. The circular β-ensembles were sampled by the Killip–Nenciu
+CMV construction, validated against Haar CUE (KS 0.005) and against direct COE = VVᵀ (KS 0.004).
+The localisation assumption behind the law — that the first collision is governed by the minimal
+initial gap — holds in 95–99% of samples, and in 100% of ACUE configurations.
+
+So the depth is a scalar fingerprint of the microscopic repulsion exponent. That is a clean
+random-matrix statement independent of anything about zeta.
+
+### 4.5 A configuration constant, computed two ways
+
+Inside the ACUE law there is a distinguished stratum. Take the alternating clock (the zeros of
+z^N + 1), delete the point e^{−iπ/N}, and insert 1; the gap pattern becomes 1, 2, 2, …, 2, 3 in
+half-lattice units and the polynomial is exactly
+
+  P_N(z) = (z − 1)(z^N + 1)/(z − e^{−iπ/N}).
+
+Two completely independent routes give the same asymptotic depth.
+
+*Lattice route.* Our exact solver on this configuration, N = 3 … 20, gives N²(−Λ) increasing
+monotonically 1.41473945, 1.41821551, …, **1.41963827** at N = 20.
+
+*Continuum route.* Setting t = −s/N², z = e^{iu/N} and passing to the limit yields the local
+function
+
+  G_s(u) = 2 cos(u/2) − 2π ∫₀^{1/2} e^{s(1/4 − y²)} cos((π + u)y) dy,
+
+whose first double zero (G = ∂_u G = 0) is at
+
+  **s\* = 1.419640342…, u\* = 1.812942145…,** with G″(u\*) = −0.3767 ≠ 0 (a generic tangency).
+
+The two agree to 2·10⁻⁶ at N = 20, consistent with an O(N⁻²) approach. This is Proposition-grade:
+a lattice enumeration and a transcendental double-root equation meeting to six digits.
+
+One correction to the record. It is tempting to read s\* as the limit of the ensemble median,
+because for N ≤ 7 the two coincide: the median of N²(−Λ) rises 1.41474, 1.41908, 1.41950. The
+complete enumeration shows the median **turns around at N = 7** and falls — 1.41822 (N = 8),
+1.41520 (N = 9), 1.41277 (N = 10) — as the support spreads from [1.4147, 1.8246] to
+[1.3146, 1.9855]. At small N the single-dislocation orbit dominates the ACUE measure; from N = 8
+the ensemble outgrows it. So s\* is a *configuration* constant belonging to the support of the
+limit law, not the median's limit. The neighbouring constant for a well-separated defect pair is
+N²(−Λ) → 1.46946 (i.e. ρ∞ = 8N²(−Λ)/π² → 1.19120), the other end of the same defect family.
+
+### 4.6 The depth escapes the freezing theorem
+
+The point of the whole exercise. Because the flow is diagonal on coefficients, any balanced moment
+of degree ≤ N is a t-dependent linear combination of frozen quantities, hence frozen along the whole
+trajectory; we verified this to 4.5·10⁻¹⁶ on explicit mimickers. Yet Λ separates the fibre at O(1):
+
+- an N = 5 mimicker in the ℚ(√5) family moves the clock atom from 0.0625 to 0.1398 and shifts
+  E[N²(−Λ) | non-clock] by −0.093;
+- at N = 8, mimicker families move the entire Λ-law by total variation 0.12–0.24, with the
+  dependence concentrated on the centre-of-mass class X = 0;
+- linear-programming tomography over the exact fibre at N = 6 (affine dimension 10 at orbit level)
+  gives E[N²(−Λ) | non-clock] ranging over **[1.3610, 1.4770]** against ACUE's 1.4336, while the
+  clock atom — the mass at Λ = −∞ — can be pushed from 0 to **0.0975**, i.e. tripled from ACUE's
+  0.03125, with every constrained moment held fixed.
+
+The conclusion deserves stating twice.
+
+> **Moment matching does not imply stopping-time matching.** Two ensembles can be indistinguishable
+> to a whole algebra of observables, and remain indistinguishable along an entire natural flow, yet
+> have first-passage laws in different scaling universality classes.
+
+### 4.7 Two honest limitations
+
+*Ordinary Λ cannot see eigenvectors.* Λ is a function of the characteristic polynomial alone. Two
+isospectral matrices have the same Λ, so any counterexample family built to have matching spectra
+but differing directional data (Schur complements, inverse-Gram quantities) is invisible to it. The
+natural repair is a **marked depth**: deform G ↦ G + η uu\*, transport to the circle by Cayley, and
+differentiate, χ_Λ(G; u) = ∂_η Λ_u |_{η=0}. Since det(zI − G − ηuu\*) = det(zI − G)(1 − η u\*(zI −
+G)^{−1}u), the marked depth is coupled precisely to the resolvent quantity u\*(zI − G)^{−1}u that
+those counterexamples were built around. Testing whether χ_Λ blows up with the inverse-Gram
+pathology is the natural next experiment.
+
+*Linear flows do not destroy linear invisibility.* If a hidden direction is orthogonal to the
+observable algebra, the heat operator — being diagonal — generally keeps it hidden. So the power
+here does not come from the flow mixing frequencies; it comes from Λ being a *nonlinear stopping
+time*, measuring how far each orbit runs before hitting a variety. Two orbits may live in the same
+invariant subspace and still have different distances to the discriminant.
+
+### 4.8 What this could mean for zeta, stated carefully
+
+We claim no theorem about ζ. But the structure suggests a target that is strictly weaker than what
+the static programme requires. ACUE predicts N²(−Λ) ≍ 1; CUE predicts N²(−Λ) ≍ N^{−2/3} → 0.
+Therefore, to exclude the ACUE universality class for zeta one does not need the full 8/3 law: it
+suffices to prove that the local depth of ξ under the true de Bruijn–Newman flow, suitably
+normalised at height T, satisfies
+
+  (log T)² · D_T → 0,
+
+with any rate. That is a substantially weaker statement than a full extreme-gap theorem, and
+Rodgers–Tao's method — averaged information plus a heat-flow energy argument, rather than the full
+GUE law — is evidence that such intermediate statements are reachable. Making the truncation
+rigorous (one may not simply cut a window of zeros and call the result a polynomial; the Polymath15
+machinery for computing H_t is the honest route) is the first obstacle.
+
+---
+
+## 5. How this was done
+
+The methodology is not incidental, so we describe it plainly.
+
+**Fleets, not oracles.** Work proceeded in rounds. Each round posed one question, and between three
+and ten language-model agents attacked it in parallel from deliberately different angles, each
+writing and running its own code, each producing a report tagged line by line as *proved*,
+*computed*, *heuristic* or *conjecture*. Agents shared a written context file stating the current
+state of knowledge, including known errors. They did not share conclusions; convergence of
+independent agents was treated as evidence, and divergence as a bug report.
+
+**Adversarial defaults.** Every context file instructed agents that the default assumption is that
+the idea has already been tried and failed, and that their first job is to find the reason. The
+prompt for the prime-gap round said outright that any improvement to 246 was 99% likely to be a
+misread constraint. This is not modesty; it is calibration. Of the phenomena that looked like
+discoveries during this project, most were arithmetic or normalisation errors, and the ones that
+survived did so because they were attacked first by their own authors.
+
+**Exact arithmetic at every threshold.** Nothing near a decision boundary was accepted in floating
+point. The Maynard–Tao certificates are ball-arithmetic with outward rounding; the variational
+crossings are exact-rational Rayleigh quotients of rounded eigenvectors; the ACUE enumeration uses
+exact Vandermonde masses with 40-digit spot checks; the signed-sieve identity was verified in exact
+rationals on a thousand random weights. The single most common failure mode in machine-generated
+mathematics is a plausible float, and the remedy is cheap.
+
+**Two implementations or it did not happen.** Every headline number here was produced twice by
+independent code, usually by agents that could not see each other's work: the record tuples were
+re-verified by a second admissibility checker; the CUE depth was computed by an ODE integrator and
+by coefficient bisection agreeing to 10⁻⁶; the single-dislocation constant was obtained from a
+lattice enumeration and from a transcendental equation, agreeing to six digits. Where two
+implementations disagreed — an engine crossing at k = 15,856 against another at 29,500 — the
+discrepancy was tracked to its source before anything was claimed.
+
+**The human supplies the questions.** Every genuinely new direction in this paper came from a human
+mathematician's judgement: to stop optimising 246 and look at H₂; to ask whether removing the square
+opens a phase; to propose the de Bruijn–Newman depth as a dynamic observable in the first place; to
+insist that 72π be factorised rather than fitted; to recognise that the single-dislocation
+configuration was the right object to compute exactly. The models supplied speed, breadth, exact
+arithmetic, and — importantly — the willingness to write and discard fifty scripts a day. The
+division of labour was not "human checks machine" but "human chooses the question, machine
+exhausts it, human reads the residue".
+
+**Negative results are the main product.** Five walls, one no-go theorem, one empty phase, one
+refuted extrapolation. A method that only reports successes cannot be trusted about them. The most
+valuable single output of the signed-sieve round is that it is closed, and that we can say exactly
+what would open it.
+
+---
+
+## 6. Open problems
+
+1. **Rigorise the CUE depth law.** Prove 8N^{8/3}(−Λ) ⟹ G². The hard half — the smallest-gap
+   limit law — exists in the literature (Ben Arous–Bourgade, Feng–Wei). What is needed is the
+   localisation lemma: that the remaining N − 2 zeros perturb the two-body collision time by
+   1 + o(1). Our data show the correction is positive and of size ≈0.60·N^{−0.73}.
+2. **Make s\* = 1.419640342… a theorem** for the single-dislocation family, and compute the
+   separated-defect constant ρ∞ = 1.19120… exactly. The natural framework is an infinite clock with
+   one localised defect under the Coulomb dynamics, i.e. a Calogero–Moser problem; the target is a
+   closed form in terms of theta or Bessel data.
+3. **The marked depth.** Does χ_Λ(G; u) = ∂_η Λ_u separate isospectral counterexample families? If
+   so, the static counterexample programme and the Newman dynamics become one structure.
+4. **A transversality conjecture.** With static observables M and fibre F_m = {X : M(X) = m}, prove
+   that τ = −Λ restricted to F_m is generically non-constant; equivalently ker DM ⊄ ker DΛ, with
+   marks added until the intersection is trivial.
+5. **Function-field depth.** Frobenius conjugacy classes give characteristic polynomials, hence
+   depths. Does equidistribution of Frobenius push through to the depth law — a genuinely arithmetic
+   Newman-depth universality theorem, rather than a random-matrix analogy? The g = 1 case is the
+   exact N = 2 law in arithmetic clothing, Λ = log(|a_p|/2√p).
+6. **(E_θ), the tuple-residue well-factorable estimate**, for any θ > 1/2. This is the single
+   statement standing between the certified price list of §3.5 and H₁ ≤ 130.
+7. **The k = 49 door.** Decide whether some legal Maynard–Tao variant has M₄₉ > 4. Certified
+   3.930490592, float optimum 3.959325169, upper bounds closing only ε ≤ 0.00682.
+
+---
+
+## References
+
+J. Maynard, *Small gaps between primes*, Ann. of Math. 181 (2015) 383–413 ·
+D.H.J. Polymath, *Variants of the Selberg sieve, and bounded intervals containing many primes*,
+Res. Math. Sci. 1:12 (2014) ·
+Y. Zhang, *Bounded gaps between primes*, Ann. of Math. 179 (2014) ·
+J. Stadlmann, *On primes in arithmetic progressions to smooth moduli*, Adv. Math. (2025) ·
+E. Bombieri, J. Friedlander, H. Iwaniec, *Primes in arithmetic progressions to large moduli*,
+Acta Math. 156 (1986) ·
+J. Maynard, *Primes in arithmetic progressions to large moduli II: well-factorable estimates*,
+Mem. AMS 1543 ·
+A. Pascadi, arXiv:2505.00653 ·
+B. Rodgers, T. Tao, *The de Bruijn–Newman constant is non-negative*, Forum Math. Pi 8 (2020) ·
+T. Tao, *The alternative hypothesis for unitary matrices* (blog, 2019) ·
+D.H.J. Polymath, *Effective approximation of heat flow evolution of the Riemann ξ function*
+(Polymath15) ·
+G. Ben Arous, P. Bourgade, *Extreme gaps between eigenvalues of random matrices*, Ann. Probab.
+41 (2013) ·
+R. Feng, D. Wei, *Small gaps of circular β-ensemble*, Ann. Probab. 49 (2021) ·
+R. Killip, I. Nenciu, *Matrix models for circular ensembles*, IMRN (2004) ·
+N. Katz, P. Sarnak, *Random matrices, Frobenius eigenvalues, and monodromy*, AMS (1999) ·
+T. Engelsma, tables of minimal admissible tuples; A.V. Sutherland, narrow admissible tuples database.
+
+*All engines, certificates, tuples and audit scripts are in the accompanying repository.*
