@@ -226,8 +226,15 @@ three are corollaries.
 
 - **A critical price.** The value of max{Φ − βD : S₁ = 1} is *exactly* the classical positive
   optimum for β above a sharp β\*, and acquires a signed optimiser below it. In the base model
-  (k = 3, features {2,3,5,7}) the classical value is 0.338489109…, the signed vertex has
-  Φ = 1.20828…, D = 0.41472…, hence β\* = 2.09732…, with 85% of the optimiser's mass negative. The
+  (k = 3, features {2,3,5,7}) an exact-rational simplex with certified dual gives the classical
+  value **1087376209/3212440751** = 0.3384891094603102 and the critical price
+
+    **β\* = 23051796480/10991046857 = 2.0973249209031…**,
+
+  the signed vertex having Φ = 1.2082816957…, D = 0.4147152297…, with 85% of its mass negative on
+  16 of 96 cells. The transition is certified on both sides: at β\* − 10⁻³ the optimum is strictly
+  above the plateau (0.3389038246899884 > 0.3384891094603102) and genuinely signed, while at
+  β\* + 10⁻³ it equals the plateau as exact rationals. At β = 2 the programme is unbounded. The
   theorem explains why β\* > 1 always: at the true price the signed class is dominated.
 - **An apparent linear gain.** Imposing ‖w‖₁ ≤ A gives λ(1) = λ_positive exactly (for w ≥ 0 the
   normalisation S₁ = 1 *is* the ℓ¹ norm) and then a strictly positive slope 0.32–0.89 per unit of

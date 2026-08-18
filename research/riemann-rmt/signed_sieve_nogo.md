@@ -66,9 +66,15 @@ structure. All three are corollaries of the theorem, and each is instructive.
 
 **(a) The critical-price kink.** Sweeping β in max{Φ(w) − βD(w) : S₁(w) = 1}, the value is
 *exactly* the classical positive optimum for β above a sharp β\*, then acquires a signed optimizer
-below it. Certified example (k = 3, m = 1, features {2,3,5,7}): val_pos = 0.338489109…, the signed
-vertex has Φ = 1.20828…, D = 0.41472…, giving β\* = (Φ − val_pos)/D = **2.09732…**, with the
-optimizer carrying 85% of its mass negative on 16 of 96 cells. Below β_unb = 2.03265 the LP is
+below it. Certified example (k = 3, m = 1, features {2,3,5,7}), exact-rational simplex with verified
+dual: val_pos = **1087376209/3212440751** = 0.3384891094603102, signed vertex Φ = 1.2082816957…,
+D = 0.4147152297…, giving the exact critical price
+
+  **β\* = (Φ − val_pos)/D = 23051796480/10991046857 = 2.0973249209031…**,
+
+the optimizer carrying 85% of its mass negative on 16 of 96 cells. Certified on both sides: at
+β\* − 10⁻³ the optimum is 0.3389038246899884 > val_pos with a genuinely signed optimizer; at
+β\* + 10⁻³ it equals val_pos as exact rationals; at β = 2 the programme is unbounded. Below β_unb = 2.03265 the LP is
 unbounded. Across eight model variants β\* ranged 1.44–6.72, and in five of the eight the window
 (β_unb, β\*) was numerically **empty** (width < 10⁻⁶): the value falls off the classical plateau
 directly into unboundedness. Table in `fab_phase_results.json`.
