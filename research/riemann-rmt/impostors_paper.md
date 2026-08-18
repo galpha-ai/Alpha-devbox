@@ -297,6 +297,84 @@ identical — at N = 8 the quantiles are 1.3739/1.3959/1.4182/1.4554/1.4839 agai
 are a Class II/III object: caught at finite N, invisible in the limit, and a natural first target
 for the marked depth.
 
+### 1.7 What is now proved: a two-body comparison theorem
+
+The three scaling laws above were, until this point, numerical. They are not independent: all three
+follow from a local collision law plus a smallest-gap law, and the smallest-gap laws are known. What
+was missing was control of the *background* — the effect of the other N − 2 zeros on the collision
+time of the closest pair. That is now a theorem, and it is elementary.
+
+Parameterise the flow by the depth u = −t, so the zeros obey θ_j′ = −Σ_{k≠j} cot((θ_j − θ_k)/2) and
+collisions occur as u increases. Two facts:
+
+**Exact two-body solution.** For N = 2, separating variables in δ′ = −2cot(δ/2) gives
+cos(δ(u)/2) = e^u cos(δ(0)/2), hence collision exactly at u = −log cos(δ(0)/2) = δ(0)²/8·(1 + δ(0)²/24 + …).
+
+> **Theorem A (two-body comparison).** Let (a,b) be an *adjacent* pair, i.e. no zero lies strictly
+> inside the short arc from θ_b to θ_a, and let g be its gap. Then under the depth flow
+>   **g′ ≥ −2cot(g/2).**
+> Consequently no collision occurs before u = −log cos(δ_min/2), so
+>   **−Λ ≥ −log cos(δ_min/2) ≥ δ_min²/8,  i.e. ρ ≥ 1 always.**
+
+*Proof.* Write x_j^k = (θ_j − θ_k) mod 2π ∈ (0, 2π). Then
+
+  g′ = θ_a′ − θ_b′ = −2cot(g/2) − Σ_{k≠a,b} [ cot(x_a^k/2) − cot(x_b^k/2) ].
+
+Adjacency says that for every other zero k one has x_a^k = x_b^k + g with both in (0, 2π): going
+counterclockwise from k one meets b before a, and k is not inside the arc. Since cot(x/2) is
+strictly decreasing on (0, 2π), each bracket is negative, so each term enters g′ with a positive
+sign — **every other zero slows the collapse.** Hence g′ ≥ −2cot(g/2). The ordering of the zeros
+is preserved until the first collision, so each gap dominates the two-body solution started from
+its own initial value, and the earliest possible vanishing is at u = −log cos(δ_min/2). ∎
+
+The sign claim was checked on 11,060 background terms across random and lattice configurations with
+zero exceptions, and the resulting inequality holds on every dataset in this paper: the minimum of
+(−Λ)/(−log cos(δ_min/2)) is 1.0842, 1.0714, 1.0612 over the complete ACUE enumerations at
+N = 6, 8, 10, and 1.00019, 1.00021 over the CUE samples at N = 16, 64. (At N = 256 the measured
+minimum is 1 − 1.3·10⁻⁵, an absolute discrepancy of 2·10⁻¹¹, at the solver's tolerance.)
+
+**Corollaries, all now rigorous.**
+- **−Λ^ACUE ≥ π²/(8N²) exactly**, since δ_min = π/N for every non-clock configuration (§1.3).
+- **Any point process with hard core c has N²(−Λ) ≥ π²c²/2.** The exchange inequality
+  μ_Λ ≥ π²μ²/2 of §1.5 — hence the Lagarias–Rodgers direction we actually use, and the
+  falsification threshold π²/8 = 1.2337 — is a theorem, not numerics. What remains conjectural
+  there is only the *reverse* comparison.
+
+**Theorem B (matching upper bound where the background is subcritical).** The background term is
+bounded by the mean value theorem: |Σ_{k≠a,b}[…]| ≤ g·Σ_{k} ½csc²(x_b^k/2), and for a configuration
+all of whose gaps exceed c/N this is ≤ C·N²g, using Σ_{k=1}^{N−1} ½csc²(πk/N) = (N²−1)/6.
+Integrating δ′ ≤ −2cot(δ/2) + CN²δ gives
+
+  **−Λ ≤ (δ_min²/8)·(1 + O(N²δ_min²)),** hence −Λ = (δ_min²/8)(1 + o(1)) whenever N²δ_min² → 0.
+
+**What this reduces the three laws to.**
+
+*Law 1 (CUE).* δ_min ≍ N^{−4/3} gives N²δ_min² ≍ N^{−2/3} → 0, so Theorems A and B pin
+−Λ = δ_min²/8·(1 + O(N^{−2/3})). The predicted relative correction exponent −2/3 = −0.667 matches
+the independently measured 0.598·N^{−0.729}. Composing with the sine-kernel smallest-gap law
+P(N^{4/3}δ_min > x) → exp(−x³/72π) — Ben Arous–Bourgade, and Feng–Wei for CβE — yields
+**8N^{8/3}(−Λ) ⟹ G²**. So Law 1 is reduced to a cited theorem plus Theorems A and B; what is still
+needed for a complete proof is that the error in Theorem B is uniform in probability, i.e. that the
+minimal gap is with high probability isolated and unaccompanied by a second anomalously small gap —
+which is precisely what the extreme-gap literature supplies.
+
+*Law 3 (β-universality).* Identical, for every finite β: δ_min ≍ N^{−1−1/(β+1)} gives
+N²δ_min² ≍ N^{−2/(β+1)} → 0, so **−Λ ≍ N^{−2−2/(β+1)}** reduces to the CβE extreme-gap law. The
+exponent is not an empirical fit; it is the image of the repulsion exponent under two elementary
+steps.
+
+*Law 2 (ACUE).* Here δ_min = π/N exactly, so N²δ_min² = π² — **the background correction does not
+vanish**, which is precisely why ρ^ACUE ∈ [1.05, 1.61] rather than → 1. The lower bound
+−Λ ≥ π²/(8N²) is exact and proved; the matching upper bound needs ρ ≤ C, which our complete
+enumeration establishes for N ≤ 10 and to which the slowly decreasing minimising family of §1.5
+gives strong evidence, but which is not proved in general. This is the one remaining gap, and it is
+a lattice-specific constant problem rather than a universality problem.
+
+So the honest status of the three laws changes from "numerical" to: **Law 1 and Law 3 reduced to
+published extreme-gap theorems; Law 2 proved in the direction that matters for the alternative
+hypothesis.**
+
+
 ---
 
 ## 2. One operator: why a hitting time sees what moments cannot
@@ -780,13 +858,12 @@ exactly what would open it.
 
 ## 8. Open problems
 
-1. **Rigorise the CUE depth law**: prove 8N^{8/3}(−Λ) ⟹ G². The hard half — the smallest-gap limit
-   law — exists (Ben Arous–Bourgade, Feng–Wei). What is missing is the localisation lemma, that the
-   other N − 2 zeros perturb the two-body collision time by 1 + o(1); our data show the correction
-   is positive and of size ≈0.60·N^{−0.73}.
-2. **Prove ρ ≥ 1** — the background never accelerates the first collision. This single lemma turns
-   §3.5's exchange rate between the depth and the Lagarias–Rodgers hard core into a theorem, and it
-   is the same estimate problem 1 needs.
+1. **Complete the CUE depth law**: Theorems A and B (§1.7) reduce 8N^{8/3}(−Λ) ⟹ G² to the cited
+   smallest-gap law; what remains is uniformity in probability of Theorem B's error term — that the
+   minimal gap is w.h.p. isolated, with no second comparably small gap.
+2. **Bound ρ for the lattice**: prove ρ^ACUE ≤ C, completing Law 2's upper bound. The lower bound
+   −Λ ≥ π²/(8N²) is now exact (§1.7). This is a constant problem for one specific configuration
+   family, not a universality problem.
 3. **Make s\* = 1.419640342… a theorem** for the single-dislocation family, and compute the
    separated-defect constant ρ∞ = 1.19120… exactly; the natural setting is an infinite clock with
    one localised defect under the Coulomb dynamics.
