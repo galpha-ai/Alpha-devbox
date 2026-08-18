@@ -375,6 +375,64 @@ published extreme-gap theorems; Law 2 proved in the direction that matters for t
 hypothesis.**
 
 
+### 1.8 The separation, proved on one side and reduced on the other
+
+The two laws can now be separated by a *deterministic threshold* rather than by comparing fitted
+exponents.
+
+> **Theorem C (CUE/ACUE separation).**
+> **(i)** For every N and every non-clock ACUE configuration, **N²(−Λ) ≥ π²/8 = 1.2337…**
+> **(ii)** P( N²(−Λ^CUE) < π²/8 ) → 1.
+> Hence the two depth laws are eventually separated by the fixed constant π²/8, almost surely on
+> the ACUE side.
+
+Part (i) is unconditional and needs nothing new: δ_min = π/N exactly for every non-clock ACUE
+configuration (§1.3, pigeonhole), and Theorem A gives −Λ ≥ δ_min²/8. There is no probability in it
+— the bound holds configuration by configuration.
+
+Part (ii) rests on two events, and it is worth separating what is cited from what we verified.
+
+*The gap event.* The sine-kernel law P(N^{4/3}δ_min > x) → exp(−x³/72π) gives
+P(δ_min > π/N) = P(N^{4/3}δ_min > πN^{1/3}) → exp(−π²N/72): the CUE minimum gap exceeds the lattice
+gap with **superpolynomially small** probability. This is the cited input.
+
+*The regularity event.* Theorem B needs the background slowdown coefficient
+B := Σ_{k≠a,b}[cot(x_b^k/2) − cot(x_a^k/2)]/g to satisfy B ≤ AN². The clock value is exactly
+(N²−1)/6, so A ≈ 1/6 = 0.1667 is the natural scale. Measured on fresh Haar samples:
+
+| N | 8 | 16 | 32 | 64 | 128 |
+|---|---|---|---|---|---|
+| median B/N² | 0.1092 | 0.1202 | 0.1171 | 0.1202 | 0.1200 |
+| 99th percentile | 0.2192 | 0.2551 | 0.3572 | 0.2829 | 0.3273 |
+| maximum observed | 0.2974 | 0.3106 | 0.6075 | 0.7948 | 0.3595 |
+
+so B ≤ N² comfortably, with a stable median of 0.120 and no observed excursion past 0.80. On that
+event Theorem B gives N²(−Λ) ≤ (N²δ_min²/8)(1 + O(N²δ_min²)), and the same samples give
+median N²δ_min² = 7.41, 4.66, 2.92, 1.85, 1.18 at N = 8, …, 128 — a ratio of 6.28 across a factor
+16 in N, against the predicted N^{−2/3} scaling factor 16^{2/3} = 6.35, agreement to 1%.
+
+**The conclusion, measured directly.** The fraction of CUE samples with N²(−Λ) below the ACUE floor
+π²/8, and the largest value observed:
+
+| N | 8 | 16 | 32 | 64 | 128 | 256 |
+|---|---|---|---|---|---|---|
+| fraction below π²/8 | 0.565 | 0.823 | 0.967 | 0.9984 | **1.0000** | **1.0000** |
+| max N²(−Λ) observed | 7.93 | 4.92 | 2.48 | 1.34 | **0.911** | **0.437** |
+| median N²(−Λ) | 1.083 | 0.627 | 0.385 | 0.231 | 0.146 | 0.0946 |
+
+From N = 128 onward **every** sampled CUE configuration lies below the deterministic ACUE floor,
+and by N = 256 the median sits a factor 13 below it. The separation is not asymptotic bookkeeping:
+it is visible as a strict inequality between two computable quantities at accessible sizes.
+
+**What is proved and what is not.** (i) is a theorem. In (ii), the gap event is a cited theorem and
+the regularity event is verified numerically rather than proved; converting the table above into a
+proof requires a high-probability bound on B, which is a standard rigidity statement for CUE
+(control of Σ_k d_k^{−2} for the neighbourhood of the extremal pair) but one we have not carried
+out. That is the precise remaining gap, and it is narrower than the one we started with: the
+separation no longer depends on the exponent −8/3 at all, only on the CUE minimum gap being
+eventually smaller than π/N together with a bounded background.
+
+
 ---
 
 ## 2. One operator: why a hitting time sees what moments cannot
@@ -859,8 +917,9 @@ exactly what would open it.
 ## 8. Open problems
 
 1. **Complete the CUE depth law**: Theorems A and B (§1.7) reduce 8N^{8/3}(−Λ) ⟹ G² to the cited
-   smallest-gap law; what remains is uniformity in probability of Theorem B's error term — that the
-   minimal gap is w.h.p. isolated, with no second comparably small gap.
+   smallest-gap law; what remains is a high-probability bound on the background coefficient
+   B ≤ AN² (§1.8) — a CUE rigidity statement controlling Σ_k d_k^{−2} near the extremal pair.
+   Measured: median B/N² = 0.120, max observed 0.79. This same bound completes Theorem C(ii).
 2. **Bound ρ for the lattice**: prove ρ^ACUE ≤ C, completing Law 2's upper bound. The lower bound
    −Λ ≥ π²/(8N²) is now exact (§1.7). This is a constant problem for one specific configuration
    family, not a universality problem.
