@@ -74,8 +74,8 @@ D = 0.4147152297…, giving the exact critical price
 
 the optimizer carrying 85% of its mass negative on 16 of 96 cells. Certified on both sides: at
 β\* − 10⁻³ the optimum is 0.3389038246899884 > val_pos with a genuinely signed optimizer; at
-β\* + 10⁻³ it equals val_pos as exact rationals; at β = 2 the programme is unbounded. Below β_unb = 2.03265 the LP is
-unbounded. Across eight model variants β\* ranged 1.44–6.72, and in five of the eight the window
+β\* + 10⁻³ it equals val_pos as exact rationals. Below β_unb = 2.03265 the LP is unbounded (in
+particular at β = 2, certified). Across eight model variants β\* ranged 1.44–6.72, and in five of the eight the window
 (β_unb, β\*) was numerically **empty** (width < 10⁻⁶): the value falls off the classical plateau
 directly into unboundedness. Table in `fab_phase_results.json`.
 
