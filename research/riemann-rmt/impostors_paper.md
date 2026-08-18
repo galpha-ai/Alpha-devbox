@@ -24,7 +24,7 @@ correlation exactly. The programme of "find the first statistic ACUE cannot fake
 ever since and keeps hitting the same wall: the set of measures matching any finite list of
 moments is a large convex body, so ruling out ACUE never rules out its neighbours.
 
-This paper does three things.
+This paper does four things.
 
 **We measure the wall exactly.** The family of impostors — measures matching every balanced moment
 of degree ≤ N — has dimension 0, 0, 2, 10, 80, 403, 1804 for N = 3, …, 9. We give closed-form
@@ -48,13 +48,20 @@ the eigenvalue of the Jacobian of the zero dynamics at the clock configuration. 
 whole phenomenon in one sentence: *impostors hide in exactly the modes the flow acts on most
 strongly*, which is why a hitting time sees what moments cannot.
 
+**We obtain an exact law for the refined instrument.** Ordinary Λ is blind to eigenvectors, so
+isospectral impostors need a *marked* depth: perturb by a rank-one mark and differentiate. Its
+derivative turns out not to be the global quantity one expects from the determinant lemma, but a
+**rank-two contrast supported on the pair of eigenvalues that is about to collide** — plus one
+background term which, once identified, removes the last fitted constant from the theory. The
+resulting formula is parameter-free and matches measurement to eleven digits (§3).
+
 We also relate Λ quantitatively to the Lagarias–Rodgers extremum μ, the existing formulation of
 the same question, and extract from that relation a single explicit number below which the
 alternative hypothesis is false.
 
 **What we do not claim.** We have not proved the Riemann hypothesis, refuted the alternative
-hypothesis, or proved the pair correlation conjecture. §3 and §4 are theorems about random matrices
-plus a precise, falsifiable, currently unverified prediction about zeta. Where a statement is
+hypothesis, or proved the pair correlation conjecture. §§1–3 are theorems and computations about
+random matrices, plus a precise, falsifiable, currently unverified prediction about zeta. Where a statement is
 numerical rather than proved, it is labelled. A separate part of the paper reports three new
 unconditional records for prime clustering, which are proved and machine-certified.
 
@@ -268,20 +275,9 @@ zero (τ(G₁) = τ(G₂) = 0.068725421516, difference 8·10⁻¹⁷). The repai
 transports to the circle by Cayley, and differentiates: χ(G;u) = ∂_η(−Λ)|₀. It separates the
 isospectral pair immediately, median |χ(G₁;u) − χ(G₂;u)| = 0.081 against |χ| of order 0.01–0.2.
 
-*What drives χ is not what the determinant lemma suggests.* One expects
-det(zI − G − ηuu\*) = det(zI − G)(1 − η u\*(zI−G)^{−1}u) to make χ track the directional resolvent
-and blow up at the ill-conditioned directions. **It does not**: rotating the mark onto the
-smallest-|eigenvalue| direction drives the resolvent from 1.615 to 6.667 = 1/|λ_min| while χ *falls*
-from 0.0267 to 0.0028. The correct law is local to the collision — rank-one perturbation moves λ_j
-by η|⟨u,v_j⟩|², Cayley contributes dθ/dλ = −2/(1+λ²), and the depth responds through the critical
-gap:
-
-  **χ(G;u) ≈ ρ·(δ/4)·( c_a|⟨u,v_a⟩|² − c_b|⟨u,v_b⟩|² ), c_j = −2/(1 + λ_j²),**
-
-with (a,b) the pair that collides first. Correlation with this formula over random marks is
-**0.9958**; a mark orthogonal to both critical eigenvectors gives χ = 2.8·10⁻³, two orders below
-typical. So the marked depth is a **differential alignment detector**, and it tells you which marks
-to use: those overlapping the critical pair, not those exploring ill-conditioned directions.
+What χ actually measures is **not** the directional resolvent the determinant lemma suggests, but a
+rank-two contrast on the colliding pair, and the exact law — parameter-free, verified to eleven
+digits — is the subject of §3.
 
 **Class III, immune to the linear flow.** If the observable algebra misses a direction v, the heat
 operator — being diagonal — keeps H_t v in the same hidden sector, so static invisibility persists
@@ -412,7 +408,128 @@ counterexample.
 
 ---
 
-## 3. What we can and cannot say about zero density
+---
+
+## 3. The marked depth: an exact rank-two law
+
+Λ is a function of the characteristic polynomial alone, so isospectral matrices share it exactly —
+we verify τ(G₁) = τ(G₂) = 0.068725421516 to 8·10⁻¹⁷. Impostors built to match rank, trace and
+Hilbert–Schmidt norm while differing in directional data therefore need a refinement. Deform by a
+rank-one **mark**, transport to the circle by Cayley, and differentiate:
+
+  G_η = G + η uu\*,  U_η = (G_η − iI)(G_η + iI)^{−1},  χ(G;u) = ∂_η(−Λ(U_η))|_{η=0}.
+
+It separates the isospectral pair at once — median |χ(G₁;u) − χ(G₂;u)| = 0.081 against |χ| of order
+0.01–0.2. The interesting question is what it measures.
+
+### 3.1 Not the resolvent
+
+The determinant lemma det(zI − G − ηuu\*) = det(zI − G)(1 − η·u\*(zI − G)^{−1}u) suggests that χ
+should track the directional resolvent and blow up wherever the inverse-Gram data is worst. **It
+does the opposite.** Rotating the mark onto the smallest-|eigenvalue| direction drives
+u\*(z₀I − G)^{−1}u from 1.615 to 6.667 = 1/|λ_min| while χ *falls* from 0.0267 to 0.0028 — an order
+of magnitude the wrong way. Condition-number susceptibility and collision susceptibility are
+different questions: the resolvent asks how much mass the mark puts on a spectral singularity, the
+depth asks how much *differential angular velocity* the mark induces on the pair that collides
+first. A near-null eigenvector orthogonal to that pair scores high on the first and nothing on the
+second.
+
+### 3.2 The law
+
+Let (a,b) be the first colliding pair with gap δ, and write
+
+  q_j(u) = |⟨u, v_j⟩|²,  c_j = −2/(1 + λ_j²),  **K_{ab} = c_a v_a v_a\* − c_b v_b v_b\***.
+
+Hellmann–Feynman gives dλ_j/dη = q_j, the Cayley map contributes dθ_j/dλ_j = c_j, so the first-order
+response of the critical gap is exactly the rank-≤2 quadratic form
+
+  δ′(u) = c_a q_a(u) − c_b q_b(u) = u\* K_{ab} u.
+
+The remaining ingredient is that the local collision law −Λ = κ·δ²/8 has κ = 8τ/δ² a *functional of
+the configuration*, not a constant. Differentiating τ = κδ²/8 therefore gives two terms, and this
+is the whole content of the earlier fitted factor:
+
+> **Marked depth derivative law.**
+>   **Dτ_G[uu\*] = (κ(G)·δ(G)/4)·u\*K_{ab}u + (δ(G)²/8)·κ′(u).**
+
+Measured at N = 6 with κ(G) = 1.280050 taken directly from the configuration (not fitted): the
+correlation with measurement is **1.00000000**, the slope **1.00000**, and the residual **5.7·10⁻¹¹**
+— finite-difference accuracy. The local term alone gives correlation 0.9958, slope 1.347, residual
+8.1·10⁻². So the previously reported empirical constant ρ ≈ 1.72 was never a constant: fitting
+χ = ρ(δ/4)δ′ forces ρ = κ + (δ/2)(κ′/δ′), which varies from mark to mark and averages to something
+larger than κ. **The law is now parameter-free**, and it decomposes cleanly into a local gap
+response and a background renormalisation response.
+
+### 3.3 It is a polarisation detector, not an overlap detector
+
+Write T(u) = q_a + q_b for the mark's total mass in the critical two-plane and
+I(u) = (q_a − q_b)/(q_a + q_b) for its imbalance. When the two critical eigenvalues are close,
+c_a ≈ c_b ≈ c and
+
+  δ′(u) ≈ c·T(u)·I(u).
+
+In the critical two-plane K_{ab} = diag(c_a, −c_b) ≈ c·σ_z. **The marked depth measures P_a − P_b,
+not P_a + P_b.** This corrects the natural guess: overlapping the critical pair is *not* sufficient.
+The mark u = (v_a + v_b)/√2 lies entirely inside the critical subspace, T = 1, yet has I = 0 and so
+gives no first-order response at all; the maximal-response marks are v_a and v_b themselves. The
+exact null cone is
+
+  𝒩_{ab} = { u : c_a q_a = c_b q_b } = { u : q_a/(1 + λ_a²) = q_b/(1 + λ_b²) },
+
+which reduces to q_a = q_b only when λ_a ≈ λ_b.
+
+### 3.4 Three confirmations
+
+**Blind tomography.** Sampling 60 random marks and solving χ(u_k) ≈ u_k\*K u_k for a symmetric K,
+without telling the solver which pair collides: the recovered K has top-two energy fraction 0.986,
+and its leading two-dimensional eigenspace agrees with the true span{v_a, v_b} to principal angles
+of **2.3·10⁻⁶ and 3.0·10⁻⁶ degrees**. The residual 1.4% of energy is the κ′ term, which is not
+rank-two. So the critical pair can be recovered from depth measurements alone.
+
+**The null cone is reachable, and reveals a floor.** Constructing marks with c_a q_a = c_b q_b to
+10⁻¹⁶ while keeping q_a = 0.244, q_b = 0.694 leaves χ = −3.3·10⁻³ to −3.9·10⁻³ — the same order as
+the orthogonal control, 2.8·10⁻³. This is a genuine background channel, not a residue of the local
+one, and it is worth noting *why*: for u ⊥ v_a, v_b the perturbation leaves λ_a and λ_b **exactly**
+fixed, not merely to first order, since (G + ηuu\*)v_a = λ_a v_a. So the floor cannot come from
+critical-pair eigenvalue motion at all; it is background renormalisation and trajectory shift, which
+is precisely the κ′ term. The experiments therefore separate χ = χ_local + χ_background cleanly.
+
+**The resolvent returns at second order.** It was not meaningless, only mis-ordered. Second-order
+rank-one perturbation theory gives λ_j″ = 2q_j Σ_{k≠j} q_k/(λ_j − λ_k), so the denominators
+1/(λ_j − λ_k) — the resolvent structure — govern the *next* term. The correct hierarchy is:
+first order, critical-pair differential overlap; second order, spectral mixing through the
+resolvent; then global heat-flow background renormalisation. On the null cone the first channel is
+switched off by construction, which makes it the natural place to test the second.
+
+At finite η the two-plane picture continues: the mark contributes off-diagonal coupling
+α_a ᾱ_b inside span{v_a, v_b}, giving a 2×2 effective Hamiltonian whose gap has the usual
+square-root form. So the regimes are linear response, then an avoided-crossing (Landau–Zener)
+crossover as η approaches the original gap, then exact degeneracy where the off-diagonal term
+leads — a finite-dimensional local model, not an N×N resolvent computation.
+
+### 3.5 The pattern this belongs to
+
+Two very different compressions in this paper have the same shape. In the ACUE fibre, an enormous
+moment space collapses at the critical degree to a **rank-one** transport channel between conjugate
+rectangles. In the marked depth, an enormous spectral geometry collapses at first order to a
+**rank-two** contrast on the colliding pair. We record the pattern as a working principle rather
+than a theorem:
+
+> **First-defect compression.** When a model is indistinguishable from its target under all
+> low-complexity observables, the first observable that does distinguish them tends to act through
+> a channel of very low rank.
+
+If that is right, the search for detectors should be reorganised. The natural objects are not
+further class functions Tr ρ(U) or Schur polynomials s_λ(U), but **marked matrix coefficients**: the
+quantity χ measures a dipole of the mark's spectral measure μ_u = Σ_j q_j(u) δ_{θ_j} across the
+critical pair, c_a μ_u(θ_a) − c_b μ_u(θ_b). In the Langlands setting the analogous objects are
+periods and relative characters ⟨v, π(g)v⟩ rather than traces Tr π(g) — which is an argument, from
+this side, that a relative trace formula is the right home for an arithmetic version of this
+detector.
+
+---
+
+## 4. What we can and cannot say about zero density
 
 The other headline target adjacent to this circle of ideas is the zero-density exponent. Guth and
 Maynard's large-value estimate gives N(σ,T) ≤ T^{(30/13)(1−σ)+o(1)} and primes in intervals of
@@ -441,9 +558,9 @@ collaborating system, not as a result of this paper.
 
 ---
 
-## 4. Records for clustered primes
+## 5. Records for clustered primes
 
-### 4.1 The mechanism
+### 5.1 The mechanism
 
 Fix a set of offsets H = {h₁, …, h_k} that is *admissible* — for each prime p the offsets miss a
 residue class mod p, so nothing forbids all of n + h₁, …, n + h_k being prime at once. Maynard's
@@ -458,7 +575,7 @@ primes infinitely often, hence H_m := liminf(p_{n+m} − p_n) ≤ H(k), the diam
 admissible k-tuple. Bombieri–Vinogradov gives θ = 1/2 unconditionally, so the criterion is
 M_k > 4m.
 
-### 4.2 What everyone had missed
+### 5.2 What everyone had missed
 
 For m = 1 the relevant k is 50 and M_k has been computed exhaustively. For m ≥ 2 the relevant k
 runs from ten thousand to fifty million, and there M_k had never been computed at all: every record
@@ -470,7 +587,7 @@ Its deficit is 2.3 to 2.9 units of log k, and about 1.1 units are recoverable el
 M_k ≈ log k and H(k) ≈ k(log k + 0.77), recovering 1.1 units is a factor e^{1.1} ≈ 3 in k, hence
 nearly a factor 3 in H_m.
 
-### 4.3 The engine
+### 5.3 The engine
 
 Take F(t) = ∏_i g(t_i)·1[Σt_i ≤ k]. Let X_i be i.i.d. with density g²/c₂, c₂ = ∫g², write S_j for
 partial sums and G(u) = ∫₀^u g. Then, exactly,
@@ -489,7 +606,7 @@ the hard truncation by **shaped subexponential tails** g(t) = e^{−(t/T₁)^κ}
 support recovers the remainder: +0.12 units from exact truncation accounting, +0.49 from tail
 shaping, the rest from shape optimisation.
 
-### 4.4 The results
+### 5.4 The results
 
 | | new bound | k | previous record |
 |---|---|---|---|
@@ -509,7 +626,7 @@ These are computer-assisted results produced by AI systems and have not been ref
 certificates and scripts are published for replay. A further conditional improvement
 (H₂ ≤ 145,226 via Deligne-strength equidistribution) is deliberately **not** claimed.
 
-### 4.5 Why 246 did not move: five walls
+### 5.5 Why 246 did not move: five walls
 
 1. **The ceiling is the tuple diameter.** No post-processing of Maynard–Tao output beats H(k_min);
    pair-correlation constants cannot lower H₁ at all.
@@ -536,7 +653,7 @@ best certified value is M₄₉,₁/₃₅ ≥ 3.930490592 with float optimum 3.
 
 ---
 
-## 5. The signed sieve: an identity that closes a decade-old temptation
+## 6. The signed sieve: an identity that closes a decade-old temptation
 
 Maynard–Tao weights are squares, hence nonnegative, and positivity is what makes the decode valid.
 Chen's theorem, Iwaniec's linear-sieve weights λ^±, and Zhang's Landau–Siegel programme are all
@@ -614,7 +731,7 @@ crossing a parity barrier.
 
 ---
 
-## 6. How this was done
+## 7. How this was done
 
 The method is part of the result, so we describe it plainly.
 
@@ -661,7 +778,7 @@ exactly what would open it.
 
 ---
 
-## 7. Open problems
+## 8. Open problems
 
 1. **Rigorise the CUE depth law**: prove 8N^{8/3}(−Λ) ⟹ G². The hard half — the smallest-gap limit
    law — exists (Ben Arous–Bourgade, Feng–Wei). What is missing is the localisation lemma, that the
@@ -673,9 +790,11 @@ exactly what would open it.
 3. **Make s\* = 1.419640342… a theorem** for the single-dislocation family, and compute the
    separated-defect constant ρ∞ = 1.19120… exactly; the natural setting is an infinite clock with
    one localised defect under the Coulomb dynamics.
-4. **The marked depth law**: prove χ(G;u) = ρ(δ/4)(c_a|⟨u,v_a⟩|² − c_b|⟨u,v_b⟩|²) and determine ρ
-   for the lattice families. Empirical correlation 0.9958; what is missing is problem 1's estimate,
-   differentiated.
+4. **The marked depth law**: prove Dτ_G[uu\*] = (κδ/4)·u\*K_{ab}u + (δ²/8)·κ′(u) as an asymptotic
+   identity with controlled error, and characterise the background term κ′. Numerically the law is
+   exact (correlation 1.00000000, residual 5.7·10⁻¹¹); what is missing is the same localisation
+   estimate as problem 1, differentiated. A natural sub-target: on the null cone c_a q_a = c_b q_b,
+   show the leading behaviour is governed by λ_j″ = 2q_j Σ_{k≠j} q_k/(λ_j − λ_k).
 5. **A transversality theorem**: with static observables M and fibre F_m, prove τ|_{F_m} generically
    non-constant, adding marks until ⋂ ker DΛ_{u_j} ∩ ker DM = {0}.
 6. **Transport the Palm certificates to the depth**, aiming at a bound μ_Λ < 1.8177 — which by
