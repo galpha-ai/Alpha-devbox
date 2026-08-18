@@ -687,7 +687,86 @@ statement to prove is that τ restricted to F_m is generically non-constant, wit
 coordinates; marked Newman constants supply the directional ones. The tables above are the first
 evidence that this is achievable rather than merely well-posed.
 
-### 4.10 What this could mean for zeta, stated carefully
+### 4.10 The depth is the Lagarias–Rodgers hard core in another coordinate
+
+The sharpest consequence of the depth law is that it is not a new statistic competing with the
+existing formulation of the alternative hypothesis — it is that formulation, in coordinates where
+our machinery computes exactly.
+
+Lagarias and Rodgers study the class 𝒯₁ of point processes that mimic the sine process at
+coordinatewise bandwidth one — for every r and every Schwartz η with supp η̂ ⊂ [−1,1]^r, the
+factorial correlation statistics agree — and define
+
+  μ = sup{ c : some X ∈ 𝒯₁ has minimum spacing ≥ c },  mean spacing normalised to 1.
+
+They prove μ ≥ 1/2 by the randomly shifted half-lattice (which is exactly ACUE), record the
+pair-only upper bound μ ≤ 0.606894…, and conjecture μ = 1/2. The alternative hypothesis is
+precisely the assertion that zeta's zeros realise a hard core of 1/2.
+
+**The bridge.** On the circle with N points the mean angular spacing is 2π/N, so a hard core of c
+mean-spacings is δ_min = 2πc/N. Combined with the local collision law −Λ = ρ·δ_min²/8 this gives
+
+  **N²(−Λ) = ρ · π²c² / 2,  and at the alternative-hypothesis value c = 1/2, N²(−Λ) = ρ · π²/8.**
+
+Here ρ ≥ 1 is the background delay factor of §4.5 and §4.7. Every number we computed is this
+identity read in one direction or the other. The ACUE quantiles at N = 3, …, 10 give
+
+| N | min N²(−Λ) | ρ_min | median | ρ_med | max | ρ_max |
+|---|---|---|---|---|---|---|
+| 6 | 1.353146 | 1.0968 | 1.419374 | 1.15050 | 1.952629 | 1.5827 |
+| 8 | 1.330383 | 1.0784 | 1.418216 | 1.14956 | 1.976122 | 1.6018 |
+| 10 | 1.314614 | 1.0656 | 1.412774 | 1.14515 | 1.985458 | 1.6094 |
+
+and the single-dislocation constant of §4.7 is exactly the median branch:
+s\* = 1.41964034… = ρ_∞ · π²/8 with **ρ_∞ = 1.1507015…**. The minimising family
+{0,…,N−3} ∪ {N+3, N+4} — a maximally packed block beside a void — has ρ falling slowly
+(1.0656, 1.0611, 1.0579, …, 1.0495 at N = 18) toward a limit near 1.03–1.05; the block is nearly
+stationary under the flow, so only its ends move, which is why it resists collapse and keeps ρ > 1.
+The maximising symmetric three-block family gives ρ → 1.6094, i.e. N²(−Λ) → 1.9861.
+
+**The equivalence of extremal problems.** Define the depth extremum
+μ_Λ = sup{ liminf N²(−Λ) : X ∈ 𝒯₁ }. The identity gives, in both directions,
+
+  **μ_Λ ≥ π²μ²/2  and  μ ≤ √(2μ_Λ)/π.**
+
+These are not loose: LR's published bound μ ≤ 0.606894… is *exactly* the depth bound
+μ_Λ ≤ π²(0.606894)²/2 = 1.8177…, and the conjecture μ = 1/2 is exactly μ_Λ = π²/8 · ρ for the
+half-lattice's own ρ. So **any improvement of the depth bound is an improvement of the
+Lagarias–Rodgers bound**, at the explicit exchange rate above; a depth bound of 1.29 — barely below
+what the ACUE configurations themselves realise — would already give μ ≤ 0.511.
+
+**A falsifiable threshold for the alternative hypothesis.** Running the inequality in the direction
+that costs nothing:
+
+> **If the zeros of ζ have, in a window at height T with N = (log T)/2π zeros, local Newman depth
+> satisfying liminf N²(−Λ) < π²/8 = 1.2337…, then the alternative hypothesis is false.**
+
+This uses only the hard-core consequence of AH — not the lattice structure, not any correlation
+beyond it — and it replaces the vague target "beat the bandwidth wall" with one number. Compare the
+two sides: AH predicts N²(−Λ) ≥ 1.2337 with the half-lattice's actual typical value 1.41964, while
+CUE predicts N²(−Λ) ≍ N^{−2/3} → 0. The gap between prediction and threshold is a factor 1.15, and
+between CUE and threshold it is unbounded.
+
+**Why this reformulation may be easier to attack.** The LR extremum is a constraint on a *minimum*,
+a hard combinatorial quantity; Palm-type certificates — the row-sum square
+Var⁰_sine(S_f) ≤ (M_h − A_f)(A_f − m_h) for band-limited f, and its multiwindow quadratic
+generalisation on the packing body K_h — apply naturally to smooth functionals and awkwardly to a
+minimum. The depth is smooth in the configuration (§4.9 computes its gradient), it has a variational
+characterisation as a distance to a hypersurface, and its derivative has the explicit critical-pair
+law of §4.9. Transporting the Palm/packing certificates from the row sum to the depth is therefore
+the natural next attempt, and unlike the row-sum searches — which failed for an exact local reason,
+the pattern {−h, 0, h} already forcing S₀ = 2f(h) > 9/7 for the first nonnegative Fejér profile —
+the depth has no such immediate obstruction.
+
+**One missing lemma.** The bridge is rigorous except for ρ ≥ 1, i.e. that the background never
+*accelerates* the first collision below the isolated two-body time δ_min²/8. Every computation in
+this project supports it: on the CUE side the correction is positive with median 0.598·N^{−0.729},
+on the ACUE side ρ ∈ [1.049, 1.610] over all configurations and sizes tested, and the mechanism is
+clear — the neighbours of a close pair pull its members outward. We have not proved it. It is the
+single lemma standing between the numerology above and a theorem, and it is exactly the same
+localisation estimate that Open Problems 1 and 3 require.
+
+### 4.11 What this could mean for zeta, stated carefully
 
 We claim no theorem about ζ. But the structure suggests a target that is strictly weaker than what
 the static programme requires. ACUE predicts N²(−Λ) ≍ 1; CUE predicts N²(−Λ) ≍ N^{−2/3} → 0.
