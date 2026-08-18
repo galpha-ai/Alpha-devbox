@@ -202,7 +202,7 @@ monotonically to **1.41963827** at N = 20; the continuum limit t = −s/N², z =
 
 whose first double zero (G = ∂_u G = 0) sits at **s\* = 1.419640342…, u\* = 1.812942145…** with
 G″(u\*) = −0.3767 ≠ 0. The two agree to 2·10⁻⁶ at N = 20, consistent with an O(N⁻²) approach. And
-s\* = ρ_∞·π²/8 with ρ_∞ = 1.1507015… — the constant is the hard core, dressed by the background.
+s\* = ρ_∞·π²/8 with ρ_∞ = 1.150717118… — the constant is the hard core, dressed by the background.
 *(One correction to the record: s\* is not the limit of the ensemble median. For N ≤ 7 the two
 coincide, but the complete enumeration shows the median turns around at N = 7 and falls —
 1.41822, 1.41520, 1.41277 at N = 8, 9, 10 — as the support spreads from [1.4147, 1.8246] to
@@ -237,11 +237,28 @@ the row sum to the depth is the natural next attempt, and unlike the row-sum sea
 for an exact local reason, the pattern {−h, 0, h} already forcing S₀ = 2f(h) > 9/7 for the first
 nonnegative Fejér profile — the depth has no such immediate obstruction.
 
-**The one missing lemma.** The bridge is rigorous except for **ρ ≥ 1**: that the background never
-*accelerates* the first collision below the two-body time δ_min²/8. Every computation supports it —
-on the CUE side the correction is positive with median 0.598·N^{−0.729}, on the ACUE side
-ρ ∈ [1.049, 1.610] across all configurations and sizes tested — and the mechanism is clear, since
-the neighbours of a close pair pull its members outward. We have not proved it.
+**Two lemmas, not one.** It is worth separating them, because they have different status and do
+different jobs.
+
+> **Hard-core lemma (ρ ≥ 1).** Proved in §1.7 directly from the adjacent-gap ODE. It gives the
+> inequality in the direction used here, hence the falsification threshold: **N²(−Λ) < π²/8 ⟹ the
+> alternative hypothesis is false.**
+>
+> **Localisation lemma (ρ → 1 for finite β).** The remaining probabilistic estimate. It is what
+> upgrades the exponents to distributional limits.
+
+Only the second is open, and §1.7 predicts its rate.
+
+**The leverage on μ, made explicit.** Since μ_Λ ≥ π²μ²/2, any upper bound D_dyn ≤ M for the depth
+of an admissible class gives
+
+  **μ ≤ √(2M)/π.**
+
+M = 1.29 — barely below what ACUE configurations themselves realise — already gives
+μ ≤ 0.511281…, a large improvement on the published 0.606894…. Crossing the alternative-hypothesis
+barrier itself requires M < π²/8 = 1.2337005501…. So the depth is not merely an equivalent
+coordinate for the Lagarias–Rodgers problem; it is a coordinate in which a *quantitative* target is
+visible, and the target is a single number.
 
 ### 1.6 A classification of impostors, with two computable criteria
 
@@ -370,9 +387,46 @@ enumeration establishes for N ≤ 10 and to which the slowly decreasing minimisi
 gives strong evidence, but which is not proved in general. This is the one remaining gap, and it is
 a lattice-specific constant problem rather than a universality problem.
 
+**The finite-β / β = ∞ dichotomy, and why it is singular.** The background correction is governed by
+δ_min²·S with S ≍ N² the background stiffness (the clock value is exactly (N²−1)/6). Feng–Wei give
+δ_min ≍ N^{−1−1/(β+1)} for the circular β-ensembles, so
+
+  δ_min²·S ≍ N^{−2−2/(β+1)}·N² = **N^{−2/(β+1)} → 0 for every finite β**,
+
+whence ρ_β → 1 and the two-body constant 1/8 is asymptotically exact. But at β = ∞ the hard core
+pins δ_min ≍ 1/N, so δ_min²·S ≍ 1: the background contributes at leading order and **ρ_∞ ≠ 1**.
+The lattice endpoint is therefore *not* the smooth limit of the finite-β formula — it is a singular
+hard-core endpoint, and that is exactly why the single-dislocation configuration realises
+
+  **s\* = 1.419640342… = 1.150717118… × π²/8**,
+
+a two-body collision time dressed by roughly 15% of many-body shielding, rather than π²/8 itself.
+
+This also predicts the *rate* at which ρ_β approaches 1, which is a sharper and independently
+testable statement than the leading exponent:
+
+  **ρ_β − 1 = O_ℙ(N^{−2/(β+1)+o(1)}).**
+
+| β | predicted rate | fitted over N ≤ 128–256 | local slope at the largest N |
+|---|---|---|---|
+| 1 (COE) | −1 | **−1.012** | −0.851 |
+| 2 (CUE) | −2/3 = −0.667 | −0.710 | **−0.624** |
+| 4 (CSE) | −2/5 = −0.400 | −0.501 | **−0.407** |
+
+β = 1 lands on the prediction; for β = 2 and 4 the global fits are steeper but the local slopes
+decrease monotonically toward the predicted value and essentially reach it at the largest sizes,
+with the finite-N drift growing with β as expected (a slower predicted decay is more heavily
+contaminated).
+
+**The pipeline.** The three laws are therefore not three empirical facts but one mechanism:
+
+  extreme-gap law (cited) + first-collision identity (§1.7) + background localisation (open)
+    ⟹ −Λ = ρ·δ_min²/8 with ρ ≥ 1 proved, ρ → 1 for finite β, ρ = O(1) but ≠ 1 at β = ∞
+    ⟹ **−Λ ≍ N^{−2−2/(β+1)}** across the whole family, lattice included.
+
 So the honest status of the three laws changes from "numerical" to: **Law 1 and Law 3 reduced to
-published extreme-gap theorems; Law 2 proved in the direction that matters for the alternative
-hypothesis.**
+published extreme-gap theorems plus the localisation lemma; Law 2 proved in the direction that
+matters for the alternative hypothesis, with its non-unit constant explained rather than fitted.**
 
 
 ### 1.8 The separation, proved on one side and reduced on the other
