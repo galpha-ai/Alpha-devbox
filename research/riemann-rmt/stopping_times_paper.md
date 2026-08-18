@@ -601,22 +601,91 @@ The conclusion deserves stating twice.
 > to a whole algebra of observables, and remain indistinguishable along an entire natural flow, yet
 > have first-passage laws in different scaling universality classes.
 
-### 4.9 Two honest limitations
+### 4.9 A classification of counterexamples, and two computable criteria
 
-*Ordinary Λ cannot see eigenvectors.* Λ is a function of the characteristic polynomial alone. Two
-isospectral matrices have the same Λ, so any counterexample family built to have matching spectra
-but differing directional data (Schur complements, inverse-Gram quantities) is invisible to it. The
-natural repair is a **marked depth**: deform G ↦ G + η uu\*, transport to the circle by Cayley, and
-differentiate, χ_Λ(G; u) = ∂_η Λ_u |_{η=0}. Since det(zI − G − ηuu\*) = det(zI − G)(1 − η u\*(zI −
-G)^{−1}u), the marked depth is coupled precisely to the resolvent quantity u\*(zI − G)^{−1}u that
-those counterexamples were built around. Testing whether χ_Λ blows up with the inverse-Gram
-pathology is the natural next experiment.
+Not every impostor is caught by the same instrument. The counterexample families that arose in this
+project fall into three classes, and — this is the useful part — membership is decidable by two
+computations rather than by taste.
 
-*Linear flows do not destroy linear invisibility.* If a hidden direction is orthogonal to the
-observable algebra, the heat operator — being diagonal — generally keeps it hidden. So the power
-here does not come from the flow mixing frequencies; it comes from Λ being a *nonlinear stopping
-time*, measuring how far each orbit runs before hitting a variety. Two orbits may live in the same
-invariant subspace and still have different distances to the discriminant.
+**Criterion I (transversality).** Fix a configuration X and a bandwidth r; let M_r(X) = (p₁,…,p_r)
+be the moment map and τ = −Λ the depth. The class is caught by ordinary Λ precisely when
+ker DM_r ⊄ ker Dτ, i.e. when grad τ has a component off the row space of DM_r. We compute the
+relative residual directly.
+
+| configuration | r = 1 | r = 2 | r = 3 | r ≥ N/2 |
+|---|---|---|---|---|
+| single dislocation, N = 6 | 0.976 | 0.800 | — | rank saturates |
+| single dislocation, N = 8 | 0.991 | 0.941 | 0.737 | rank saturates |
+| random ACUE lattice, N = 7 | 0.996 | 0.963 | 0.569 | rank saturates |
+| generic non-lattice, N = 7 | 0.998 | 0.926 | 0.195 | rank saturates |
+
+Read this correctly. While rank DM_r < N the moment map has a kernel and the question is
+meaningful; in that entire regime the answer is decisively yes — 80% to 99% of the depth gradient
+lies in directions the first one or two moments cannot see. Once r ≈ N/2 the rank saturates at N,
+ker DM_r = 0, and there are no moment-blind directions left to test: the residual drops to 10⁻¹⁶
+not because Λ fails but because the question becomes vacuous. So: **moment-null does not imply
+depth-null**, quantitatively, for every bandwidth at which the distinction exists.
+
+**Class I — caught by Λ directly.** Anything whose defect changes the geometry of the closest
+pair. This includes the collision-stratum families (a configuration sitting on δ = 0 has Λ = 0
+outright, the same mechanism by which function-field Newman constants are pinned by double roots),
+the half-lattice and PairCeiling adversaries (§4.5: a hard lower spacing δ_min ≳ c/N forces
+−Λ ≳ N^{−2}, incompatible with CUE's N^{−8/3}), and the centre-of-mass and secant families of §4.2,
+which move the depth law by total variation 0.12–0.24 while every balanced moment stays frozen.
+
+**Class II — invisible to Λ, caught by the marked depth.** Λ is a function of the characteristic
+polynomial alone, so it cannot see eigenvectors. Two isospectral matrices have *identically* the
+same depth; we verify this to machine zero (τ(G₁) = τ(G₂) = 0.068725421516, difference 8·10⁻¹⁷).
+Counterexamples built to match rank, trace and Hilbert–Schmidt norm while differing in a directional
+Schur complement live here. The repair is a **marked depth**: deform G ↦ G + η uu\*, transport to
+the circle by Cayley, and differentiate,
+
+  χ(G; u) = ∂_η ( −Λ(U_{η,u}) ) |_{η=0}.
+
+It separates the isospectral pair immediately — median |χ(G₁;u) − χ(G₂;u)| = 0.081 over random
+marks, against |χ| itself of order 0.01–0.2.
+
+*What drives χ is not what one would guess.* The determinant lemma
+det(zI − G − ηuu\*) = det(zI − G)(1 − η·u\*(zI − G)^{−1}u) suggests the marked depth should track
+the directional resolvent, and hence blow up wherever the inverse-Gram pathology is worst. It does
+not. Rotating the mark onto the smallest-|eigenvalue| direction drives the resolvent
+u\*(z₀I − G)^{−1}u from 1.615 to 6.667 = 1/|λ_min| while χ *falls* from 0.0267 to 0.0028 — an order
+of magnitude the wrong way. The correct mechanism is local to the collision. Rank-one perturbation
+moves λ_j by η|⟨u, v_j⟩|², the Cayley map contributes dθ/dλ = −2/(1 + λ²), and the depth responds
+through the critical gap, giving
+
+  **χ(G; u) ≈ ρ · (δ/4) · ( c_a |⟨u, v_a⟩|² − c_b |⟨u, v_b⟩|² ),  c_j = −2/(1 + λ_j²),**
+
+where (a, b) is the pair that collides first, δ their gap, and ρ a background renormalisation of the
+same kind as the ACUE constant of §4.7. Measured against random marks the correlation with this
+formula is **0.9958** (best-fit ρ = 1.72 in the instance tested, against τ/(δ²/8) = 1.28 for the
+value itself — derivative and value renormalise differently). The control confirms the mechanism: a
+mark orthogonal to *both* critical eigenvectors gives χ = 2.8·10⁻³, two orders below typical.
+
+So the marked depth is a **differential alignment detector**: it measures how asymmetrically the
+mark couples to the two eigenvectors about to collide, and vanishes on marks that couple to them
+equally. That is a sharper instrument than a resolvent probe, and it says exactly which marks to
+choose when testing a Class II family — those overlapping the critical pair, not those exploring the
+ill-conditioned directions.
+
+**Class III — genuinely immune to the linear flow.** Suppose the observable algebra misses a
+direction v. Because the heat operator is diagonal in the coefficient basis, H_t v generally stays
+in the same hidden sector, so if F(X) = F(X + εv) for all observables F, then F(H_t X) =
+F(H_t(X + εv)) for all t as well. **A linear flow does not destroy linear invisibility** — this is
+a genuine negative result and it is why "evolve the moments you have" fails, as §4.2 records.
+
+The point is that Λ is not in that argument's scope. It is not a linear observable transported by
+the flow; it is the first hitting time of the orbit against the discriminant variety. Two orbits can
+live in the same invariant hidden sector and still stand at different distances from
+D = {Disc = 0}. Class III is therefore not "counterexamples the depth cannot see" but
+"counterexamples for which the *linear* dynamic argument gives nothing" — and Criterion I is what
+decides whether the nonlinear stopping time recovers them.
+
+**The programme in one line.** With static observables M and fibre F_m = {X : M(X) = m}, the
+statement to prove is that τ restricted to F_m is generically non-constant, with marks added,
+Λ_{u₁}, …, Λ_{u_k}, until ⋂_j ker DΛ_{u_j} ∩ ker DM = {0}. Static moments supply coarse
+coordinates; marked Newman constants supply the directional ones. The tables above are the first
+evidence that this is achievable rather than merely well-posed.
 
 ### 4.10 What this could mean for zeta, stated carefully
 
@@ -695,8 +764,9 @@ what would open it.
    separated-defect constant ρ∞ = 1.19120… exactly. The natural framework is an infinite clock with
    one localised defect under the Coulomb dynamics, i.e. a Calogero–Moser problem; the target is a
    closed form in terms of theta or Bessel data.
-3. **The marked depth.** Does χ_Λ(G; u) = ∂_η Λ_u separate isospectral counterexample families? If
-   so, the static counterexample programme and the Newman dynamics become one structure.
+3. **The marked depth law.** Prove χ(G;u) = ρ·(δ/4)·(c_a|⟨u,v_a⟩|² − c_b|⟨u,v_b⟩|²) with the
+   background constant ρ, and determine ρ for the lattice families. Empirically the correlation is
+   0.9958 (§4.9); what is missing is the same localisation estimate as in problem 1, differentiated.
 4. **A transversality conjecture.** With static observables M and fibre F_m = {X : M(X) = m}, prove
    that τ = −Λ restricted to F_m is generically non-constant; equivalently ker DM ⊄ ker DΛ, with
    marks added until the intersection is trivial.
