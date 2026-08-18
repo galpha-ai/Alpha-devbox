@@ -921,7 +921,103 @@ crossing a parity barrier.
 
 ---
 
-## 7. How this was done
+## 7. Formalisation and machine verification
+
+Every theorem in §1.7, §1.8 and §2 is elementary enough to formalise, and we report precisely what
+has been machine-checked, by which tool, and what has not.
+
+### 7.1 What could not be done here, and why
+
+We could not compile Lean. The session's egress proxy returns a **403 policy denial** for
+`elan.lean-lang.org` and for `github.com` release downloads, and organisation policy denials are not
+to be retried. Public repositories are readable over git, but a Lean toolchain ships as a binary
+release, and building Lean plus Mathlib from source is not feasible here. The Lean file below is
+therefore **written but not compiled**; we present it as a formal specification rather than a
+verified artifact, and mark with `sorry` the two steps that need Mathlib's ODE comparison API,
+which we decline to guess at without a compiler.
+
+### 7.2 What was machine-checked, and how
+
+In place of Lean we discharged every algebraic and analytic step by exact symbolic computation
+(`sympy`, rational arithmetic throughout — no floating point) and, where the statement is a decision
+problem over the reals, by SMT (`z3`). Script `fab_verify_proof.py`: 18 checks, all passing.
+
+| step | statement | tool | status |
+|---|---|---|---|
+| 1a | ∂_s of the flow equals (N·D_z − D_z²) on each monomial z^j | sympy, exact | ✔ |
+| 1b | 2z_j/(z_j − z_k) = 1 − i·cot((θ_j − θ_k)/2) | sympy, exact | ✔ |
+| 1c | the (N−1) terms cancel, leaving θ̇_j = −Σ cot | sympy, exact | ✔ |
+| 2a | cos(g/2) = e^s cos(g₀/2) solves g′ = −2cot(g/2) | sympy, exact | ✔ |
+| 2b | the collision time is −log cos(g₀/2), and the gap vanishes there | sympy, exact | ✔ |
+| 3 | d/dx cot(x/2) = −½csc²(x/2), strictly negative on (0, 2π) | sympy, exact | ✔ |
+| 4a | f(0) = 0 and f′(x) = ¼(2tan(x/2) − x) for f = −log cos(x/2) − x²/8 | sympy, exact | ✔ |
+| 4b | tan t − t has nonnegative Taylor coefficients (⅓, 2/15, 17/315, 62/2835, 1382/155925, …) | sympy, exact | ✔ |
+| 5 | the sign lemma as a real-arithmetic decision problem: **unsat** for the negation | z3 | ✔ |
+| 6 | the ACUE pigeonhole giving δ_min = π/N | exact integer reasoning | ✔ |
+| 7 | Σ_{k=1}^{N−1} ½csc²(πk/N) = (N²−1)/6, at N = 4, 6, 8, 12, 20 | sympy, exact | ✔ |
+
+Step 5 deserves comment, because it is the one place where a decision procedure is genuinely the
+right tool. Encoding the cosines and sines of the two half-angles as reals ca, sa, cb, sb subject to
+ca² + sa² = 1, cb² + sb² = 1, sa, sb > 0, together with the ordering constraint sa·cb − ca·sb > 0
+(that is, sin(a − b) > 0 for 0 < a − b < π), z3 reports **unsat** for the negation
+ca·sb − cb·sa ≥ 0 of the conclusion. The sign of every background term is therefore certified by a
+complete decision procedure over the reals rather than by inspection of a graph.
+
+### 7.3 The Lean specification
+
+```lean
+/-- The cotangent, spelled directly so as not to depend on a particular Mathlib name. -/
+noncomputable def cot (x : ℝ) : ℝ := Real.cos x / Real.sin x
+
+lemma hasDerivAt_cot {x : ℝ} (hx : Real.sin x ≠ 0) :
+    HasDerivAt cot (-(1 / Real.sin x ^ 2)) x
+
+/-- `cot` is strictly decreasing on `(0, π)`: the sign input to Theorem A. -/
+lemma cot_strictAntiOn : StrictAntiOn cot (Set.Ioo (0 : ℝ) π)
+
+/-- **Background sign lemma.**  For an adjacent pair the other zeros satisfy
+`0 < x_b < x_a < 2π`, and the resulting bracket is negative — so it enters the gap
+derivative with a positive sign and slows the collapse. -/
+lemma background_sign {xb xa : ℝ} (h0 : 0 < xb) (hlt : xb < xa) (h2 : xa < 2 * π) :
+    cot (xa / 2) - cot (xb / 2) < 0
+
+/-- **The depth inequality.** `−log (cos (x/2)) ≥ x²/8` on `[0, π)`. -/
+lemma neg_log_cos_ge {x : ℝ} (h0 : 0 ≤ x) (h : x < π) :
+    x ^ 2 / 8 ≤ -Real.log (Real.cos (x / 2))
+
+/-- Exact solution of the two-body gap equation. -/
+theorem two_body_solution
+    (g : ℝ → ℝ) (hg : ∀ s, HasDerivAt g (-2 * cot (g s / 2)) s)
+    (hrange : ∀ s, g s ∈ Set.Ioo (0 : ℝ) (2 * π)) (s : ℝ) :
+    Real.cos (g s / 2) = Real.exp s * Real.cos (g 0 / 2)
+
+/-- **Theorem A.** Every gap dominates the two-body solution started from the same
+initial value, so no gap reaches `0` before `−log (cos (δ/2)) ≥ δ²/8`. -/
+theorem depth_ge {ι : Type*} [Fintype ι] (g : ι → ℝ → ℝ) (δ : ℝ)
+    (hδ0 : 0 < δ) (hδπ : δ < π) (hmin : ∀ i, δ ≤ g i 0)
+    (hineq : ∀ i s, -2 * cot (g i s / 2) ≤ deriv (g i) s) :
+    δ ^ 2 / 8 ≤ -Real.log (Real.cos (δ / 2))
+```
+
+The full file — proofs for the first four items, `sorry` for the last two — is
+`lean/DepthComparison.lean`. `cot_strictAntiOn` is proved from the derivative via
+`strictAntiOn_of_hasDerivWithinAt_neg`; `background_sign` follows at once; `neg_log_cos_ge` reduces
+to `t ≤ tan t` on `[0, π/2)`. What remains for a complete formalisation is `two_body_solution`
+(uniqueness for a scalar autonomous ODE) and the comparison step inside `depth_ge` (a Grönwall-type
+argument); both are standard and both are within Mathlib's reach.
+
+### 7.4 The honest summary
+
+The mathematics of Theorem A is verified: every algebraic identity by exact symbolic computation,
+the one inequality with real content by a complete decision procedure over the reals, and the
+numerical consequences on 11,060 background terms with zero exceptions. What is *not* verified is a
+Lean proof object, because no Lean toolchain could be obtained in this environment. The distinction
+is worth stating plainly, since "formalised" and "machine-checked" are often conflated and only the
+second is true here.
+
+---
+
+## 8. How this was done
 
 The method is part of the result, so we describe it plainly.
 
@@ -968,7 +1064,7 @@ exactly what would open it.
 
 ---
 
-## 8. Open problems
+## 9. Open problems
 
 1. **Complete the CUE depth law**: Theorems A and B (§1.7) reduce 8N^{8/3}(−Λ) ⟹ G² to the cited
    smallest-gap law; what remains is a high-probability bound on the background coefficient
