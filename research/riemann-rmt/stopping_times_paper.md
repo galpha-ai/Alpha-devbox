@@ -30,13 +30,18 @@ We give the precise missing estimate (E_θ) for each level θ ∈ {4/7, 7/12, 3/
 the conditional price list it would buy (H₁ ≤ 130, 114, 94, 80).
 
 **(3) A dynamic separation.** Tao's alternative hypothesis ensemble ACUE matches CUE on every
-low-order statistic that bandwidth-limited detectors can see. We show that a *stopping time* —
-the finite de Bruijn–Newman depth Λ, the first collision time of the zeros under backwards heat
-flow — separates them at the level of universality class: −Λ^CUE ≍ N^{−8/3} against
-−Λ^ACUE ≍ N^{−2}. More generally, for the circular β-ensembles we find and confirm
-−Λ ≍ N^{−2−2/(β+1)} for β = 1, 2, 4, with the rigid lattice as the β = ∞ endpoint. The
-separation survives inside the mimicker fibre, where all balanced moments of degree ≤ N are frozen
-along the entire flow. The methodological content is a slogan:
+low-order statistic that bandwidth-limited detectors can see. We first measure the obstruction: the
+exact fibre of measures matching all balanced moments of degree ≤ N has dimension 0, 0, 2, 10, 80,
+403, 1804 for N = 3, …, 9, contains an explicit (N−3)-parameter family q_ACUE(C)·g(Σc mod N) with
+ĝ(±1) = 0, and — because the heat flow is diagonal in the coefficients — stays frozen to that
+algebra along the *entire* flow. We then show that a *stopping time* escapes it: the finite
+de Bruijn–Newman depth Λ, the first collision time of the zeros under backwards heat flow,
+separates CUE from ACUE at the level of universality class, −Λ^CUE ≍ N^{−8/3} against
+−Λ^ACUE ≍ N^{−2}. The exponent gap is the extreme-value statistics of the spectrum in scalar form:
+CUE admits rare pairs at distance N^{−4/3} while the lattice quantises every gap at π/N, so the
+alternative hypothesis satisfies its own RH-analogue *too robustly*. More generally, for the
+circular β-ensembles we find and confirm −Λ ≍ N^{−2−2/(β+1)} at β = 1, 2, 4, with the rigid lattice
+as the β = ∞ endpoint. The methodological content is a slogan:
 
 > **moment matching does not imply stopping-time matching.**
 
@@ -62,9 +67,11 @@ The third wall is the alternative hypothesis. Tao's ACUE ensemble is a lattice-s
 unitary spectra that reproduces CUE's pair correlation and, as we and others have verified, an
 entire algebra of low-degree statistics. The programme of "find a moment ACUE cannot fake" has
 been running for years and keeps hitting the same obstruction: the fibre of measures matching a
-given set of moments is large, and adding one more moment enlarges the search rather than ending
-it. Our contribution is to stop adding moments. A *stopping time* is not a polynomial statistic,
-and the fibre's freedom does not protect it.
+given set of moments is large — we compute it exactly, and it reaches dimension 403 by N = 8 — so
+adding one more moment enlarges the search rather than ending it. Our contribution is to stop
+adding moments. A *stopping time* is not a polynomial statistic, and the fibre's freedom does not
+protect it: what it protects is the algebra of observables, and the first-passage time of a flow is
+not in that algebra.
 
 The paper is written to be read by mathematicians, not by machines; but the last section describes
 how the work was actually done, because the method is part of the result.
@@ -300,28 +307,109 @@ proved endpoints rather than crossing a parity barrier.
 
 ## 4. Stopping times: the finite de Bruijn–Newman depth
 
-### 4.1 The obstruction we were trying to get around
+### 4.1 Why the alternative hypothesis is worth attacking
 
-The Riemann ξ function has a canonical heat deformation ξ_t, and de Bruijn and Newman showed there
-is a constant Λ with ξ_t having only real zeros exactly when t ≥ Λ. The Riemann hypothesis is
-Λ ≤ 0; Rodgers and Tao proved Λ ≥ 0. So RH, if true, is *barely* true — ξ sits exactly on the
-boundary of heat stability. Newman's phrase for this was that the Riemann hypothesis, if true, is
-only just true.
+Montgomery's pair correlation conjecture says the normalised gaps between zeros of ζ follow the
+GUE law. Half a century later it remains open, and the reason is sharper than "it is hard". The
+**alternative hypothesis** (AH) is the scenario in which the normalised gaps all lie
+asymptotically in (1/2)ℤ — the zeros sitting on a half-integer lattice rather than fluctuating like
+a random matrix spectrum. AH is not idle: it is consistent with everything currently provable about
+zeros, and it has real arithmetic consequences (it would force strong bounds on class numbers, and
+would be incompatible with certain conjectures on Landau–Siegel zeros). It is precisely the
+scenario that the known techniques cannot exclude.
 
-Separately, Tao introduced the **alternative hypothesis ensemble** ACUE: the measure on N-point
-configurations supported on the 2N-th roots of unity, weighted by |Δ(C)|², which reproduces CUE's
-pair correlation. It is the standing obstruction to proving that zeta zeros are GUE-distributed: a
-great many statistics cannot tell CUE from ACUE. During this project we verified how severe this is.
-Writing the characteristic polynomial as P(z) = det(I − zU) = Σ a_j z^j and defining the flow
+Tao's blog article *The alternative hypothesis for unitary matrices* makes the obstruction concrete
+by moving it into random-matrix theory, where it can be computed with. Define the **ACUE** — the
+alternative circular unitary ensemble — as the measure on N-point configurations
+C ⊂ {2N-th roots of unity}, |C| = N, with
+
+  μ_ACUE(C) = |Δ(ζ^C)|² / (2N)^N,  Δ = Vandermonde, ζ = e^{2πi/2N}.
+
+This is a lattice-supported measure whose eigenvalue gaps are all multiples of half the mean
+spacing — a perfect finite model of AH. Tao's point is that ACUE reproduces the CUE two-point
+correlation exactly, so any argument that only sees pair statistics cannot distinguish them, and
+he asks what does. The natural programme — find the first moment or correlation at which they
+differ — has been running ever since, and it keeps colliding with the same difficulty: the set of
+measures matching a given list of moments is a large convex body, so ruling out ACUE itself never
+rules out its neighbours. One must rule out a *fibre*, not a point.
+
+There is a second thread. The Riemann ξ function has a canonical heat deformation ξ_t, and de
+Bruijn and Newman showed there is a constant Λ_dBN such that ξ_t has only real zeros exactly when
+t ≥ Λ_dBN. The Riemann hypothesis is Λ_dBN ≤ 0; Rodgers and Tao proved Λ_dBN ≥ 0. So RH, if true,
+is *barely* true: ξ sits exactly on the boundary of heat stability, which is Newman's dictum that
+the Riemann hypothesis, if true, is only just true. Crucially, Rodgers and Tao's proof is a
+statement about *dynamics*: assuming Λ_dBN < 0 forces the zeros, run backwards, into an
+increasingly rigid local equilibrium — a clock — which contradicts what is known about their
+fluctuations.
+
+This paper joins the two threads. The second suggests the observable that resolves the first.
+
+### 4.2 How large the blind spot really is: explicit mimicker families
+
+Before looking for a distinguishing statistic it is worth measuring the enemy. We constructed, for
+each N, the exact convex body of probability measures on the ACUE support matching every balanced
+moment E[p_λ p̄_ν] of degree ≤ N — the *mimicker fibre*. Everything here is exact (rational
+Vandermonde masses, rank computed with a spectral gap of 10⁶ or better).
+
+**The fibre.** Its affine dimension at the level of rotation orbits is
+
+| N | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|---|---|---|---|---|---|---|---|
+| dim of mimicker fibre | 0 | 0 | 2 | 10 | 80 | 403 | 1804 |
+
+So for N ≤ 4 the moment data pins the measure — ACUE is rigid and any statistic distinguishes it.
+From N = 5 the fibre opens, and it grows explosively. At N = 8 there are 403 independent directions
+in which one may deform ACUE without changing a single balanced moment of degree ≤ N.
+
+**An explicit family for every N.** Inside the fibre there is a clean closed-form subfamily. Let
+X(C) = Σ_{c ∈ C} c mod N be the centre-of-mass class and set
+
+  q_g(C) = μ_ACUE(C) · g(X(C)),  g : ℤ/N → ℝ_{≥0}.
+
+Then q_g matches all balanced moments of degree ≤ N **iff** E[g] = 1 and the Fourier coefficients
+ĝ(±1) vanish; all other frequencies are free. Hence a family of affine dimension **N − 3**,
+nonempty for every N ≥ 4 and verified directly at N = 5, 6, 7, 8 (null dimensions 2, 3, 4, 5;
+worst balanced-moment error 10⁻¹²; positivity radius in random null directions up to 1.0–2.2, so
+genuinely positive measures, not signed deformations).
+
+| N | family dim | forced-zero frequencies | free frequencies |
+|---|---|---|---|
+| 5 | 2 | j = ±1 | j = 2 |
+| 6 | 3 | j = ±1 | j = 2, 3 |
+| 7 | 4 | j = ±1 | j = 2, 3 |
+| 8 | 5 | j = ±1 | j = 2, 3, 4 |
+
+**A second, representation-theoretic family.** Writing D_r(C) = ∏_{c∈C} ζ^{rc} = det(U_C)^r for the
+determinant character, the tilts
+
+  q(C) = μ_ACUE(C)·[1 + c·Re(η D_r(C))],  |η| = 1, 0 ≤ c ≤ 1,
+
+also lie in the fibre. These have an exact quantum-mechanical description: μ_ACUE is the Born
+distribution |⟨C | (∧^N F)A₀⟩|² of a single Slater determinant (F the DFT matrix, A₀ the Fermi sea
+e₀∧…∧e_{N−1}) — a re-proof that ACUE is a projection determinantal process — and the tilted family
+is the interference pattern of *two* shifted Fermi seas, a coherent superposition
+(|Ω₀⟩ + a|Ω_r⟩)/√(1+a²) with c = 2a/(1+a²). In Plücker coordinates ACUE is a point of the
+Grassmannian Gr(N, 2N) and the mimickers are points of its first secant variety
+σ₂(Gr(N,2N)) \ Gr(N,2N): the minimal non-Gaussian deformations of a fermionic Gaussian state.
+
+**How invisible are these directions?** At N = 8, of the 403 fibre directions, 401 are invisible to
+*every* pattern count of window width ≤ 2, 397 to width ≤ 3, 396 to width ≤ 4, 392 to width ≤ 5,
+and 383 to width ≤ 6. The blind spot is not a thin exceptional set; it is almost the whole fibre.
+
+**And the flow does not help.** Writing P(z) = det(I − zU) = Σ_j a_j z^j, the finite analogue of
+the de Bruijn–Newman deformation is
 
   P_r(z) = Σ_j a_j r^{j(N−j)} z^j,  t = log r,
 
-which is the finite analogue of the de Bruijn–Newman deformation, the flow is *diagonal in the
-coefficients*. Consequently every balanced moment of degree ≤ N is frozen not only at t = 0 but
-along the entire trajectory. Adding one more moment, or evolving the moments you have, is provably
-futile.
+which is *diagonal in the coefficients*. Consequently every balanced moment of degree ≤ N is a
+t-dependent linear combination of frozen quantities, so it stays frozen along the **entire**
+trajectory — we verified this to 4.5·10⁻¹⁶ on explicit mimickers. Evolving the moments you already
+have is provably futile, and so is adding one more.
 
-### 4.2 The observable
+This is the situation the rest of the section is about: a large, explicitly parameterised family of
+impostors, invisible to a whole algebra of observables, and invisible to that algebra for all time.
+
+### 4.3 The observable
 
 Define the **finite depth**
 
@@ -341,7 +429,7 @@ Static moments are coordinates *along* the mimicker fibre; Λ is a coordinate *t
 pointing at the boundary. It is not a polynomial statistic of any degree — it is a first-passage
 time — and that is exactly why the fibre's freedom does not protect it.
 
-### 4.3 The separation
+### 4.4 The separation
 
 Two independent computations, one exact and one Monte Carlo, settle the scaling.
 
@@ -377,7 +465,62 @@ sense; ACUE is over-equilibrated, sitting far from the discriminant because its 
 forbids the rare very close pairs (δ_min ≍ N^{−4/3}) that CUE produces. A fake RH universe survives
 too long under a natural deformation.
 
-### 4.4 A universality law
+### 4.5 What the exponents mean
+
+The numbers 8/3 and 2 are not two readings on a dial; they encode a structural difference, and it is
+worth unpacking exactly what.
+
+**Λ measures a distance to a hypersurface.** Let R_N be the set of degree-N polynomials with all
+roots on the circle, and D_N = {Disc = 0} the discriminant hypersurface, which is exactly the
+boundary of R_N: a configuration leaves the "all roots on the circle" locus precisely by two roots
+first colliding. The heat flow gives a canonical vector field on coefficient space. Then
+
+  −Λ(P) = how far one must travel from P, against the heat field, to reach D_N.
+
+So Λ is a *margin*: the distance from a configuration to the failure of its own Riemann-hypothesis
+analogue. This is the exact finite-dimensional shadow of the de Bruijn–Newman picture, in which
+Λ_dBN ≤ 0 is RH and Λ_dBN = 0 says ξ sits on the boundary.
+
+**Why the exponent is a fingerprint of level repulsion.** For an isolated close pair at angular gap
+δ, the two-body reduction of the Coulomb dynamics gives collision time δ²/8 + o(δ²) — a purely
+local law we confirmed to 10⁻⁷ in the continuum regime, and exactly at N = 2 where
+−Λ = −log cos(δ/2). Hence the depth is governed by the *smallest gap in the configuration*, and the
+smallest gap is governed by the level repulsion exponent:
+
+  p(s) ∼ c s^β ⟹ min of ≈N gaps ≍ N^{−1/(β+1)} (normalised) ≍ N^{−1−1/(β+1)} (angular)
+       ⟹ −Λ ≍ N^{−2−2/(β+1)}.
+
+Reading the chain for the two cases in question:
+
+- **CUE (β = 2).** Quadratic repulsion still permits rare, anomalously close pairs: the smallest of
+  N gaps is of order N^{−4/3}, a full factor N^{−1/3} *below* the mean spacing N^{−1}. One such
+  accident is enough, and it produces depth N^{−8/3}.
+- **ACUE (β = ∞).** The lattice forbids accidents. Every gap is a multiple of π/N, so the smallest
+  gap is *exactly* π/N — deterministically, with no fluctuation at all (we prove this: any
+  configuration all of whose gaps exceed 2π/N must be a clock). Depth N^{−2}.
+
+So the ratio −Λ^ACUE / −Λ^CUE ≍ N^{2/3} is precisely the ratio between "the closest pair among N
+random ones" and "the closest pair when closeness is quantised". The exponent gap *is* the
+extreme-value statistics of the spectrum, converted into a single scalar.
+
+**The interpretive punchline.** One might have expected a fake RH universe to be caught out by
+being fragile somewhere. The opposite happens. ACUE's defect is that it is **too stable**: it sits
+N^{2/3} times farther from the discriminant than a genuine random-matrix spectrum does. A true
+GUE/CUE world is real-rooted but *microscopically fragile* — it is always within N^{−8/3} of losing
+the property, because it always contains one near-collision. ACUE is over-equilibrated: it satisfies
+its RH-analogue far too robustly, because its rigidity rules out the near-collisions.
+
+This is the finite-N precise form of Newman's dictum. "RH, if true, is only just true" is not a
+piece of rhetoric; it is a statement about a scaling exponent, and the alternative hypothesis fails
+it by getting the exponent wrong in the direction of excessive safety.
+
+It also reframes what one must prove about ζ. The static programme asks for a correlation statistic
+at frequencies beyond the reach of current technique. The dynamic programme asks instead: *is the
+zeta zero configuration, locally, as fragile as a random matrix?* Those are different questions, and
+§4.10 argues the second may be the easier one — because refuting ACUE needs only that the depth be
+**o(N^{−2})**, with any rate whatsoever, not the full N^{−8/3} law.
+
+### 4.6 A universality law
 
 The mechanism suggests, and the data confirm, a general law. If the normalised nearest-neighbour
 gap density behaves like p(s) ∼ c s^β as s → 0, then the smallest of ≈N gaps is of order
@@ -403,7 +546,7 @@ initial gap — holds in 95–99% of samples, and in 100% of ACUE configurations
 So the depth is a scalar fingerprint of the microscopic repulsion exponent. That is a clean
 random-matrix statement independent of anything about zeta.
 
-### 4.5 A configuration constant, computed two ways
+### 4.7 A configuration constant, computed two ways
 
 Inside the ACUE law there is a distinguished stratum. Take the alternating clock (the zeros of
 z^N + 1), delete the point e^{−iπ/N}, and insert 1; the gap pattern becomes 1, 2, 2, …, 2, 3 in
@@ -437,11 +580,11 @@ the ensemble outgrows it. So s\* is a *configuration* constant belonging to the 
 limit law, not the median's limit. The neighbouring constant for a well-separated defect pair is
 N²(−Λ) → 1.46946 (i.e. ρ∞ = 8N²(−Λ)/π² → 1.19120), the other end of the same defect family.
 
-### 4.6 The depth escapes the freezing theorem
+### 4.8 The depth escapes the freezing theorem
 
-The point of the whole exercise. Because the flow is diagonal on coefficients, any balanced moment
-of degree ≤ N is a t-dependent linear combination of frozen quantities, hence frozen along the whole
-trajectory; we verified this to 4.5·10⁻¹⁶ on explicit mimickers. Yet Λ separates the fibre at O(1):
+The point of the whole exercise. Return to the mimicker families of §4.2 — the 403-dimensional
+fibre at N = 8, the centre-of-mass family q_ACUE·g(X), the secant tilts by det(U)^r — every one of
+which is frozen to the moment algebra for all time. Λ separates them at O(1):
 
 - an N = 5 mimicker in the ℚ(√5) family moves the clock atom from 0.0625 to 0.1398 and shifts
   E[N²(−Λ) | non-clock] by −0.093;
@@ -458,7 +601,7 @@ The conclusion deserves stating twice.
 > to a whole algebra of observables, and remain indistinguishable along an entire natural flow, yet
 > have first-passage laws in different scaling universality classes.
 
-### 4.7 Two honest limitations
+### 4.9 Two honest limitations
 
 *Ordinary Λ cannot see eigenvectors.* Λ is a function of the characteristic polynomial alone. Two
 isospectral matrices have the same Λ, so any counterexample family built to have matching spectra
@@ -475,7 +618,7 @@ here does not come from the flow mixing frequencies; it comes from Λ being a *n
 time*, measuring how far each orbit runs before hitting a variety. Two orbits may live in the same
 invariant subspace and still have different distances to the discriminant.
 
-### 4.8 What this could mean for zeta, stated carefully
+### 4.10 What this could mean for zeta, stated carefully
 
 We claim no theorem about ζ. But the structure suggests a target that is strictly weaker than what
 the static programme requires. ACUE predicts N²(−Λ) ≍ 1; CUE predicts N²(−Λ) ≍ N^{−2/3} → 0.
