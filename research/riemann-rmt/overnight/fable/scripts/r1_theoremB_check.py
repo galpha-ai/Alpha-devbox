@@ -23,9 +23,11 @@ What it does
      S_avg   = sum_k 1/4 (csc^2(x_b^k/2) + csc^2(x_a^k/2))           (AM-GM refinement)
      S_exact = sum_k 1/2 / (sin(x_b^k/2) sin(x_a^k/2))               (B = 2 sin(g/2) S_exact)
    and reports how often B <= g S_old fails and that B <= g S_exact <= g S_avg <= g S* never fails.
-3. Integrates the root ODE with scipy.solve_ivp (DOP853, terminal event at min gap = 1e-3 delta,
+3. Integrates the root ODE with scipy.solve_ivp (DOP853, rtol 1e-12, terminal event at min gap = 1e-5 delta,
    then adds the exact two-body residual -log cos(g_end/2)) to get D; cross-checks with the
-   polynomial method dyn1_core.find_ustar (first root leaving the unit circle); compares D with
+   polynomial method dyn1_core.find_ustar (first root leaving the unit circle; double precision,
+   usable only for N <= 32) and with a 40-digit mpmath bracket certificate (all roots on the circle at
+   D(1-rel), a root off the circle at D(1+rel)) for the first --n-cert samples; compares D with
    delta^2/8, -log cos(delta/2) and the repaired closed form
        T(mu) = -log(1 - mu delta^2/4) / (2 mu),   mu = A N^2 + kappa_0,  kappa_0 = kappa(delta/2),
        kappa(x) = (1 - x cot x)/x^2,
@@ -149,7 +151,7 @@ def rhs(s, th):
     return -np.sum(1 / np.tan(d / 2), axis=1)
 
 
-def depth_ode(th0, a, b, eps_rel=1e-3, rtol=1e-10, atol=1e-13, horizon_factor=10.0):
+def depth_ode(th0, a, b, eps_rel=1e-5, rtol=1e-12, atol=1e-15, horizon_factor=10.0):
     """Depth by integrating the root ODE.  Returns (D, S*_sup over accepted steps, S*_end, n_steps,
     colliding_pair_is_ab)."""
     delta = float(cyc_gaps(th0).min())
@@ -194,18 +196,29 @@ def mp_offcircle(th, u, dps=40):
         for zj in z:
             a = [(a[k] if k < len(a) else 0) - zj * (a[k - 1] if k >= 1 else 0) for k in range(len(a) + 1)]
         n = len(th)
-        c = [a[j] * mp.exp(u * j * (n - j)) for j in range(n + 1)]
+        # NOTE: the exponent must be formed in mp arithmetic with the exact integer j(n-j): the double
+        # product (u*j)*(n-j) differs from (u*(n-j))*j by an ulp, which breaks the self-inversive
+        # symmetry of P_u at the 1e-11 level and (divided by |P'| ~ 1e-8 at a lattice cluster) throws
+        # roots 1e-4 off the circle.  This was the cause of two spurious certificate failures.
+        um = mp.mpf(u)
+        c = [a[j] * mp.exp(um * (j * (n - j))) for j in range(n + 1)]
         roots, err = mp.polyroots(c[::-1], maxsteps=400, extraprec=200, error=True)
         return float(max(abs(abs(r) - 1) for r in roots)), float(err)
 
 
-def mp_bracket_certificate(th, D, rel=1e-6, dps=40):
+def mp_bracket_certificate(th, D, rels=(1e-6, 1e-5, 1e-4), dps=40):
     """Certificate that the true depth lies in [D(1-rel), D(1+rel)]: every root on the circle at the
-    lower end (off < 1e-10) and some root off the circle at the upper end (off > 1e-8)."""
-    off_lo, err_lo = mp_offcircle(th, D * (1 - rel), dps)
-    off_hi, err_hi = mp_offcircle(th, D * (1 + rel), dps)
-    return dict(rel=rel, off_lo=off_lo, off_hi=off_hi, polyroots_err=max(err_lo, err_hi),
-                certified=(off_lo < 1e-10 and off_hi > 1e-8))
+    lower end (off < 1e-20) and some root off the circle at the upper end (off > 1e-8).  Tries the
+    relative widths in `rels` in order and reports the first that certifies."""
+    out = None
+    for rel in rels:
+        off_lo, err_lo = mp_offcircle(th, D * (1 - rel), dps)
+        off_hi, err_hi = mp_offcircle(th, D * (1 + rel), dps)
+        out = dict(rel=rel, off_lo=off_lo, off_hi=off_hi, polyroots_err=max(err_lo, err_hi),
+                   certified=(off_lo < 1e-20 and off_hi > 1e-8))
+        if out['certified']:
+            break
+    return out
 
 
 # ----------------------------------------------------------------------------- one sample
@@ -332,7 +345,7 @@ def main():
             rec = analyse(th, ens, N)
             if i < args.n_cert and np.isfinite(rec['D_ode']):
                 ps = pair_stats(th)
-                D_tight = depth_ode(th, ps['a'], ps['b'], eps_rel=1e-5, rtol=1e-12, atol=1e-15)[0]
+                D_tight = depth_ode(th, ps['a'], ps['b'], eps_rel=1e-6, rtol=1e-13, atol=1e-16)[0]
                 rec['D_tight_reldiff'] = abs(D_tight - rec['D_ode']) / rec['D_ode']
                 rec['mp_cert'] = mp_bracket_certificate(th, rec['D_ode'])
             recs.append(rec)
@@ -343,6 +356,7 @@ def main():
         s['cert_max_off_lo'] = float(max(r['mp_cert']['off_lo'] for r in cert)) if cert else None
         s['cert_min_off_hi'] = float(min(r['mp_cert']['off_hi'] for r in cert)) if cert else None
         s['tight_max_reldiff'] = float(max(r['D_tight_reldiff'] for r in cert)) if cert else None
+        s['cert_max_rel'] = float(max(r['mp_cert']['rel'] for r in cert)) if cert else None
         s['seconds'] = time.time() - t1
         results['summaries'][f'{ens}_N{N}'] = s
         results['records'].extend(recs)
@@ -351,7 +365,7 @@ def main():
               f"(min gS*/B={s['min_gSstar_over_B']:.3f}); D/(d^2/8) med={s['D_over_quadratic']['median']:.5f} "
               f"max={s['D_over_quadratic']['max']:.5f}; T_sup/D min={s['T_sup']['min_T_over_D']:.5f}; "
               f"S_sup/S0 max={s['Ssup_over_S0']['max']:.3f}; ode/poly disc max={s['max_rel_disc_ode_poly']:.1e}; "
-              f"cert {s['n_cert']} pass={s['cert_all_pass']} off_lo<={s['cert_max_off_lo']:.1e} off_hi>={s['cert_min_off_hi']:.1e} "
+              f"cert {s['n_cert']} pass={s['cert_all_pass']} (rel<={s['cert_max_rel']:.0e}) off_lo<={s['cert_max_off_lo']:.1e} off_hi>={s['cert_min_off_hi']:.1e} "
               f"tight-tol reldiff<={s['tight_max_reldiff']:.1e}")
 
     # single dislocation

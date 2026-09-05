@@ -1,0 +1,28 @@
+float64 sieve vs exact Fractions, n <= 10000: max relative error 1.52e-15
+L=    1000 fixed     J_full=-0.0519926 J_nopp=-0.1022309 J_clean=-0.1269461 cont=-0.0146624
+L=    1000 massonly  J_full=-0.0624271 J_nopp=-0.1086167 J_clean=-0.1327861 cont=-0.0215653
+L=    1000 one       J_full=-0.0757862 J_nopp=-0.1202985 J_clean=-0.1452729 cont=-0.0333607
+L=    1000 one_ell1  J_full=-0.0721550 J_nopp=-0.1158317 J_clean=-0.1391083 cont=-0.0307565
+L=    1000 deg14     J_full=-0.0521013 J_nopp=-0.0983082 J_clean=-0.1203483 cont=-0.0153580
+L=    1000 eigsh lambda_max=3.9492871367 margin=-0.0499267764 res=1.3e-15
+L=    1000 N(L)/(C (log L)^a/Gamma(a+1)) = 1.108966  S2 mean ratio=1.01416  S2^2 mean ratio=1.20345  time=0.1s maxrss=94MB
+L=   10000 fixed     J_full=-0.0431175 J_nopp=-0.0892650 J_clean=-0.1129781 cont=-0.0146624
+L=   10000 massonly  J_full=-0.0529804 J_nopp=-0.0960455 J_clean=-0.1192720 cont=-0.0215653
+L=   10000 one       J_full=-0.0660752 J_nopp=-0.1080466 J_clean=-0.1319965 cont=-0.0333607
+L=   10000 one_ell1  J_full=-0.0626498 J_nopp=-0.1033256 J_clean=-0.1254454 cont=-0.0307565
+L=   10000 deg14     J_full=-0.0436240 J_nopp=-0.0867461 J_clean=-0.1086689 cont=-0.0153580
+L=   10000 eigsh lambda_max=4.1058670454 margin=-0.0419943455 res=4.6e-15
+L=   10000 N(L)/(C (log L)^a/Gamma(a+1)) = 1.081599  S2 mean ratio=1.02250  S2^2 mean ratio=1.17425  time=0.5s maxrss=94MB
+L=  100000 fixed     J_full=-0.0376302 J_nopp=-0.0793054 J_clean=-0.1015971 cont=-0.0146624
+L=  100000 massonly  J_full=-0.0470595 J_nopp=-0.0864525 J_clean=-0.1083494 cont=-0.0215653
+L=  100000 one       J_full=-0.0599583 J_nopp=-0.0986198 J_clean=-0.1211548 cont=-0.0333607
+L=  100000 one_ell1  J_full=-0.0566769 J_nopp=-0.0938112 J_clean=-0.1144779 cont=-0.0307565
+L=  100000 deg14     J_full=-0.0383148 J_nopp=-0.0779362 J_clean=-0.0991244 cont=-0.0153580
+L=  100000 eigsh lambda_max=4.2052553801 margin=-0.0369592737 res=2.0e-13
+L=  100000 N(L)/(C (log L)^a/Gamma(a+1)) = 1.065243  S2 mean ratio=1.02758  S2^2 mean ratio=1.15196  time=4.2s maxrss=112MB
+L= 1000000 fixed     J_full=-0.0339176 J_nopp=-0.0715145 J_clean=-0.0922927 cont=-0.0146624
+L= 1000000 massonly  J_full=-0.0430127 J_nopp=-0.0789299 J_clean=-0.0994034 cont=-0.0215653
+L= 1000000 one       J_full=-0.0557633 J_nopp=-0.0911774 J_clean=-0.1122071 cont=-0.0333607
+L= 1000000 one_ell1  J_full=-0.0525863 J_nopp=-0.0863726 J_clean=-0.1055482 cont=-0.0307565
+L= 1000000 deg14     J_full=-0.0346862 J_nopp=-0.0710042 J_clean=-0.0912065 cont=-0.0153580
+L= 1000000 N(L)/(C (log L)^a/Gamma(a+1)) = 1.054351  S2 mean ratio=1.03016  S2^2 mean ratio=1.13458  time=9.9s maxrss=213MB

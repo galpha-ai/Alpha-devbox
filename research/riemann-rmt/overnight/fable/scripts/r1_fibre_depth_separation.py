@@ -130,11 +130,12 @@ def main(N):
     P = np.zeros((R, N + 2), complex)
     for k in range(1, N + 2): P[:, k] = np.exp(1j * pi * k * Xs / N).sum(axis=1)   # p_1..p_{N+1}
     A, _ = balanced_rows(P, N, range(1, N + 1))
-    Afull = np.vstack([A, np.ones((1, R))])
+    A = A / np.linalg.norm(A, axis=1, keepdims=True)          # row scaling does not change the null space
+    Afull = np.vstack([A, np.ones((1, R)) / np.sqrt(R)])
     r = rank_gap(Afull, "balanced deg<=N + normalisation")
     _, sv, Vt = np.linalg.svd(Afull, full_matrices=True)
     NS = Vt[r:].T; dim = NS.shape[1]
-    assert np.abs(Afull @ NS).max() < 1e-9
+    assert np.abs(Afull @ NS).max() < 1e-8, np.abs(Afull @ NS).max()
     Psym = (NS + Rm @ NS) / 2; Pchi = (NS - Rm @ NS) / 2
     d_sym, d_chi = rank_tol(Psym), rank_tol(Pchi)
     # orthonormal bases of the two parts
@@ -148,7 +149,7 @@ def main(N):
     nlev = len(levels) - 1
     if d_chi > 0:
         rng = np.random.default_rng(0)
-        v = NSc @ rng.normal(size=d_chi); h = v / mu
+        v = NSc @ (NSc.T @ (mu * rng.normal(size=R))); h = v / mu        # projection of a mu-weighted vector on the chiral space
         eps = 0.9 / max(-h.min(), 1e-300)
         q = mu * (1 + eps * h)
         assert q.min() > 0 and abs(q.sum() - 1) < 1e-12
@@ -159,6 +160,18 @@ def main(N):
               f"max |q-mu|/mu = {np.abs(q/mu-1).max():.4f}, moment residual {res:.1e}, TV(q, mu) = {0.5*np.abs(q-mu).sum():.4f}")
         print(f"     law of N^2(-Lambda): TV(law_q, law_mu) = {tv:.2e}; clock atom {q[clock].sum():.6f} vs {mu[clock].sum():.6f}; "
               f"E[N^2 tau|nc] {Enc(q):.10f} vs {Enc(mu):.10f}   -> the depth is exactly blind")
+    # ---- 2b. closed-form chiral impostors: q = mu (1 + eps Im det(U)^{2k}),  det(U_C)^{2k} = e^{2 pi i k X/N}, X = sum(C)
+    Xc = np.array([sum(r) for r in reps])
+    for k in range(1, N // 2 + 1):
+        s_k = np.sin(2 * pi * k * Xc / N)                       # Im det^{2k}: rotation-invariant, reflection-odd
+        if np.abs(s_k).max() < 1e-12: continue                # k = N/2: det^N is real
+        v = mu * s_k
+        inf = np.abs(A @ v).max() < 1e-10                      # in the fibre?
+        chi = np.abs(v[refl] + v).max() < 1e-12
+        q = mu * (1 + 0.9 * s_k)
+        tvq = 0.5 * np.abs(q - mu).sum(); tvl = 0.5 * np.abs(T @ q - T @ mu).sum()
+        print(f"  det-type direction Im det^{2*k} (k={k}): in fibre {inf} (|A v|max={np.abs(A@v).max():.1e}, predicted iff k(N-k)={k*(N-k)} > N), "
+              f"chiral {chi}; q=mu(1+0.9 Im det^{2*k}): TV(q,mu)={tvq:.4f}, TV of tau-laws={tvl:.1e}")
     # ---- 3. injectivity of tau on reflection classes
     nc = ~clock
     cls = {}
@@ -172,14 +185,15 @@ def main(N):
           f"min separation between classes {dv[dv>=1e-9].min() if (dv>=1e-9).any() else 0:.2e}; coincidences (<1e-9): {len(coinc)}")
     for a, b, vv in coinc[:6]:
         print(f"     tie at N^2 tau = {vv:.9f}: orbits {[tuple(reps[i]) for i in a]} vs {[tuple(reps[i]) for i in b]}")
-    Lmap = T @ (mu[:, None] * NSs)                 # law map restricted to symmetric directions
+    Lmap = T @ NSs                                 # law map restricted to symmetric directions (NS lives in delta-q space)
     rk_law_sym = rank_tol(Lmap, 1e-8)
-    rk_law_all = rank_tol(T @ (mu[:, None] * NS), 1e-8)
+    rk_law_all = rank_tol(T @ NS, 1e-8)
     print(f"  rank of law map on symmetric fibre = {rk_law_sym} / {d_sym}  ({'INJECTIVE: the law of tau pins the symmetric fibre' if rk_law_sym == d_sym else 'NOT injective'});"
           f"  on the full fibre = {rk_law_all} / {dim}  (chiral part invisible: {dim - rk_law_all} dims)")
     # ---- 4. how many depth functionals
     vnc = np.where(clock, 0.0, val)
-    x = (vnc - vnc[nc].mean()) / (vnc[nc].std() + 1e-300)     # centred/scaled for conditioning
+    lo_, hi_ = vnc[nc].min(), vnc[nc].max()
+    x = np.where(nc, (2 * vnc - lo_ - hi_) / (hi_ - lo_), 0.0)       # non-clock values mapped to [-1,1] (Chebyshev basis stays bounded)
     rows = [clock.astype(float)]
     names = ["atom"]
     invis = []
@@ -189,11 +203,14 @@ def main(N):
     for m in range(0, 30):
         if m > 0:
             rows.append(np.where(nc, polys[m], 0.0)); names.append(f"E[tau^{m}]")
-        Fm = np.array(rows) @ (mu[:, None] * NSs)
-        invis.append(d_sym - rank_tol(Fm, 1e-7))
+        Fm = np.array(rows) @ NSs
+        invis.append(d_sym - rank_tol(Fm, 1e-10))
         if invis[-1] == 0: break
     print(f"  dims of symmetric sub-fibre invisible to (atom, E tau, ..., E tau^m), m=0..: {invis}")
-    print(f"     -> {len(invis)-1} power moments of tau (plus the atom) are needed to pin the symmetric fibre (generic count would be {d_sym})")
+    if invis[-1] == 0:
+        print(f"     -> atom + {len(invis)-1} power moments = {len(invis)} functionals pin the symmetric fibre (d_sym = {d_sym}: {'generic count, no saving' if len(invis)==d_sym else 'fewer than generic'})")
+    else:
+        print(f"     -> one dimension per moment (generic); {invis[-1]} dims still invisible at the 30-moment cap, so d_sym = {d_sym} functionals would be needed")
     # ---- 5. marked depth as gradient functionals
     G2 = np.zeros(R); G3 = np.zeros(R); kinks = np.zeros(R, bool); gsum = np.zeros(R)
     if N <= 7:
@@ -206,19 +223,19 @@ def main(N):
         ok2 = np.abs(G2[refl] - G2)[~kinks & ~kinks[refl]].max(); ok3 = np.abs(G3[refl] + G3)[~kinks & ~kinks[refl]].max()
         print(f"     parity check: |G2(refl) - G2| <= {ok2:.1e} (even), |G3(refl) + G3| <= {ok3:.1e} (odd)")
         G3s = np.where(kinks, 0.0, G3); G2s = np.where(kinks, 0.0, G2)
-        rk3 = rank_tol((G3s[None, :] * mu) @ NSc, 1e-8) if d_chi > 0 else 0
+        rk3 = rank_tol(G3s[None, :] @ NSc, 1e-8) if d_chi > 0 else 0
         print(f"     does the Haar 3rd moment of the covariant marked depth (G3 = sum (d_j tau)^3, odd) see the chiral fibre? rank {rk3} (of at most 1) on d_chi = {d_chi}")
         if d_chi > 0 and rk3 > 0:
-            dq = (G3s * mu) @ NSc; k = np.argmax(np.abs(dq))
+            dq = G3s @ NSc; k = np.argmax(np.abs(dq))
             v = NSc[:, k]; h = v / mu; eps = 0.9 / max(-h.min(), 1e-300); q = mu * (1 + eps * h)
             print(f"        explicit chiral impostor: E_q[G3;nc] - E_mu[G3;nc] = {(q-mu) @ G3s:+.3e}  while TV of tau-laws = {0.5*np.abs(T@q - T@mu).sum():.1e}")
         # static odd observable of degree N+1
         _, odd = balanced_rows(P, N, [N + 1])
-        rk_odd = rank_tol((odd * mu) @ NSc, 1e-8) if d_chi > 0 else 0
-        rk_ev = rank_tol((A * mu) @ NSc, 1e-8) if d_chi > 0 else 0
-        print(f"     for comparison: odd balanced moments of degree N+1 see {rk_odd} of the {d_chi} chiral dims (degree<=N moments see {rk_ev}, by construction)")
+        rk_odd = rank_tol(odd @ NSc, 1e-8) if d_chi > 0 else 0
+        rk_ev = rank_tol(A @ NSc, 1e-8) if d_chi > 0 else 0
+        print(f"     for comparison: odd balanced moments of degree N+1 see {rk_odd} of the {d_chi} chiral dims (degree<=N moments see {rk_ev}: must be 0 by construction)")
         # does G2 add anything beyond the law on the symmetric part? (only meaningful if law not injective)
-        rkG2 = rank_tol(np.vstack([T, G2s[None, :]]) @ (mu[:, None] * NSs), 1e-8)
+        rkG2 = rank_tol(np.vstack([T, G2s[None, :]]) @ NSs, 1e-8)
         print(f"     rank of (law, G2) on symmetric fibre = {rkG2} / {d_sym}")
     np.savez(f"{OUT}/r1_fibre_N{N}.npz", NS=NS, NSs=NSs, NSc=NSc, refl=refl, mu=mu, val=val, clock=clock,
              G2=G2, G3=G3, kinks=kinks, reps=np.array(reps), levels=np.array(levels[:-1]))
