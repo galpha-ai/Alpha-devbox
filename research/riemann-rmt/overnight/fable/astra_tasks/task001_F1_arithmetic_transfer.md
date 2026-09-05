@@ -19,6 +19,14 @@ full before writing this report, re-derived the key formulas by hand to check th
 additional least-squares fit (reported inline, no new sieving) to test the shape of the slowest-converging
 residual. No pre-existing file was modified. No new large computation was run in this pass.
 
+**Repair pass (2026-09-05, same day):** two independent refuters found valid, major-severity issues in the
+version above — a self-contradictory algebra step in the `Pi_4`/`m4` derivation (claim F1-3) and a
+mis-transcribed numerical sequence mixing different `v`-rows (claim F1-2). Both are corrected in place
+(§2, §3, and the new §6a "Refuter responses" below); one new diagnostic script was added
+(`f1_pi4_leading_coefficient.py`) in an attempt to close the F1-3 gap numerically, which did not succeed
+(reported honestly in §3/§10). No pre-existing file was modified in the repair pass either; the six
+original scripts, their results/logs, and the two refuters' own scripts are all unchanged.
+
 Primary source status: `WebFetch https://arxiv.org/html/2604.05733v1` was attempted once, as instructed,
 and returned `EGRESS_BLOCKED: arxiv.org` (same as F2). **Every statement about Inoue's Theorems 2 and 4
 is "(as described by Astra; paper not read)".** The classical Selberg–Delange theorem is used as
@@ -203,14 +211,22 @@ N(y) := sum_{n<=y} d_ell(n)^2/n = C_ell [ (log y)^a/Gamma(a+1) + kappa1 (log y)^
 **Numerical check** (`f1_moment_checks.py`, `f1_sd_expansion.py`, sieve to `10^7`; `EULER_GAMMA` is the
 usual `gamma_0`): the *one*-term ratio `N(L)/[C_ell (log L)^a/Gamma(a+1)]` is `1.0816, 1.0652, 1.0544,
 1.0466` at `L=10^4..10^7` (i.e. a stable `0.75/log L` correction, matching F2's F2-8); the *two*-term ratio
-`N(L)/[1+2-term]` is `1.002005, 1.000396, 1.0000833, 1.0000617` at the same `L` — a clean, rapidly-improving
-match (relative error shrinking by very close to the expected extra `1/log L` factor at each step: ratio of
-`(ratio-1)` values `1.002005-1 -> 1.000396-1` is `5.06`, close to `log(10^5)/log(10^4)=1.25`... — the
-*ratio of errors* between successive decades should be `(log L1/log L2)^2` for a clean two-term match if the
-third term were absent, and closer to `(log L1/log L2)` if the third term dominates; observed error ratios
-`0.002005/0.000396=5.06`, `0.000396/0.0000833=4.75`, `0.0000833/0.0000617=1.35` are consistent with a
-genuine third-order term (`kappa2` above) becoming comparable to residual float/sieve error by `L=10^7`
-rather than with a bug). This is the strongest, cleanest numerical confirmation in this report.
+`N(L)/[1+2-term]` at `v=1` (`x=L`) is `1.0001888, 1.0001190, 1.0000834, 1.0000617` at the same `L=10^4,
+10^5, 10^6, 10^7` — a clean, rapidly-improving match. **[Corrected in this repair pass — see "Refuter
+response" below: the previously printed sequence `1.002005, 1.000396, 1.0000833, 1.0000617` mis-transcribed
+its first two entries from the `(L=10^4, v=0.5)` and `(L=10^4, v=0.75)` rows of `f1_moment_results.json`
+instead of the `(L=10^4, v=1)` and `(L=10^5, v=1)` rows; only the last two entries were correct. The
+numbers above are the actual `v=1` sequence, read directly from `f1_moment_results.json`.]** The error
+`(ratio-1)` shrinks as `1.888e-4, 1.190e-4, 0.834e-4, 0.617e-4` across `L=10^4..10^7`, with successive-decade
+ratios `1.587, 1.427, 1.352`. Since the two-term expansion omits the `kappa2` term, which is one further
+power of `1/log L` down from the `kappa1` term already included, the *relative error of the two-term ratio*
+is expected to scale as `O((log L)^{-2})` (not `O((log L)^{-1})`, which is the one-term rate already seen
+above) — i.e. the error-ratio between decades should track `(log L_{k+1}/log L_k)^2`. That is exactly what
+is observed: `(log(10^5)/log(10^4))^2=1.5625` vs. observed `1.587`; `(log(10^6)/log(10^5))^2=1.44` vs.
+observed `1.427`; `(log(10^7)/log(10^6))^2=1.361` vs. observed `1.352` — agreement to within `2%` at every
+step, a smooth, non-erratic trend (not the accelerating-then-stalling pattern the mis-transcribed numbers
+had suggested). This is, if anything, a *cleaner* numerical confirmation of the recalled theorem's first two
+terms than originally written, and it is the strongest numerical confirmation in this report.
 
 **Cancellation of `C_ell (log L)^a` between `I` and `M`:** since `N(L^v)/N(L) -> v^a` as `L->infty` for
 every fixed `v` (the `C_ell(log L)^a/Gamma(a+1)` factor is `L`-dependent but *not* `v`-dependent, so it is
@@ -245,12 +261,51 @@ does enter `h_2`); numerically `R1 = 2.3675580`. Hence
 Pi_2(1+eps) = a/eps^2 + pi_0 + O(eps),   pi_0 = a*h2(1) + R2(1),  R2(1) = sum_p (log p)^2 (rho_p(1) - a/p),
 ```
 with `R2 = -0.0630942` (a genuinely small correction, unlike `R1`), giving `pi_0 = -2.5434631`.
-`Pi_4(1+eps) = 6 a^2/eps^4 + O(eps^{-2})` has no `eps^{-3}, eps^{-2}, eps^{-1}` term because `-zeta'/zeta`
-has a *simple* pole (all its derivatives beyond the first vanish in the principal Laurent part), so
-`Pi_2^2 + Pi_4` has leading `(a^2+6a^2 ... )` — the script tracks this exactly; the leading Hankel
-coefficient of `Sigma_2 := sum d^2 S~^2/n` comes out `m4 = a^2+6a` after collecting `Pi_2^2`'s `a^2/eps^4`
-and `Pi_4`'s `6a^2/eps^4`... **(the exact bookkeeping is in `f1_sd_expansion.py`; it reduces to matching
-Astra's stated `a(a+6)` coefficient in `E_v[S2^2]`, confirmed below).**
+`Pi_4(1+eps) = 6a/eps^4 + O(eps^{-2})` **[corrected in this repair pass — see "Refuter response" below;
+was previously mis-stated as `6a^2/eps^4`]**: `Pi_4(s) = sum_p (log p)^4 rho_p(s)(1-rho_p(s))`, and since
+`rho_p(1+eps) = a p^{-1-eps} + O(p^{-2-2eps}) -> 0` as `p->infty` for any fixed `eps>0`, the divergent
+(as `eps->0`) part of the sum comes entirely from the large-`p` tail, where `rho_p(1-rho_p) = rho_p + O(rho_p^2)
+= a p^{-1-eps} + O(p^{-2-2eps})` — i.e. *one* power of `a`, the same leading-order fact already used for
+`Pi_2 ~ a/eps^2` (not two powers, which would require `rho_p^2` itself, whose square is `O(p^{-2-2eps})` and
+therefore only contributes to the convergent `O(eps^{-2})` remainder, not the leading `eps^{-4}` term). So
+`Pi_4(1+eps) ~ a * sum_p (log p)^4 p^{-1-eps} ~ a * (6/eps^4) = 6a/eps^4`, using the same pure-zeta fact
+(`sum_p (log p)^4 p^{-1-eps} = 6/eps^4+O(1)`, because `-zeta'/zeta` has a *simple* pole so its third
+derivative's principal part is exactly `-6/eps^4`) that `f1_selberg_delange_expansion.py` already computes
+and verifies numerically as `h4_zeta_part` (`= 24 c_4`, matched against `mp.diff` of `zeta'/zeta` to
+`1e-9` — see `f1_sd_expansion_run.log` lines 1-11, `"24 c4": "-0.0885099529527"` vs. the direct probe
+`"-0.0884..."` at `eps=10^-3, 5*10^-4`, confirming the `6/eps^4` leading term is right, since a *wrong*
+leading coefficient there would make the residual diverge rather than converge to a stable `O(1)` value).
+Hence `Pi_2^2 + Pi_4` has leading term `a^2/eps^4 + 6a/eps^4 = (a^2+6a)/eps^4 = a(a+6)/eps^4`, so the
+leading Hankel coefficient of `Sigma_2 := sum d^2 S~^2/n` is `m4 = a^2+6a = a(a+6)` — **[exact algebra,
+corrected]**, matching Astra's stated `a(a+6)` coefficient in `E_v[S2^2]` exactly (confirmed below).
+**Honesty note (not fully closed by this repair pass):** `f1_selberg_delange_expansion.py` line 87 sets
+`m4 = a*a + 6*a` as a bare literal — it does not itself compute `Pi_4(1+eps)` at runtime and take the
+`eps->0` limit (unlike `kappa1, kappa2, pi0, R1, R2`, which the same script *does* compute from explicit
+prime sums / Stieltjes constants). The algebra above closes the *logical* gap (why `6a`, not `6a^2`) using
+only quantities the script already computes (`h4_zeta_part`) plus the already-used fact that `rho_p`'s
+leading term is linear in `a`. **A new, direct attempt to close this numerically was made in this repair
+pass** (`f1_pi4_leading_coefficient.py`, new file): it sums `(log p)^4 rho_p(1+eps)(1-rho_p(1+eps))` over
+the actual primes `<= 2*10^6` (no zeta-function shortcut) for `eps in {1, 0.5, 0.25, 0.125, 0.0625}` and
+checks whether `eps^4 * Pi_4(1+eps) -> 6a = 6.8267`. **Result: inconclusive, not confirmatory** —
+`Pi4*eps^4` is `5.88, 6.04, 3.29, 0.75, 0.094` at those five `eps` (ratios to `6a`: `0.86, 0.89, 0.48, 0.11,
+0.014`), i.e. it does not stabilize near `1.0`; a control column (`Pi2*eps^2` vs. target `a`) shows the same
+problem (ratios `0.74, 0.84, 0.81, 0.52, 0.22`, also far from `1` and non-monotone). The cause is truncation:
+the asymptotic regime requires primes out to roughly `p ~ e^{1/eps}`, which already exceeds the `2*10^6`
+cutoff once `eps<=0.125` (`e^{1/0.125}=e^8~2981` is fine, but `e^{1/0.0625}=e^{16}~8.9e6` is not) — yet even
+at `eps=1,0.5`, where the nominal cutoff `e^{1/eps}` is tiny, the ratio is still only `~0.86-0.89`, showing
+the sub-leading (non-power-law) terms in `rho_p` and `E_p` remain large at `O(1)` `eps` and this direct
+truncated-sum approach cannot reach small enough `eps` to isolate the leading term before truncation error
+dominates, for either `Pi_2` or `Pi_4` (this project's existing scripts avoid the problem entirely by using
+mpmath's exact, non-truncated `zeta` function rather than a finite prime sum for exactly this reason). So
+**this repair pass's own new numerical attempt does not independently confirm `6a` over `6a^2`** — the
+claim still rests on: (i) the algebra above (sound, and not contested by any refuter), (ii) the pre-existing,
+*exact* (mpmath, no prime truncation) confirmation that the pure-zeta, `a`-independent constant is `6`
+(`f1_sd_expansion_run.log`, and independently re-confirmed via direct high-precision differentiation of
+`zeta'/zeta` in `refute_F1_rigour.py`'s `probe_vals`, both agreeing to the displayed precision), and (iii)
+the excellent match of `m4=a^2+6a` against Astra's independently-stipulated `E_v[S2^2]=(a+6)v^4/(...)`
+formula. No dedicated, converging numerical check of `Pi_4(1+eps)*eps^4 -> 6a` specifically (as opposed to
+`6a^2`) exists in this project even after this repair pass; the gap the refuter identified is narrowed
+(the algebra is now spelled out and the wrong prose is fixed) but not fully closed by new numerics.
 
 Selberg–Delange again (recalled) with `z=a+2` (for `Sigma_1`) and `z=a+4` (for `Sigma_2`) gives, at leading
 order,
@@ -422,6 +477,49 @@ or derived here.
 
 ---
 
+## 6a. Refuter responses (repair pass, 2026-09-05)
+
+Two independent refuters reviewed the original version of this report. Both findings were **valid** and
+have been corrected in place above; nothing raised was found to be a misreading on the refuters' part.
+
+* **Refuter 1 (major; claim F1-3, the `m4`/`Pi_4` derivation).** Correctly caught that the original §3
+  prose stated `Pi_4(1+eps) = 6a^2/eps^4` and then used `m4 = a^2+6a` (not the `a^2+6a^2=7a^2` its own
+  stated `Pi_4` coefficient implies) — a genuine, self-contradictory algebra slip — and correctly observed
+  that `f1_selberg_delange_expansion.py` line 87 hardcodes `m4 = a*a+6*a` as a literal rather than deriving
+  it from a computed `Pi_4`, unlike every other constant in that script (`kappa1, kappa2, pi0, R1, R2`).
+  **Fix applied:** §3 above now derives the correct leading coefficient `Pi_4(1+eps) ~ 6a/eps^4` (one power
+  of `a`, from `rho_p(1-rho_p) ~ rho_p ~ a p^{-1-eps}` to leading order — the same fact already used for
+  `Pi_2 ~ a/eps^2` — combined with the script's own already-verified pure-zeta constant `6`), so that
+  `m4 = a^2+6a = a(a+6)` is now backed by a corrected, internally-consistent derivation rather than a
+  self-contradictory one. **A new script was written in this repair pass** to try to close the remaining
+  gap numerically (direct, un-shortcut prime-sum evaluation of `Pi_4(1+eps)`, `f1_pi4_leading_coefficient.py`)
+  — it did **not** succeed (truncation effects dominate before the asymptotic regime is reached; see the
+  "Honesty note" in §3), so the claim still rests on hand algebra plus the pre-existing exact (non-truncated,
+  mpmath-based) confirmation of the pure-zeta "6", not on a fresh dedicated numerical confirmation of `Pi_4`
+  itself. Claim F1-3's status is downgraded below from an unqualified "exact algebra" to "exact algebra
+  (second-moment part corrected in repair pass; `m4`'s numeric value remains a literal in the code, not
+  independently computed at runtime, though a new numerical attempt to do so was inconclusive)".
+* **Refuter 2 (major; claim F1-2, the two-term normalization-ratio sequence).** Correctly caught that the
+  original §2/Summary sequence `1.002005, 1.000396, 1.0000833, 1.0000617` was not the `v=1` sequence across
+  `L=10^4..10^7` it was presented as — the first two entries were actually the `(L=10^4, v=0.5)` and
+  `(L=10^4, v=0.75)` rows of `f1_moment_results.json`, mis-transcribed, while the last two entries were
+  correctly the `v=1` rows at `L=10^6, 10^7`. **Fix applied:** §2 and the Summary above now use the correct
+  `v=1` sequence `1.0001888, 1.0001190, 1.0000834, 1.0000617` (read directly from `f1_moment_results.json`,
+  independently re-verified by the refuter's own from-scratch recomputation, `refute_F1_repro.py`), and the
+  "ratio of successive-decade errors" discussion is redone using the correct numbers — which, as it happens,
+  fit an `O((log L)^{-2})` decay law cleanly (agreement to within `2%` at every step), a *smoother and
+  stronger* confirmation than the erratic, mis-transcribed sequence had suggested. Refuter 2's own
+  characterization of the corrected sequence as "a much smoother, non-accelerating trend, arguably an even
+  better numerical confirmation" is accurate and is adopted verbatim in spirit above.
+
+Neither correction changes this report's overall verdict (mixed: normalization and background S2-moments
+established modulo the recalled Selberg–Delange theorem; M2-transfer and coincidence-completeness open).
+Both refuters also independently re-ran or cross-checked large parts of this report (the `L=1000` insertion
+table, `C_ell`, the `alpha+beta+gamma+delta+eps=T` identity, the `A[qm,m]` formula, the `f1_common` self-test)
+and found them to reproduce exactly — those parts of the report are unaffected and are not re-litigated here.
+
+---
+
 ## 7. What this changes for the main obligation, and what it does not
 
 * **Item 1 (normalization):** closed at the level the task asked for — exact Euler-product identity,
@@ -468,11 +566,14 @@ OPENBLAS_NUM_THREADS=1 python3 f1_moment_checks.py                 # ~23s -> f1_
 python3 f1_continuum.py                                            # ~1s  -> f1_continuum_results.json
 OPENBLAS_NUM_THREADS=1 python3 f1_insertion_decomposition.py       # ~8s  -> f1_insertion_results.json
 OPENBLAS_NUM_THREADS=1 python3 f1_prime_discreteness.py            # ~88s -> f1_prime_discreteness_results.json
+python3 f1_pi4_leading_coefficient.py                              # ~0.2s -> f1_pi4_leading_coefficient_results.json (repair pass; inconclusive, see §3/§6a)
 ```
 Logs: `f1_sd_expansion_run.log`, `f1_moment_checks_run.log`, `f1_insertion_run.log`,
 `f1_prime_discreteness_run.log` (all already present; re-inspected, not re-run, in this pass, since
 outputs and logs were consistent with the scripts as read and the task's time budget is better spent on
-verification and write-up than on re-executing already-consistent runs).
+verification and write-up than on re-executing already-consistent runs). `f1_pi4_leading_coefficient.py`
+and `refute_F1_rigour.py`/`refute_F1_repro.py` (the two refuters' scripts) are new in this repair pass;
+none of the six original scripts or their result/log files were modified.
 
 ---
 
@@ -481,8 +582,8 @@ verification and write-up than on re-executing already-consistent runs).
 | id | claim | status | evidence |
 |---|---|---|---|
 | F1-1 | `F(s)=zeta(s)^a G(s)`, `C_ell=G(1)` as stated, explicit `kappa1,kappa2` Laurent coefficients | exact algebra | §2, `f1_sd_expansion.py` |
-| F1-2 | Selberg–Delange (recalled) gives a 3-term expansion of `N(y)=sum d_ell(n)^2/n`; 2-term numerical match improves to `6e-3%` rel. error by `L=10^7` | proved arithmetic asymptotic (modulo recalled theorem) + finite numerical check | §2, `f1_moment_results.json` |
-| F1-3 | Marked Euler product identities for `sum d^2 S~ n^{-s}` and `sum d^2 S~^2 n^{-s}`, with explicit next-order Laurent constants `pi_0, R1, R2` | exact algebra | §3, `f1_sd_expansion.py` |
+| F1-2 | Selberg–Delange (recalled) gives a 3-term expansion of `N(y)=sum d_ell(n)^2/n`; corrected 2-term numerical match at `v=1` improves from `1.9e-4` to `6.2e-5` relative error across `L=10^4..10^7`, matching an `O((log L)^{-2})` decay to within `2%` at every decade (corrected in this repair pass; see §6a) | proved arithmetic asymptotic (modulo recalled theorem) + finite numerical check | §2, §6a, `f1_moment_results.json` |
+| F1-3 | Marked Euler product identities for `sum d^2 S~ n^{-s}` and `sum d^2 S~^2 n^{-s}`, with explicit next-order Laurent constants `pi_0, R1, R2`; corrected `Pi_4~6a/eps^4` (not `6a^2`) derivation giving `m4=a^2+6a` | exact algebra (Pi_4/m4 sub-derivation corrected in repair pass; `m4` remains a hardcoded literal in the code, not runtime-derived — a new numerical attempt to close this was inconclusive, see §3/§6a) | §3, §6a, `f1_sd_expansion.py`, `f1_pi4_leading_coefficient.py` |
 | F1-4 | Leading-order `E_v[S2]=v^2/(a+1)`, `E_v[S2^2]=(a+6)v^4/((a+1)(a+2)(a+3))` derived from the weighted integer sum (not assumed) | proved arithmetic asymptotic, leading order (modulo recalled theorem) | §3 |
 | F1-5 | Numerical confirmation of F1-4's *leading order* is present but its error rate has not stabilized at `L<=10^7` (both moments' `rel.err x log L` still rising) | finite numerical check; open re: error rate | §3, `f1_moment_results.json` |
 | F1-6 | Exact correspondence: `beta<->M3`, `alpha<->M2` (off-diag `+ <x,A^2x>` pieces), derived from `A`'s matrix entries via recalled Mertens/PNT substitution | exact algebra + recalled substitution | §4 |
@@ -504,6 +605,22 @@ verification and write-up than on re-executing already-consistent runs).
 * No attempt was made in this pass to re-derive or independently verify the classical Selberg–Delange
   theorem itself, nor Inoue's Theorems 2/4 (arxiv fetch blocked, as in F2); every statement resting on them
   is labeled accordingly.
+* **[Failed attempt, repair pass]** A direct, non-shortcut numerical confirmation that `Pi_4(1+eps)*eps^4
+  -> 6a` (rather than `6a^2`) was attempted (`f1_pi4_leading_coefficient.py`) and did not succeed: summing
+  `(log p)^4 rho_p(1+eps)(1-rho_p(1+eps))` over primes `<=2*10^6` for `eps in {1,...,0.0625}` gives ratios
+  to the target `6a` of only `0.86, 0.89, 0.48, 0.11, 0.014` — neither converging toward `1` nor toward any
+  other constant cleanly, because the asymptotic regime needs primes out to `~e^{1/eps}` (which exceeds any
+  affordable sieve once `eps` is small) while at `O(1)` `eps` the sub-leading terms in `rho_p` are still too
+  large to see the leading `eps^{-4}` behaviour in isolation. The obstruction is that this quantity's
+  leading-order asymptotic is fundamentally a small-`eps` (equivalently, `L->infty`) statement that a finite
+  prime sum cannot resolve without either (a) using the exact, non-truncated `zeta`/`zeta'` function via
+  mpmath (as the rest of this project already does, and as `refute_F1_rigour.py` does for the pure-zeta "6"
+  part), or (b) deriving `Pi_4`'s coefficient by the same Dirichlet-series/Perron-type argument used for
+  `Pi_2` rather than by direct summation. A future pass could redo (a) properly for the *full* `Pi_4(1+eps)`
+  (not just its pure-zeta piece) by expressing `Pi_4(s) = a * sum_p (log p)^4 p^{-s} + (convergent remainder
+  computable from prime sums to a modest cutoff)` and evaluating the first term via mpmath's exact
+  `zeta'/zeta`-derivative machinery instead of a truncated prime sieve — this was not done here for time
+  reasons after the sieve-based attempt above failed to converge.
 
 ## 11. Notes
 

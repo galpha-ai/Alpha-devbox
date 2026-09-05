@@ -1,0 +1,151 @@
+{
+  "model": "truncated bosonic Fock space, modes j=1..M cost mass j/M, creation weight g(j/M)=2 sin(pi j/(2M)), K = A^T A + (A^2+(A^T)^2)/2 (A = creation, FABLE/F2 convention)",
+  "threshold_pi2_over_2": 4.934802200544679,
+  "expanded_family_reference": 4.646,
+  "results": [
+    {
+      "M": 20,
+      "dim": 2714,
+      "nnz_Acre": 8266,
+      "lambda_max": 4.613125354101163,
+      "margin_over_2pi2_minus_quarter": -0.016296339415995786,
+      "eigsh_residual": 1.8668448216394864e-14,
+      "min_signed_entry": 0.3638697924122801,
+      "timing_s": {
+        "enum": 0.004013493999991624,
+        "build": 0.007882897999934357,
+        "eigsh": 0.007098539999788045,
+        "total": 0.02171230000021751
+      },
+      "maxrss_MB": 62.28125
+    },
+    {
+      "M": 25,
+      "dim": 9296,
+      "nnz_Acre": 32095,
+      "lambda_max": 4.6193379711043585,
+      "margin_over_2pi2_minus_quarter": -0.015981604561855656,
+      "eigsh_residual": 4.8739733703268686e-12,
+      "min_signed_entry": 0.3207066999676854,
+      "timing_s": {
+        "enum": 0.02121502900035921,
+        "build": 0.03537866499982556,
+        "eigsh": 0.01994953000030364,
+        "total": 0.08442407000029561
+      },
+      "maxrss_MB": 68.7890625
+    },
+    {
+      "M": 30,
+      "dim": 28629,
+      "nnz_Acre": 109350,
+      "lambda_max": 4.623565248298892,
+      "margin_over_2pi2_minus_quarter": -0.015767448197388456,
+      "eigsh_residual": 1.8094330712272708e-10,
+      "min_signed_entry": 0.28903142705894463,
+      "timing_s": {
+        "enum": 0.037457690999872284,
+        "build": 0.11263117299995429,
+        "eigsh": 0.07199925400027496,
+        "total": 0.24994790699975056
+      },
+      "maxrss_MB": 88.4296875
+    },
+    {
+      "M": 35,
+      "dim": 81156,
+      "nnz_Acre": 337506,
+      "lambda_max": 4.626623955624023,
+      "margin_over_2pi2_minus_quarter": -0.015612492274089562,
+      "eigsh_residual": 2.7327689958970764e-12,
+      "min_signed_entry": 0.2645910913624681,
+      "timing_s": {
+        "enum": 0.10191983899994739,
+        "build": 0.40960942199990313,
+        "eigsh": 0.24891575999981796,
+        "total": 0.8344036629996481
+      },
+      "maxrss_MB": 147.59375
+    },
+    {
+      "M": 40,
+      "dim": 215308,
+      "nnz_Acre": 963320,
+      "lambda_max": 4.628938225309207,
+      "margin_over_2pi2_minus_quarter": -0.015495250002204364,
+      "eigsh_residual": 3.856444924316252e-11,
+      "min_signed_entry": 0.24503648616421314,
+      "timing_s": {
+        "enum": 0.3137333839999883,
+        "build": 1.2514465160002146,
+        "eigsh": 0.6904381949998424,
+        "total": 2.4978210330000366
+      },
+      "maxrss_MB": 293.359375
+    },
+    {
+      "M": 45,
+      "dim": 540635,
+      "nnz_Acre": 2579411,
+      "lambda_max": 4.630749603320306,
+      "margin_over_2pi2_minus_quarter": -0.015403484520150196,
+      "eigsh_residual": 1.4072487199371392e-12,
+      "min_signed_entry": 0.2289559701612502,
+      "timing_s": {
+        "enum": 0.7988165520000621,
+        "build": 4.756876949000343,
+        "eigsh": 3.456470526999965,
+        "total": 9.774434189000203
+      },
+      "maxrss_MB": 647.45703125
+    },
+    {
+      "M": 50,
+      "dim": 1295971,
+      "nnz_Acre": 6547151,
+      "lambda_max": 4.632205557599098,
+      "margin_over_2pi2_minus_quarter": -0.015329725014722045,
+      "eigsh_residual": 5.849483031019457e-12,
+      "min_signed_entry": 0.21544575296018803,
+      "timing_s": {
+        "enum": 2.637571274000038,
+        "build": 12.298212328999853,
+        "eigsh": 9.369864527000118,
+        "total": 26.495074379000016
+      },
+      "maxrss_MB": 1541.91015625
+    },
+    {
+      "M": 55,
+      "dim": 2984865,
+      "nnz_Acre": 15877562,
+      "lambda_max": 4.633401137678047,
+      "margin_over_2pi2_minus_quarter": -0.015269156220352909,
+      "eigsh_residual": 3.483183350641074e-11,
+      "min_signed_entry": 0.20389788288857832,
+      "timing_s": {
+        "enum": 10.688324663000003,
+        "build": 28.738277819999894,
+        "eigsh": 23.090598160000354,
+        "total": 67.65188095699978
+      },
+      "maxrss_MB": 3541.5546875
+    },
+    {
+      "M": 60,
+      "dim": 6639349,
+      "nnz_Acre": 37013901,
+      "status": "built, eigsh skipped (memory limit)",
+      "maxrss_MB": 7909.88671875
+    }
+  ],
+  "extrapolation_quadratic_1_over_M": {
+    "lambda_infty": 4.6456429187586785,
+    "c1": -0.6861744832112888,
+    "c2": 0.7158892878993249
+  },
+  "extrapolation_linear_1_over_M": {
+    "lambda_infty": 4.644919707437812,
+    "slope": -0.6380319861476922
+  }
+}

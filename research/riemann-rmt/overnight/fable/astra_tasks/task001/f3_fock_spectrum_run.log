@@ -1,0 +1,19 @@
+M=20: dim=2714, nnz(Acre)=8266, enum 0.0s, build 0.0s, maxrss 61 MB
+M=20: lambda_max(K)=4.6131253541  (pi^2/2=4.9348022)  residual=1.87e-14  total 0.0s  maxrss 62 MB
+M=25: dim=9296, nnz(Acre)=32095, enum 0.0s, build 0.0s, maxrss 68 MB
+M=25: lambda_max(K)=4.6193379711  (pi^2/2=4.9348022)  residual=4.87e-12  total 0.1s  maxrss 69 MB
+M=30: dim=28629, nnz(Acre)=109350, enum 0.0s, build 0.1s, maxrss 88 MB
+M=30: lambda_max(K)=4.6235652483  (pi^2/2=4.9348022)  residual=1.81e-10  total 0.2s  maxrss 88 MB
+M=35: dim=81156, nnz(Acre)=337506, enum 0.1s, build 0.4s, maxrss 148 MB
+M=35: lambda_max(K)=4.6266239556  (pi^2/2=4.9348022)  residual=2.73e-12  total 0.8s  maxrss 148 MB
+M=40: dim=215308, nnz(Acre)=963320, enum 0.3s, build 1.3s, maxrss 293 MB
+M=40: lambda_max(K)=4.6289382253  (pi^2/2=4.9348022)  residual=3.86e-11  total 2.5s  maxrss 293 MB
+M=45: dim=540635, nnz(Acre)=2579411, enum 0.8s, build 4.8s, maxrss 647 MB
+M=45: lambda_max(K)=4.6307496033  (pi^2/2=4.9348022)  residual=1.41e-12  total 9.8s  maxrss 647 MB
+M=50: dim=1295971, nnz(Acre)=6547151, enum 2.6s, build 12.3s, maxrss 1542 MB
+M=50: lambda_max(K)=4.6322055576  (pi^2/2=4.9348022)  residual=5.85e-12  total 26.5s  maxrss 1542 MB
+M=55: dim=2984865, nnz(Acre)=15877562, enum 10.7s, build 28.7s, maxrss 3542 MB
+M=55: lambda_max(K)=4.6334011377  (pi^2/2=4.9348022)  residual=3.48e-11  total 67.7s  maxrss 3542 MB
+M=60: dim=6639349, nnz(Acre)=37013901, enum 28.1s, build 66.7s, maxrss 7910 MB
+M=60: memory 7910 MB exceeds limit 4000.0 MB, skipping eigsh
+done
