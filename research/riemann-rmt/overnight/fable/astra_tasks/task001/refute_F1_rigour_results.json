@@ -1,0 +1,14 @@
+{
+  "a": "1.13777777777778",
+  "direct_diff_probe_-zz3(1+eps)*eps^4_should_tend_to_6": {
+    "0.001": "-6.0",
+    "0.0002": "-6.0",
+    "5.0e-5": "-6.0"
+  },
+  "Pi4 leading coefficient, correct (a * h4_zeta_part = 6a)": "6.82666666666667",
+  "Pi4 leading coefficient, as literally stated in the .md prose (6a^2)": "7.76722962962963",
+  "m4 implied by the .md's own stated Pi4 coefficient (a^2 + 6a^2 = 7a^2)": "9.06176790123457",
+  "m4 that is actually correct (a^2 + 6a)": "8.1212049382716",
+  "m4 as hardcoded literally in f1_selberg_delange_expansion.py line 87 (a*a+6*a)": "8.1212049382716",
+  "verdict": "The .md's prose derivation of Pi_4's leading coefficient (6a^2/eps^4) is WRONG -- the correct leading coefficient is 6a/eps^4 (one power of a, not two), obtainable from facts the proposer's own script already establishes (h4_zeta_part=6, and rho_p ~ a/p to leading order, the same fact used for Pi_2's leading a/eps^2 term). Combined with Pi_2^2's a^2/eps^4, this correctly gives m4 = a^2+6a, which IS what the code hardcodes (f1_selberg_delange_expansion.py line 87) -- but the code never derives this value from an actual computed Pi_4 Laurent coefficient (contrast with kappa1, kappa2, pi0, R1, R2, which are genuinely computed from prime sums / Stieltjes constants earlier in the same script); m4 is a bare literal matching Astra's target formula. So (a) the .md's own written derivation of m4 is arithmetically self-contradictory (a^2+6a^2 != a^2+6a, as printed above), and (b) the claim that this derivation is 'exact algebra' done 'in the script' / 'tracked exactly' by the code is false for this specific coefficient: it is pattern-matched to the known target answer, not independently derived, even though the target answer itself is correct."
+}
