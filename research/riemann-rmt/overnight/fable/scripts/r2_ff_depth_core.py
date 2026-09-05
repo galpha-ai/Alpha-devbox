@@ -251,13 +251,17 @@ def depth_from_angles(free, group, tol=OFF_TOL, rel=1e-11, s_cap=60.0, classify=
         if n_off == 0:
             out["ctype"] = "unresolved"
         else:
-            ang = np.angle(off) % (2 * pi)
-            alpha = float(np.angle(np.mean(np.exp(1j * ang))) % (2 * pi))
-            out["alpha"] = alpha
             if group == "U":
+                ang = np.angle(off) % (2 * pi)
+                alpha = float(np.angle(np.mean(np.exp(1j * ang))) % (2 * pi))
+                out["alpha"] = alpha
                 out["ctype"] = "bulk" if n_off == 2 else "multi"
             else:
-                near_p = min(alpha, 2 * pi - alpha) < 1e-3
+                # mirror pairs: use the upper-half-plane representatives, alpha in [0, pi]
+                up = off[off.imag >= -1e-12]
+                alpha = float(np.mean(np.abs(np.angle(up)))) if len(up) else 0.0
+                out["alpha"] = alpha
+                near_p = alpha < 1e-3
                 near_m = abs(alpha - pi) < 1e-3
                 if n_off == 2 and near_p:
                     out["ctype"] = "edge+"
@@ -277,16 +281,28 @@ def depth_from_angles(free, group, tol=OFF_TOL, rel=1e-11, s_cap=60.0, classify=
 
 
 # ----------------------------------------------------------------------------- ODE cross-check
-def depth_ode(free, group, eps_rel=2e-3, rtol=1e-10, atol=1e-13):
-    """Integrate theta_j' = -sum_{k != j} cot((theta_j - theta_k)/2) from the full configuration
-    until the smallest cyclic gap reaches eps = eps_rel * (2 pi / M); then add the exact two-body
-    remainder -log cos(g/2).  The neglected background correction to the remainder is
-    O(S* g^2) * remainder, i.e. relative O(M^2 eps^2)."""
+def depth_ode(free, group, eps_rel=1e-4, rtol=1e-12, atol=1e-15, return_sol=False):
+    """Primary depth solver for large M (np.roots is unusable beyond degree ~40, see the log of
+    r2_ff_lemma_checks.py).  Integrates theta_j' = -sum_{k != j} cot((theta_j - theta_k)/2) from
+    the full configuration (DOP853) until the smallest cyclic gap reaches eps = eps_rel*2pi/M,
+    then adds the exact local remainder: the two-body time -log cos(g/2) for an ordinary adjacent
+    pair, or the three-body hard-edge time (1/2) log(3/(1+2cos g)) when one endpoint of the closing
+    gap is a forced root (+-1, SO(odd) / O^-).  The neglected background correction to the remainder
+    is O(S* eps^2) relative to the remainder itself (Theorem B*), i.e. O(M^2 eps^2 * eps^2/delta^2)
+    relative to D: below 1e-10 for the parameters used here.
+    Returns a dict: D, t_stop, g_stop, delta_min, thA, rho, gap_index (index of the initial adjacent
+    gap, in the sorted full configuration, that closed), gap_initial, is_min_gap, ctype
+    (bulk / edge+ / edge- ), nfev."""
     from scipy.integrate import solve_ivp
     th0 = full_angles(free, group)
     M = len(th0)
     eps = eps_rel * 2 * pi / M
     mask = ~np.eye(M, dtype=bool)
+    forced = []
+    if group == "SO_odd":
+        forced = [0.0]
+    if group == "O_minus":
+        forced = [0.0, pi]
 
     def rhs(t, th):
         d = th[:, None] - th[None, :]
@@ -294,23 +310,84 @@ def depth_ode(free, group, eps_rel=2e-3, rtol=1e-10, atol=1e-13):
         c[mask] = 1.0 / np.tan(0.5 * d[mask])
         return -c.sum(axis=1)
 
-    def gap(th):
-        s = np.sort(th)
-        return float(np.min(np.diff(np.concatenate([s, [s[0] + 2 * pi]]))))
+    def gaps_of(th):
+        # order is preserved until the first collision, so th stays sorted
+        return np.diff(np.concatenate([th, [th[0] + 2 * pi]]))
 
     def event(t, th):
-        return gap(th) - eps
+        return float(np.min(gaps_of(th))) - eps
     event.terminal = True
     event.direction = -1
-    dmin = gap(th0)
-    T = 4.0 * two_body_time(dmin) + 1e-3
+    g0 = gaps_of(th0)
+    dmin = float(g0.min()); imin = int(np.argmin(g0))
+    thA = two_body_time(dmin)
+    T = 4.0 * thA + 1e-3
     sol = solve_ivp(rhs, (0.0, T), th0, method="DOP853", events=event, rtol=rtol, atol=atol)
+    out = dict(M=M, delta_min=dmin, imin=imin, thA=thA, nfev=sol.nfev)
     if len(sol.t_events[0]) == 0:
-        return np.nan, sol
+        out.update(D=np.nan, ctype="none")
+        return (out, sol) if return_sol else out
     t1 = float(sol.t_events[0][0])
     th1 = sol.y_events[0][0]
-    g1 = gap(th1)
-    return t1 + two_body_time(g1), sol
+    g1 = gaps_of(th1)
+    k = int(np.argmin(g1)); gk = float(g1[k])
+    lo, hi = th1[k], th1[(k + 1) % M] + (2 * pi if k == M - 1 else 0.0)
+    forced_endpoint = any(min(abs((x - f) % (2 * pi)), 2 * pi - abs((x - f) % (2 * pi))) < 1e-9
+                          for x in (lo, hi) for f in forced)
+    if forced_endpoint:
+        rem = hard_edge_three_body(gk)
+        ctype = "edge+" if any(min(abs(x % (2 * pi)), 2 * pi - abs(x % (2 * pi))) < 1e-9 for x in (lo, hi)) else "edge-"
+    else:
+        rem = two_body_time(gk)
+        mid = 0.5 * (lo + hi) % (2 * pi)
+        if group != "U" and min(mid, 2 * pi - mid) < 1e-7:
+            ctype = "edge+"
+        elif group != "U" and abs(mid - pi) < 1e-7:
+            ctype = "edge-"
+        else:
+            ctype = "bulk"
+    D = t1 + rem
+    out.update(D=D, t_stop=t1, g_stop=gk, rho=D / thA, gap_index=k, gap_initial=float(g0[k]),
+               is_min_gap=bool(k == imin), ctype=ctype)
+    return (out, sol) if return_sol else out
+
+
+def edge_time_exact(free, group, sign=+1, s_guess=None, dps=30):
+    """Independent high-precision check for edge collisions: a mirror pair (plus the forced root,
+    if any) merges at z = sign only when P_s(sign) = sum_j a_j e^{s j(M-j)} sign^j vanishes, and
+    for the forced-root classes the relevant scalar is P~_s(sign) with P~ = P/(z - sign) (P_s(sign)
+    vanishes identically there).  Returns the zero of that scalar nearest to s_guess (mpmath
+    findroot at `dps` digits), which equals D when the first collision is at z = sign."""
+    import mpmath as mp
+    mp.mp.dps = dps
+    M = matrix_size(group, len(free))
+    a = [mp.mpf(1)]
+    def mul(a, q):
+        new = [mp.mpf(0)] * (len(a) + len(q) - 1)
+        for i, ai in enumerate(a):
+            for j, qj in enumerate(q):
+                new[i + j] += ai * qj
+        return new
+    for t in free:
+        t = mp.mpf(float(t)); a = mul(a, [mp.mpf(1), -2 * mp.cos(t), mp.mpf(1)])
+    forced = {"SO_odd": [1], "O_minus": [1, -1]}.get(group, [])
+    for f in forced:
+        if f != sign:
+            a = mul(a, [mp.mpf(-f), mp.mpf(1)])      # keep the other forced root inside P
+    # a now has degree M - (1 if sign is forced else 0): this is P~ (forced root at `sign` stripped)
+    deg = len(a) - 1
+    z = mp.mpf(sign)
+    Mfull = M
+    # the flow acts on the full polynomial; P~_s(sign) = lim P_s(z)/(z - sign) = d/dz P_s at sign
+    # when sign is forced, else P_s(sign).  Implement both via the full coefficients.
+    afull = mul(a, [mp.mpf(-sign), mp.mpf(1)]) if sign in forced else a
+    def F(s):
+        if sign in forced:
+            return mp.fsum(afull[j] * j * mp.e ** (s * j * (Mfull - j)) * z ** (j - 1) for j in range(1, Mfull + 1))
+        return mp.fsum(afull[j] * mp.e ** (s * j * (Mfull - j)) * z ** j for j in range(Mfull + 1))
+    if s_guess is None:
+        s_guess = 1e-3
+    return float(mp.findroot(F, (mp.mpf(s_guess) * 0.999, mp.mpf(s_guess) * 1.001), solver='anderson', tol=mp.mpf(10) ** (-dps + 5)))
 
 
 # ----------------------------------------------------------------------------- closed forms
@@ -352,7 +429,9 @@ def depth_usp4_closed_form(phi1, phi2, s_max=8.0):
 def weyl_density(free, group):
     """Unnormalised Weyl density of the free angles (theta in (0,pi)^N) for the symmetric classes
     (recalled: USp(2N) prod_{j<k}(cos th_j - cos th_k)^2 prod sin^2 th_j; SO(2N) prod_{j<k}(...)^2;
-    SO(2N+1) prod_{j<k}(...)^2 prod sin^2(th_j/2); O^-(2N+2) prod_{j<k}(...)^2 prod cos^2(th_j/2))."""
+    SO(2N+1) prod_{j<k}(...)^2 prod sin^2(th_j/2); O^-(2N+2): the same density as USp(2N),
+    prod_{j<k}(...)^2 prod sin^2 th_j -- checked numerically in r2_ff_lemma_checks.py (a); an earlier
+    guess cos^2(th_j/2) was refuted by the same KS test)."""
     th = np.asarray(free, float)
     c = np.cos(th)
     N = len(th)
@@ -360,12 +439,10 @@ def weyl_density(free, group):
     for j in range(N):
         for k in range(j + 1, N):
             v *= (c[j] - c[k]) ** 2
-    if group == "USp":
+    if group in ("USp", "O_minus"):
         v *= np.prod(np.sin(th) ** 2)
     elif group == "SO_odd":
         v *= np.prod(np.sin(th / 2) ** 2)
-    elif group == "O_minus":
-        v *= np.prod(np.cos(th / 2) ** 2)
     return v
 
 
@@ -381,12 +458,10 @@ def weyl_rejection_sample(group, N, n, rng, bound=None):
         for j in range(N):
             for k in range(j + 1, N):
                 v *= (c[:, j] - c[:, k]) ** 2
-        if group == "USp":
+        if group in ("USp", "O_minus"):
             v *= np.prod(np.sin(th) ** 2, axis=1)
         elif group == "SO_odd":
             v *= np.prod(np.sin(th / 2) ** 2, axis=1)
-        elif group == "O_minus":
-            v *= np.prod(np.cos(th / 2) ** 2, axis=1)
         acc = rng.uniform(0, bound, size=4 * n) < v
         out.extend(list(np.sort(th[acc], axis=1)))
     return np.array(out[:n])

@@ -70,6 +70,17 @@ def series_fits(name, Ls, vals, cont):
         top = [i for i, L in enumerate(Ls) if L >= 1e5]
         if len(top) == 3:
             out["fit2_1e5_1e6_1e7"] = fit_2(Ls[top], vals[top])
+    # out-of-sample test of the expansion form: fit on 1e4,1e5,1e6, predict 1e7 (if available)
+    i7 = [i for i, L in enumerate(Ls) if L == 1e7]
+    if i7 and "fit2_1e4_1e5_1e6" in out:
+        lg = math.log(1e7)
+        f2 = out["fit2_1e4_1e5_1e6"]; f1 = out["fit1_1e4_1e5_1e6"]
+        p2 = f2["J_inf"] + f2["c"]/lg + f2["c2"]/lg**2
+        p1 = f1["J_inf"] + f1["c"]/lg
+        out["predict_1e7"] = {"actual": float(vals[i7[0]]), "fit2_prediction": p2, "fit2_error": float(vals[i7[0]] - p2),
+                              "fit1_prediction": p1, "fit1_error": float(vals[i7[0]] - p1)}
+        print(f"   predict 1e7: actual={vals[i7[0]]:+.7f} fit2(1e4-1e6)={p2:+.7f} (err {vals[i7[0]]-p2:+.1e})"
+              f" fit1(1e4-1e6)={p1:+.7f} (err {vals[i7[0]]-p1:+.1e})")
     print(f"--- {name}: continuum = {cont}")
     for k, v in out.items():
         if k.startswith("fit"):

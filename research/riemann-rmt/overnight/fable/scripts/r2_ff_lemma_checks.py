@@ -10,10 +10,11 @@
     (1/2) log(3/(1+2cos theta)) exactly; with background (SO(2N+1), N = 4) 6D/theta^2 -> 1 as
     theta -> 0 whereas the naive two-body value would be 8D/theta^2 -> 1.
 (e) genus 2: closed form (reduced quadratic) vs the general bisection solver on Haar USp(4).
-(f) ODE solver vs bisection solver on Haar samples (M up to 64).
+(f) ODE solver vs bisection solver on Haar samples (M up to 33).
 (g) continuity demo: D along a one-parameter rotation of a single eigenvalue through a
     simultaneous double collision (corner, but continuous) -- U(6) example.
-(h) timing of the bisection solver at M = 32, 64, 128.
+(h) np.roots conditioning at M = 32..128 (unusable beyond ~40: the ODE solver is primary) and ODE timing.
+(i) convergence of the ODE solver in the stopping gap eps.
 Outputs a JSON summary to ../data/r2_ff_lemma_checks.json.
 """
 import sys, os, json, time
@@ -83,8 +84,9 @@ for s in (0.0, 0.01, 0.1, 0.5):
 res["forced_root_and_symmetry_worst"] = float(max(vals))
 print(f"   worst |P_s(+-1)|/max|c| (forced) and palindromic/real defects: {max(vals):.2e}")
 r = roots_at(a_sp, 0.3 * depth_from_angles(th, 'USp', classify=False)['D'])
-r_sorted = np.sort_complex(r); mirror = np.sort_complex(np.conj(r))
-print(f"   mirror symmetry of flowed USp root set: {np.max(np.abs(r_sorted - mirror)):.2e}")
+mirror_defect = max(np.min(np.abs(np.conj(z) - r)) for z in r)
+res["mirror_defect"] = float(mirror_defect)
+print(f"   mirror symmetry of the flowed USp root set (max over roots of dist(conj z, root set)): {mirror_defect:.2e}")
 
 print("(d) SO(odd) hard-edge three-body law")
 rows = []
@@ -128,28 +130,43 @@ for group, N in [("U", 8), ("U", 32), ("USp", 8), ("SO_even", 16), ("SO_odd", 16
     for _ in range(3):
         fr = free_angles(sample_group(group, N, rng), group, N)
         o = depth_from_angles(fr, group, classify=False)
-        t0 = time.time(); Do, sol = depth_ode(fr, group); t1 = time.time()
+        t0 = time.time(); oo = depth_ode(fr, group); Do = oo["D"]; t1 = time.time()
         rows.append((group, N, o["D"], Do, abs(Do - o["D"]) / o["D"]))
-        print(f"   {group:8s} N={N:3d}: bisection D={o['D']:.10e}  ODE D={Do:.10e}  rel diff={abs(Do-o['D'])/o['D']:.2e}  (ODE {t1-t0:.1f}s, {sol.nfev} evals)")
+        print(f"   {group:8s} N={N:3d}: bisection D={o['D']:.10e}  ODE D={Do:.10e}  rel diff={abs(Do-o['D'])/o['D']:.2e}  (ODE {t1-t0:.1f}s, {oo['nfev']} evals, type {oo['ctype']})")
 res["ode_vs_bisection"] = rows
 
-print("(g) continuity demo in U(6): rotate one eigenvalue through a symmetric double-collision configuration")
-base = np.array([0.0, 0.30, 2.0, 2.9, 4.0, 4.30])   # gaps (0,0.30) and (4.0,4.30) equal: simultaneous collision at phi = 0.30
+print("(g) continuity demo in U(6): rotate one eigenvalue through a reflection-symmetric double-collision configuration")
+# reflection-symmetric {+-1.0, +-1.3, +-2.9}: the pairs (1.0,1.3) and (-1.3,-1.0) collide simultaneously by symmetry.
+base = np.array([1.0, 1.3, 2.9, -2.9, -1.3, -1.0])
 vals = []
 for dphi in np.linspace(-0.02, 0.02, 41):
-    fr = base.copy(); fr[1] = 0.30 + dphi
+    fr = base.copy(); fr[1] = 1.3 + dphi
     vals.append(depth_from_angles(fr, "U", classify=False)["D"])
 vals = np.array(vals)
 jumps = np.max(np.abs(np.diff(vals)))
 res["continuity_demo_max_jump"] = float(jumps); res["continuity_demo_D"] = vals.tolist()
-print(f"   D(phi) on 41 points across the double collision: max |D(phi_{{k+1}})-D(phi_k)| = {jumps:.2e}; D at the corner = {vals[20]:.8f}; slope left {np.diff(vals)[19]/0.001:.4f}, right {np.diff(vals)[20]/0.001:.4f}")
+print(f"   D(phi) on 41 points across the double collision: max |D(phi_{{k+1}})-D(phi_k)| = {jumps:.2e} (step 0.001);")
+print(f"   D at the corner = {vals[20]:.8f}; one-sided slopes: left {np.diff(vals)[19]/0.001:.4f}, right {np.diff(vals)[20]/0.001:.4f}  (a corner = continuous, not differentiable)")
 
-print("(h) timing")
-for group, N in [("U", 32), ("U", 64), ("USp", 32), ("USp", 64), ("SO_even", 64)]:
+print("(h) np.roots conditioning (baseline off-circle error at s = 0) and ODE timing")
+for group, N in [("U", 32), ("U", 64), ("USp", 32), ("USp", 64)]:
+    b = []
+    for _ in range(20):
+        fr = free_angles(sample_group(group, N, rng), group, N)
+        b.append(offcircle(poly_from_angles(fr, group), 0.0)[0])
+    res[f"base_off_median_{group}_{N}"] = float(np.median(b))
+    print(f"   {group:8s} N={N:3d} (M={matrix_size(group,N):3d}): median baseline off-circle error of np.roots = {np.median(b):.1e}  ({'usable' if np.median(b) < OFF_TOL else 'UNUSABLE -> ODE solver'})")
+for group, N in [("U", 64), ("USp", 64), ("USp", 128)]:
     fr = free_angles(sample_group(group, N, rng), group, N)
-    t0 = time.time(); o = depth_from_angles(fr, group); t1 = time.time()
-    print(f"   {group:8s} N={N:3d} (M={o['M']:3d}): {t1-t0:.2f} s, {o['iters']} bisection steps, base_off={o['base_off']:.1e}, type={o['ctype']}, rho={o['rho']:.5f}")
-    res[f"timing_{group}_{N}"] = t1 - t0
+    t0 = time.time(); o = depth_ode(fr, group); t1 = time.time()
+    print(f"   ODE {group:8s} N={N:3d} (M={o['M']:3d}): {t1-t0:.2f} s, nfev={o['nfev']}, type={o['ctype']}, rho={o['rho']:.5f}")
+    res[f"timing_ode_{group}_{N}"] = t1 - t0
+print("(i) ODE remainder convergence: eps_rel = 2e-3, 5e-4, 1e-4 on 3 samples (U(32), SO_odd(16))")
+for group, N in [("U", 32), ("SO_odd", 16)]:
+    fr = free_angles(sample_group(group, N, rng), group, N)
+    Ds = [depth_ode(fr, group, eps_rel=e)["D"] for e in (2e-3, 5e-4, 1e-4)]
+    print(f"   {group:8s} N={N}: D = {Ds[0]:.12e}, {Ds[1]:.12e}, {Ds[2]:.12e}; rel spread {np.ptp(Ds)/Ds[2]:.1e}")
+    res[f"ode_eps_convergence_{group}_{N}"] = float(np.ptp(Ds) / Ds[2])
 
 with open(os.path.join(HERE, "..", "data", "r2_ff_lemma_checks.json"), "w") as f:
     json.dump(res, f, indent=1, default=float)

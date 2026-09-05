@@ -26,7 +26,7 @@ What it does
 3. Integrates the root ODE with scipy.solve_ivp (DOP853, rtol 1e-12, terminal event at min gap = 1e-5 delta,
    then adds the exact two-body residual -log cos(g_end/2)) to get D; cross-checks with the
    polynomial method dyn1_core.find_ustar (first root leaving the unit circle; double precision,
-   usable only for N <= 32) and with a 40-digit mpmath bracket certificate (all roots on the circle at
+   usable only for N <= 32) and with a 60-digit mpmath bracket certificate (all roots on the circle at
    D(1-rel), a root off the circle at D(1+rel)) for the first --n-cert samples; compares D with
    delta^2/8, -log cos(delta/2) and the repaired closed form
        T(mu) = -log(1 - mu delta^2/4) / (2 mu),   mu = A N^2 + kappa_0,  kappa_0 = kappa(delta/2),
@@ -186,7 +186,7 @@ def depth_poly(th0):
     return (math.nan if us is None else float(us)), float(off0)
 
 
-def mp_offcircle(th, u, dps=40):
+def mp_offcircle(th, u, dps=60):
     """High-precision check: max_j | |z_j(u)| - 1 | over the roots of P_u, coefficients built exactly
     (at dps digits) from the given angles.  Before the first collision this is 0 (self-inversive)."""
     import mpmath as mp
@@ -206,16 +206,19 @@ def mp_offcircle(th, u, dps=40):
         return float(max(abs(abs(r) - 1) for r in roots)), float(err)
 
 
-def mp_bracket_certificate(th, D, rels=(1e-6, 1e-5, 1e-4), dps=40):
+def mp_bracket_certificate(th, D, rels=(1e-6, 1e-5, 1e-4), dps=60):
     """Certificate that the true depth lies in [D(1-rel), D(1+rel)]: every root on the circle at the
-    lower end (off < 1e-20) and some root off the circle at the upper end (off > 1e-8).  Tries the
-    relative widths in `rels` in order and reports the first that certifies."""
+    lower end (off < 1e-12; before the first collision the roots of the self-inversive P_s are exactly
+    unimodular, and 60-digit Durand-Kerner reaches 1e-24..1e-47 even at a 16-root lattice cluster,
+    where 40 digits bottom out at 1e-20) and some root off the circle at the upper end (off > 1e-8,
+    observed 1e-5..1e-4).  Tries the relative widths in `rels` in order and reports the first that
+    certifies."""
     out = None
     for rel in rels:
         off_lo, err_lo = mp_offcircle(th, D * (1 - rel), dps)
         off_hi, err_hi = mp_offcircle(th, D * (1 + rel), dps)
         out = dict(rel=rel, off_lo=off_lo, off_hi=off_hi, polyroots_err=max(err_lo, err_hi),
-                   certified=(off_lo < 1e-20 and off_hi > 1e-8))
+                   certified=(off_lo < 1e-12 and off_hi > 1e-8))
         if out['certified']:
             break
     return out

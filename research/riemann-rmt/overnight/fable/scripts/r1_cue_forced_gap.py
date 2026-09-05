@@ -20,8 +20,8 @@ collisions elsewhere before D_pair(lambda*), the pair's background stiffness S/N
 two-body lower bound D >= -log cos(g/2) (Theorem A, valid on the circle only while all
 roots are on the circle) is violated once other pairs have collided.
 
-Usage: python3 r1_cue_forced_gap.py [N] [samples] [seed]   (default 64 220 1)
-Writes ../data/r1_cue_forced_gap_N{N}.json
+Usage: python3 r1_cue_forced_gap.py [N] [samples] [seed] [tag]   (default 64 220 1 "")
+Writes ../data/r1_cue_forced_gap_N{N}{tag}.json (partial results every 20 samples in *_partial.json)
 """
 import json
 import os
@@ -37,6 +37,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "..", "data")
 PI2_8 = pi ** 2 / 8
 OFF_TOL = 1e-7
+TAG = ""
 
 
 def sample_cue_angles(N, rng):
@@ -219,6 +220,9 @@ def run(N, n_samples, seed):
             done = [r["lam_star"] for r in rows if r["lam_star"] is not None]
             print(f"  {len(rows):4d} samples, {time.time() - t0:6.1f}s, "
                   f"lambda* median so far {np.median(done):.4f}", flush=True)
+            os.makedirs(DATA, exist_ok=True)
+            with open(os.path.join(DATA, f"r1_cue_forced_gap_N{N}{TAG}_partial.json"), "w") as fh:
+                json.dump({"summary": summarise(rows, N), "rows": rows}, fh, indent=1)
     return rows
 
 
@@ -259,11 +263,12 @@ if __name__ == "__main__":
     N = int(sys.argv[1]) if len(sys.argv) > 1 else 64
     n_samples = int(sys.argv[2]) if len(sys.argv) > 2 else 220
     seed = int(sys.argv[3]) if len(sys.argv) > 3 else 1
-    print(f"N={N} samples={n_samples} seed={seed}")
+    TAG = sys.argv[4] if len(sys.argv) > 4 else ""
+    print(f"N={N} samples={n_samples} seed={seed} tag={TAG!r}")
     rows = run(N, n_samples, seed)
     summ = summarise(rows, N)
     print(json.dumps(summ, indent=1))
     os.makedirs(DATA, exist_ok=True)
-    with open(os.path.join(DATA, f"r1_cue_forced_gap_N{N}.json"), "w") as fh:
+    with open(os.path.join(DATA, f"r1_cue_forced_gap_N{N}{TAG}.json"), "w") as fh:
         json.dump({"summary": summ, "rows": rows}, fh, indent=1)
-    print("wrote", os.path.join(DATA, f"r1_cue_forced_gap_N{N}.json"))
+    print("wrote", os.path.join(DATA, f"r1_cue_forced_gap_N{N}{TAG}.json"))

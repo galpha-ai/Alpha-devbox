@@ -11,6 +11,7 @@ standard phase correction R -> diag(R)/|diag(R)|), take the eigenangles, and rec
                      circular-distance form  sum_k (1/2) csc^2(d_k/2),  d_k = dist(theta_k, {theta_a, theta_b}))
   S_old              sum_{k != a,b} (1/2) csc^2(x_b^k/2)   (the un-repaired stiffness, for comparison)
   d3                 min_k d_k  = distance from the min-gap pair to the nearest third point
+  vmid               d3 + delta_min/2 = distance from the pair's midpoint (the natural variable of the v^4 law)
   d_bulk_share       fraction of S_star carried by points with d_k <= 4/N
 
 Outputs (printed and saved to ../data/r1_cue_background_mc.json, per-sample arrays in
@@ -24,17 +25,18 @@ Outputs (printed and saved to ../data/r1_cue_background_mc.json, per-sample arra
   * ratio S_star/(2/d3^2): how much of S_star is the nearest third point.
 
 Usage: python3 r1_cue_background_mc.py [--quick]     (quick: 1/4 of the sample sizes)
-Uses at most 2 BLAS threads.
+Uses 1 BLAS thread (2 cores max are allowed; 1 is faster on the loaded shared host).
 """
 import os, sys, json, math, time
-os.environ.setdefault('OMP_NUM_THREADS', '2'); os.environ.setdefault('OPENBLAS_NUM_THREADS', '2'); os.environ.setdefault('MKL_NUM_THREADS', '2')
+# one BLAS thread: under the shared machine's load, multi-threaded zgeev was 15x slower than single-threaded
+for _v in ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS'): os.environ[_v] = '1'
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, '..', 'data')
 os.makedirs(DATA, exist_ok=True)
 QUICK = '--quick' in sys.argv
-SIZES = {64: 4000, 128: 2000, 256: 800}
+SIZES = {64: 8000, 128: 3000, 256: 1000}
 if QUICK: SIZES = {k: v // 4 for k, v in SIZES.items()}
 TWO_PI = 2*math.pi
 
@@ -44,9 +46,19 @@ def haar_unitary(n, rng):
     d = np.diag(r); ph = d/np.abs(d)
     return q*ph  # column j multiplied by phase_j  (Mezzadri's correction)
 
-def cue_angles(n, rng):
-    ev = np.linalg.eigvals(haar_unitary(n, rng))
-    return np.sort(np.angle(ev) % TWO_PI)
+def cue_angles(n, rng, check=False):
+    """Eigenangles of a Haar unitary U.  Uses the Cayley transform H = i(I-U)(I+U)^{-1} (Hermitian,
+    eigenvalues tan(theta/2)) and a Hermitian eigensolver, which is ~4x faster than zgeev; the
+    nonsymmetric solver is used as a cross-check when check=True (agreement ~1e-14 observed)."""
+    u = haar_unitary(n, rng)
+    I = np.eye(n)
+    H = 1j*(I - u) @ np.linalg.inv(I + u)
+    lam = np.linalg.eigvalsh((H + H.conj().T)/2)
+    th = np.sort((2*np.arctan(lam)) % TWO_PI)
+    if check:
+        th2 = np.sort(np.angle(np.linalg.eigvals(u)) % TWO_PI)
+        assert np.abs(th - th2).max() < 1e-10, 'Cayley route disagrees with zgeev'
+    return th
 
 def stiffness(theta):
     """Return delta_min, a, b, S_star (literal), S_star (circular form), S_old, d3, near_share."""
@@ -81,11 +93,12 @@ def main():
         t0 = time.time()
         rec = np.zeros((m, 8))
         for s in range(m):
-            th = cue_angles(n, rng)
+            th = cue_angles(n, rng, check=(s < 3))
             rec[s] = stiffness(th)
         delta, S_star, S_circ, S_old, d3, near = rec[:, 0], rec[:, 3], rec[:, 4], rec[:, 5], rec[:, 6], rec[:, 7]
         assert np.allclose(S_star, S_circ, rtol=1e-9), 'wrap-around/circular-distance identity violated'
         A = S_star/n**2; y = n*d3; x = n**(4/3)*delta
+        ymid = n*(d3 + delta/2)   # distance from the MIDPOINT of the pair: rho_3/rho_2 ~ (v^2 - u^2/4)^2 ~ v^4 in this variable
         out = {
             'samples': m, 'seconds': round(time.time() - t0, 1),
             'S_star_over_N2': {'median': float(np.median(A)), 'mean': float(A.mean()), 'q90': float(np.quantile(A, .9)),
@@ -98,6 +111,8 @@ def main():
             'N_d3_quantiles': {str(q): float(np.quantile(y, q)) for q in (0.001, 0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9)},
             'P_Nd3_le_c_empirical': {str(c): float(np.mean(y <= c)) for c in (1, 2, 3, 4, 5, 6)},
             'P_Nd3_le_c_prediction_c5_over_3600pi': {str(c): c**5/(3600*math.pi) for c in (1, 2, 3, 4, 5, 6)},
+            'P_Nvmid_le_c_empirical': {str(c): float(np.mean(ymid <= c)) for c in (1, 2, 3, 4, 5, 6)},
+            'N_vmid_quantiles': {str(q): float(np.quantile(ymid, q)) for q in (0.001, 0.01, 0.05, 0.1, 0.25, 0.5)},
             'share_of_S_star_from_nearest_third_point_2_over_d3sq': {
                 'median': float(np.median((2/d3**2)/S_star)), 'q10': float(np.quantile((2/d3**2)/S_star, .1))},
             'share_of_S_star_from_points_within_4_over_N': {'median': float(np.median(near)), 'q90': float(np.quantile(near, .9))},
@@ -116,18 +131,35 @@ def main():
             if not math.isnan(al): boots.append(al)
         te['bootstrap_y0=3.5'] = {'ci90': [float(np.quantile(boots, .05)), float(np.quantile(boots, .95))]} if boots else None
         out['Nd3_lower_tail_exponent_MLE'] = te
+        tem = {}
+        for y0 in (2.5, 3.0, 3.5, 4.0):
+            al, k = tail_exponent(ymid, y0); tem[str(y0)] = {'alpha_hat': float(al), 'k': int(k)}
+        bootsm = []
+        for _ in range(400):
+            yb = rng.choice(ymid, size=len(ymid), replace=True); al, k = tail_exponent(yb, 3.5)
+            if not math.isnan(al): bootsm.append(al)
+        tem['bootstrap_y0=3.5'] = {'ci90': [float(np.quantile(bootsm, .05)), float(np.quantile(bootsm, .95))]} if bootsm else None
+        out['Nvmid_lower_tail_exponent_MLE'] = tem
         summary[str(n)] = out
-        arrays[f'N{n}_delta_min'] = delta; arrays[f'N{n}_S_star'] = S_star; arrays[f'N{n}_S_old'] = S_old; arrays[f'N{n}_d3'] = d3
+        arrays[f'N{n}_vmid'] = d3 + delta/2; arrays[f'N{n}_delta_min'] = delta; arrays[f'N{n}_S_star'] = S_star; arrays[f'N{n}_S_old'] = S_old; arrays[f'N{n}_d3'] = d3
         print(f'N={n}  m={m}  {out["seconds"]}s  S*/N^2 median={out["S_star_over_N2"]["median"]:.4f} '
               f'q99={out["S_star_over_N2"]["q99"]:.4f} max={out["S_star_over_N2"]["max"]:.4f}  '
               f'frac(S*>N^2 logN)={out["frac_S_star_gt_N2logN"]}  '
               f'Nd3: q01={out["N_d3_quantiles"]["0.01"]:.3f} q10={out["N_d3_quantiles"]["0.1"]:.3f} med={out["N_d3_quantiles"]["0.5"]:.3f}  '
-              f'tail alpha(y0=3.5)={te["3.5"]["alpha_hat"]:.2f} (k={te["3.5"]["k"]})', flush=True)
+              f'tail alpha(y0=3.5)={te["3.5"]["alpha_hat"]:.2f} (k={te["3.5"]["k"]})  '
+              f'midpoint-variable alpha(y0=3.5)={tem["3.5"]["alpha_hat"]:.2f} P(Nvmid<=3)={out["P_Nvmid_le_c_empirical"]["3"]:.4f}', flush=True)
     # pooled tail exponent (N d3 is asymptotically N-free at leading order)
     ypool = np.concatenate([arrays[f'N{n}_d3']*n for n in SIZES])
     pooled = {str(y0): dict(zip(('alpha_hat', 'k'), map(float, tail_exponent(ypool, y0)))) for y0 in (2.0, 2.5, 3.0, 3.5, 4.0)}
     summary['pooled_Nd3_tail_exponent'] = pooled
     summary['pooled_P_Nd3_le_c'] = {str(c): float(np.mean(ypool <= c)) for c in (1, 2, 3, 4, 5, 6)}
+    ymp = np.concatenate([arrays[f'N{n}_vmid']*n for n in SIZES])
+    summary['pooled_Nvmid_tail_exponent'] = {str(y0): dict(zip(('alpha_hat', 'k'), map(float, tail_exponent(ymp, y0)))) for y0 in (2.0, 2.5, 3.0, 3.5, 4.0)}
+    summary['pooled_P_Nvmid_le_c'] = {str(c): float(np.mean(ymp <= c)) for c in (1, 2, 3, 4, 5, 6)}
+    summary['prediction_c5_over_3600pi'] = {str(c): c**5/(3600*math.pi) for c in (1, 2, 3, 4, 5, 6)}
+    print('pooled midpoint-variable tail exponents:', summary['pooled_Nvmid_tail_exponent'])
+    print('pooled P(N vmid <= c):', summary['pooled_P_Nvmid_le_c'])
+    print('prediction c^5/(3600 pi):', summary['prediction_c5_over_3600pi'])
     print('pooled tail exponents:', pooled)
     print('pooled P(N d3 <= c):', summary['pooled_P_Nd3_le_c'])
     with open(os.path.join(DATA, 'r1_cue_background_mc.json'), 'w') as f: json.dump(summary, f, indent=1)

@@ -14,7 +14,7 @@ Stages (all results appended to ../data/r1_sub186_lower.json):
   2. exact certification of the float vectors (best eps per k, plus eps = 0);
   3. optional arb shift-invert refinement (p2_arb_audit-style) if time permits (--hp).
 
-Usage: python3 r1_sub186_lower.py [--d 14] [--hp]
+Usage: python3 r1_sub186_lower.py [--d 14] [--eps 0,1/35,1/28]
 """
 import sys, os, json, time, math
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -43,6 +43,8 @@ def main():
     ks = [38, 39, 40]
     eps_list = [Fraction(0), Fraction(1, 60), Fraction(1, 45), Fraction(1, 35), Fraction(1, 28),
                 Fraction(1, 22), Fraction(1, 17), Fraction(1, 12)]
+    if "--eps" in sys.argv:
+        eps_list = [Fraction(e) for e in sys.argv[sys.argv.index("--eps") + 1].split(",")]
     db = load()
     t0 = time.time()
     E0 = Engine(ks[0], d, d)
