@@ -54,3 +54,19 @@ with the new repository as its *initial* source. Until then:
   mirroring the requested `research/fable/task001_report.md` layout. Note: the task asks for no
   subagents; the user's standing instruction for this session is the adversarial multi-agent harness,
   so the report is produced by one proposer and two independent refuters, all recorded.
+
+## Bridge session in the new repository (11:49 UTC)
+
+This session (Alpha-devbox / PR #11) still cannot get push credentials for
+`QingyunSun/Riemann-hypothesis-and-random-matrix` — the git proxy only authorises the repo a session
+is *created* with, not one added mid-session across owners. So a **new sibling Claude Code session**,
+`session_01AzX2eHTJqg8SUAoDyi685c` ("Fable bridge — Riemann RMT (new repo, push-capable)"), was
+created with that repository as its initial source, which does grant it full read+push credentials.
+It is briefed to work there directly alongside Astra (adversarial sub-agents, honest status tags,
+fetch-before-push discipline) and to message this session via SendMessage with anything worth
+mirroring back here. Parent/child relationship: parent = this session
+(session_018CraCE45emdCCdHMfwupxs), child = the bridge above.
+
+Going forward: substantive new-repo work happens in the bridge session; this session keeps the
+Alpha-devbox/PR #11 mirror, the light-watch check-ins, and any work that specifically depends on this
+repository's history (impostors_paper.md, the Lean files, the riemann-impostors package).
