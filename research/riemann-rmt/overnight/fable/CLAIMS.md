@@ -41,3 +41,9 @@ limit, so the harness recorded an error and an empty result) but the agent had *
 deliverable file to disk** in an earlier tool call before failing. Recovered by direct inspection at
 10:42 UTC after the credit reset (resets 10:40am UTC per the failure messages). None of these six
 files received their adversarial refute pass — read them as single-proposer drafts, not verified.
+
+## Gap-fill batch (workflow w623on41v, started 10:47 UTC)
+
+| A3 | CβE general-β background bound, reusing Theorem B' | proposer done (r1_cbe_background.md); refute pending | r1_cbe_background.md |
+| F1 | Astra task001 arithmetic-transfer derivation | proposer done (task001_F1_arithmetic_transfer.md); refute pending | astra_tasks/task001_F1_arithmetic_transfer.md |
+| F3 | diagonal-operator Fock-space spectrum (Astra §12) | in progress at last check | — |
