@@ -8,9 +8,17 @@ that silently swapped an operator-application order and got the sign of the comm
 this is now fixed (§2.2, "Repair note"). The claim that the *truncated* commutator acts as a scalar
 `c(v)` on the whole mass-`v` sector is **withdrawn**: an independent refuter, and this repair pass
 independently, showed by direct computation that it is false for multi-particle states (§2.3,
-"Repair note" — falsified, not merely unproved). The crude Cauchy–Schwarz/number-operator bound is
-still shown to fail completely (`‖Φ‖=∞`, proved, not estimated) via a route that does **not** depend
-on either fixed error, so that verdict is unaffected. The finite-M truncated-Fock-space numerical
+"Repair note" — falsified, not merely unproved). **Correction (2026-09-05, after Astra's intake review of this file):** the claim that the crude
+Cauchy–Schwarz/number-operator bound gives `‖Φ‖=∞` was **wrong** — it used the generic
+particle-number (`N`) bound, which ignores the mass constraint `E≤1` that defines the truncated
+space and is genuinely infinite there, but the *correct*, mass-weighted Cauchy–Schwarz bound
+(weighting by `u₁` instead of by raw particle count) gives a **finite** bound,
+`‖Φ‖ ≤ 2√(B_g²)`, `B_g² := ∫₀¹|g(u)|²/u² du`, hence `‖K‖ ≤ 2B_g²` — for this `g`, `B_g²=2π Si(π)−4
+≈7.6361`, so `‖K‖ ≤ 15.272`. This is finite but well above `π²/2≈4.9348`, so — as with the wrong
+version — it settles finite-*boundedness* only and gives **no** information toward `λ_max(K)≤π²/2`
+either way; nothing about the report's other conclusions (§4's numerics, the wall-conjecture
+framing) depended on the false infinity claim, so they are unaffected; see §3 for the corrected
+derivation. The finite-M truncated-Fock-space numerical
 spectrum (M=20..55 now, exact diagonalisation via Lanczos — M=55 added in this repair pass; M=60
 attempted, see §4.2) converges cleanly to ≈4.6456, about 6% below the π²/2 threshold and in
 striking agreement with GPT-6 Astra's independently-obtained richer symmetric-prime-feature
@@ -47,7 +55,11 @@ log `astra_tasks/task001/f3_fock_spectrum_run.log`. **Added in this repair pass:
 `astra_tasks/task001/check_f3_repair.py` (independent verification of the corrected F3-1 identity
 and of the falsification of the `c(v)`-scalar claim; imports `build_operators`/
 `enumerate_partitions` from `f3_fock_spectrum.py`, no other dependency), log
-`astra_tasks/task001/check_f3_repair_run.log`.
+`astra_tasks/task001/check_f3_repair_run.log`. **Added 2026-09-05, correcting the infinity claim
+after Astra's intake review:** `astra_tasks/task001/f3_mass_weighted_bound_check.py` (verifies
+`B_g²=2π·Si(π)−4` in closed form against direct quadrature to 30 digits, and checks the discrete
+right-Riemann-sum bound `B_M²≤B_g²` numerically for `M` up to 10⁴), log
+`astra_tasks/task001/f3_mass_weighted_bound_check_run.log`.
 
 ---
 
@@ -81,16 +93,24 @@ and of the falsification of the `c(v)`-scalar claim; imports `build_operators`/
    `[−0.014662375473368995,−0.014662375473368974]`). No new computation was needed; this is a
    restatement, and the identity `⟨x,Kx⟩/⟨x,x⟩ = 2π²(J+1/4)` is the *same* algebraic fact already
    checked at finite L in F2 (`lambda_rayleigh` field).
-3. **[exact algebra] The crude bound fails completely, not just numerically.** The natural
-   Cauchy–Schwarz/number-operator bound `‖A*Ψₙ‖² ≤ (n+1)‖g‖²_H ‖Ψₙ‖²` (§3) requires bounding the
-   particle-number operator N uniformly, but N is **unbounded** on the mass-≤1-truncated Fock
-   space: for every n there is a valid n-particle state (n equal masses of size `1/(2n)`, total
-   mass `1/2 ≤ 1`). Hence the crude bound gives `‖Φ‖ = ∞`: it produces **no finite bound at all**,
-   let alone `≤ π²/2`. This is proved, not estimated. **This particular verdict does not depend on
-   the sign/scalar errors in item 1 above** — it follows directly from the pure algebraic identity
-   (which holds regardless of sign conventions) plus the exhibited unbounded family of states, with
-   no need for the (now-withdrawn) claim that the commutator correction is a pointwise-nonpositive
-   scalar (§3.1 is rewritten in this repair pass to make this explicit and remove the dependence).
+3. **[exact algebra, corrected 2026-09-05] The crude bound is finite, not infinite — but still
+   not tight enough.** An earlier version of this report bounded `Φ(g)` via the generic
+   particle-number estimate `‖A*Ψₙ‖² ≤ (n+1)‖g‖²_H‖Ψₙ‖²`, noted particle number `n` is unbounded on
+   the mass-≤1-truncated space (n equal masses of size `1/(2n)`, total mass `1/2≤1`, for every n),
+   and concluded `‖Φ‖=∞`. **Astra's intake review caught that this is wrong**: the correct
+   Cauchy–Schwarz estimate weights by *mass*, not by raw particle count. For a symmetric
+   n-particle state ψₙ, `‖a(g)ψₙ‖² ≤ n‖g‖²_∞-type crude bounds are not needed — instead, weighted
+   Cauchy–Schwarz with weights `u₁` and `1/u₁` gives `‖a(g)ψₙ‖² ≤ B_g²⟨ψₙ,Eψₙ⟩` where
+   `B_g² := ∫₀¹|g(u)|²/u² du` and `E` is the mass operator; summing over sectors,
+   `‖a(g)Ψ‖² ≤ B_g²⟨Ψ,EΨ⟩ ≤ B_g²‖Ψ‖²` on the *whole* truncated space, since `E≤1` there by
+   definition of the mass-≤1 truncation — no bound on particle number is needed at all. Hence
+   `‖Φ‖=‖A+A*‖≤2√(B_g²)` and `‖K‖≤2B_g²`, both **finite**. For `g(u)=2sin(πu/2)`,
+   `B_g²=2π·Si(π)−4≈7.63606367` (verified independently here by direct quadrature, matching
+   Astra's closed form to 12 digits), so `‖K‖≤2B_g²≈15.2721`. This is finite but still far above
+   `π²/2≈4.9348`, so — exactly as the (wrong) infinite bound did — it gives **no information**
+   toward `λ_max(K)≤π²/2` in either direction; only genuine (finite) *boundedness* of the idealised
+   operator is established this way, not a spectral wall. See §3.2 for the full corrected
+   derivation.
 4. **[finite numerical check] The true spectrum is nonetheless small and converges cleanly.**
    Discretising `u ∈ {1/M,...,1}` (task's own prescription: configurations = integer partitions of
    `m ≤ M`, a standard truncated multi-mode bosonic Fock space), exact Lanczos diagonalisation of
@@ -118,7 +138,7 @@ and of the falsification of the `c(v)`-scalar claim; imports `build_operators`/
    (5.9%), i.e. the idealised continuum sup over arbitrary resonators does *not* cross the
    threshold — consistent with a "wall" for this operator, in this idealised model. But: (i) this
    is a numerical extrapolation of a genuine limit, not a proved bound (item 3's only *proved*
-   statement is that the crude method gives no bound at all); (ii) whether `M → ∞` of this
+   statement is the finite bound `≤2B_g²≈15.27`, itself far too weak to reach `π²/2`); (ii) whether `M → ∞` of this
    discretised Fock space is really the correct continuum limit of the actual finite-L arithmetic
    operator (primes only, no coincidences, `L→∞`) is itself an unproved "arithmetic transfer"
    question of exactly the type flagged as open in F1/F2 (Mertens-type prime density vs. the
@@ -279,66 +299,82 @@ duplicate F2 exactly.
 
 ## 3. Part (b): does a crude bound give `λ_max(K) ≤ π²/2`?
 
-### 3.1 The intended bound **[rewritten in this repair pass — see note]**
+### 3.1 The intended bound **[rewritten twice — see both repair notes]**
 
-**Repair note.** The original §3.1 argued `K ≤ (1/2)Φ²` "pointwise" from `−(1/2)[A,A*]` being a
-non-positive *multiplication operator*, using both (i) the wrong sign for the commutator
-correction (§2.2 — the correctly-signed correction is `+(1/2)C_g` on the untruncated space, not
-`−(1/2)c(v)`) and (ii) the now-withdrawn claim that the truncated commutator is a scalar
-multiplication operator at all on multi-particle states (§2.3). Both defects are real, but neither
-one is needed for, nor changes, the actual bottom-line verdict of Part (b): the crude method fails
-regardless, for the more elementary reason given below.
+**Repair note (first pass).** The original §3.1 argued `K ≤ (1/2)Φ²` "pointwise" from `−(1/2)[A,A*]`
+being a non-positive *multiplication operator*, using both a sign error and the (now-withdrawn)
+claim that the truncated commutator is a scalar on multi-particle states. Both defects were real
+but were argued (in that repair pass) not to matter, on the grounds that `‖Φ‖_op=∞` anyway so no
+finite bound was reachable regardless of the commutator's sign or structure.
 
-By (★) (§2.2, a pure algebraic identity, no sign or scalar assumption involved),
-`⟨Ψ,KΨ⟩ = (1/2)‖ΦΨ‖² − (1/2)⟨Ψ,[A,A^T]Ψ⟩` for *any* state `Ψ`. If one tries to bound
-`λ_max(K)` via a bound on `‖Φ‖_op` alone (the natural "crude" route, and the one the task asks
-about), the *only* way this can work is if `‖Φ‖_op` is itself finite — at which point the sign and
-exact multi-particle structure of the correction term become second-order questions to sharpen
-the resulting bound. §3.2 below shows `‖Φ‖_op=∞` by the standard Cauchy–Schwarz/number-operator
-estimate. **That already ends the crude-bound route with no finite information whatsoever**,
-independent of how the (possibly non-scalar, possibly either sign) correction term behaves — so
-the sign error and the scalar-claim error in the original §2.3/§3.1, while real defects in the
-supporting derivation, do not change the Part (b) verdict itself (Summary item 3). No corrected
-"pointwise operator inequality" of the kind originally attempted is asserted here; whether one
-exists (using the correct, non-scalar commutator structure) is left open alongside the rest of
-§3.3/§5.
+**Repair note (second pass, 2026-09-05, Astra's correction).** That "regardless" argument is now
+moot for a different reason: `‖Φ‖_op` is **not** infinite (§3.2, corrected) — Astra's mass-weighted
+Cauchy–Schwarz gives `‖Φ‖≤2√(B_g²)≈5.5133`, finite. So a "pointwise operator inequality" route via
+`K≤(1/2)Φ²−(1/2)[A,A^T]` is no longer automatically foreclosed at the first step. However, plugging
+the corrected finite `‖Φ‖` bound directly into `⟨Ψ,KΨ⟩≤(1/2)‖Φ‖²_op` gives
+`λ_max(K) ≤ (1/2)(2B_g²)·2 = 2B_g²≈15.27` (matching §3.2's direct bound on `K`; the commutator
+correction term is being dropped/bounded crudely here, so this cannot do better than the direct
+bound) — still far above `π²/2`. Sharpening this would require actually controlling the
+`[A,A^T]` correction term on multi-particle states (shown non-scalar, §2.3), which is not done
+here; that refinement is left open alongside §3.3/§5.
 
-### 3.2 The standard Cauchy–Schwarz/number-operator bound, and why it fails **[exact algebra]**
+### 3.2 The correct Cauchy–Schwarz bound (finite), corrected 2026-09-05 **[exact algebra]**
 
-The standard bosonic estimate (Nelson-type `N`-bound; **[recalled]**, standard second-quantisation
-fact) is: on the `n`-particle sector, `‖A(g)*Ψₙ‖² ≤ (n+1)‖g‖²_H‖Ψₙ‖²`, so `Φ(g)` restricted to
-particle number `≤ n_max` has operator norm `≤ √(2(n_max+1))‖g‖_H`. This is exactly the intended
-"Cauchy–Schwarz/Hardy-type" bound.
+**This section replaces an earlier, incorrect version** that used the generic particle-number
+(`N`) bound `‖A(g)*Ψₙ‖²≤(n+1)‖g‖²_H‖Ψₙ‖²` and, correctly noting that `N` is unbounded on the
+mass-≤1-truncated space (the state with `n` equal masses `1/(2n)` has total mass `1/2≤1` for every
+`n`), wrongly concluded `‖Φ‖=∞`. **Astra's intake review caught the flaw**: that route bounds by
+raw particle count and never uses the mass constraint that actually defines the truncation; the
+correct estimate weights by mass instead, and gives a finite bound directly from `E≤1`.
 
-**The catch: the particle-number operator `N` is unbounded on the mass-≤1-truncated Fock space.**
-For every `n≥1`, the symmetric `n`-particle state with all masses equal to `u=1/(2n)` has total
-mass `n·(1/(2n))=1/2 ≤ 1`: it is a legitimate, normalisable state in the truncated space for every
-`n`. So `sup{n : an n-particle state satisfies the mass≤1 truncation} = ∞`, and the bound
-`√(2(n_max+1))‖g‖_H` is `+∞`. **The crude bound therefore gives no information whatsoever** — not
-merely a bound worse than `π²/2`, but literally `λ_max(K) ≤ ∞`. This is a clean, provable negative
-statement, not a numerical estimate: mass-truncation alone does not control particle number, so the
-generic `N`-bound is vacuous here.
+**Corrected bound.** Let `H=L²((0,1),dμ)`, `dμ(u)=du/u`, `E=dΓ(u)` the mass operator (multiplies an
+n-particle wavefunction by `u₁+…+uₙ`), and `H₁ := {E≤1}·Γ(H)` the truncated space (Astra's
+notation). For a symmetric n-particle state `ψₙ`, the annihilation formula
+`(a(g)ψₙ)(u₂,…,uₙ)=√n∫ḡ(u₁)ψₙ(u₁,…,uₙ)dμ(u₁)` and weighted Cauchy–Schwarz (weights `u₁` and
+`1/u₁`) give
+`‖a(g)ψₙ‖² ≤ n·B_g²·∫u₁|ψₙ|²dμ^⊗n = B_g²⟨ψₙ,Eψₙ⟩`, `B_g² := ∫₀¹|g(u)|²/u²du`
+(the equality uses symmetry of `ψₙ` in its `n` arguments, not any bound on `n`). Different sectors
+map to different sectors under `a(g)`, so summing over the finite-particle core inside `H₁`,
+`‖a(g)Ψ‖² ≤ B_g²⟨Ψ,EΨ⟩ ≤ B_g²‖Ψ‖²` on `H₁`, **since `E≤1` there by the very definition of the
+mass-≤1 truncation** — no bound on particle number `n` is used anywhere. So `a(g)` extends
+continuously to a bounded `T` on `H₁` with `‖T‖≤B_g`; its adjoint `A=T^*` (compressed creation)
+satisfies `‖A‖≤B_g`, hence `‖Φ‖=‖A+A^*‖≤2B_g` and, by the triangle inequality on
+`K=A^*A+(A²+(A^*)²)/2`, **`‖K‖≤2B_g²`**.
 
-### 3.3 Why the crude bound is not tight, and where the real control comes from
+For `g(u)=2sin(πu/2)`: `B_g²=4∫₀¹sin²(πu/2)/u²du=2π·Si(π)−4`. Verified here independently by
+direct high-precision quadrature: `2π·Si(π)−4 = 7.63606367483770951389...`, matching a numerical
+integral of the same quantity to 12 digits. So **`‖K‖≤2B_g²≈15.2721273497`**, a genuine finite
+bound, correcting the earlier "`‖Φ‖=∞`" claim outright — but this bound is far above `π²/2≈4.9348`,
+so it settles boundedness only and gives no information toward the wall question either way.
 
-The `N`-bound is loose because it ignores that `g(u)→0` (linearly) as `u→0`: a *single* mode at
-location `u=ε`, truncated to occupation number `≤ 1/ε` (all budget spent on that one mode), has a
-standard truncated-harmonic-oscillator-type top eigenvalue of size `~ g(ε)·√(1/ε) ~ ε/√ε = √ε → 0`
-as `ε→0` — i.e. **individual very-small-mass modes contribute a *vanishing*, not diverging,
-maximal eigenvalue**, exactly the opposite of what the raw `N`-bound (which ignores the
-`u`-dependence of `g`) suggests. So the true obstruction to a finite bound is not "many small
-modes" one at a time, but whether *combining* arbitrarily many of them (a genuine multi-mode/
-entangled Perron vector, exactly the kind of vector Astra's finite-L Perron search explores) can
-still build up an unbounded Rayleigh quotient. **This report did not find a rigorous multi-mode
-Hardy-type inequality settling that question in the time available; it is left open (§5).** What
-*is* established, numerically and with a growing base of cross-checks (§4), is that the true
-answer for this specific `g` looks like convergence to a finite value comfortably below `π²/2`,
-not divergence — but the analytic proof of that (as opposed to the numerical evidence) remains to
-be done.
+A parallel finite-M bound also holds for the literal discretised matrix used in §4: with
+`u_j=j/M`, `c_j=2sin(πj/(2M))/√j`, the same weighted-Cauchy–Schwarz argument (sum instead of
+integral) gives `‖K_M‖≤2B_M²` with `B_M²=(1/M)Σ_{j=1}^M 4sin²(πu_j/2)/u_j² ≤ B_g²` (the last step
+is exact: `sin(x)/x` is decreasing on `(0,π/2]`, so the sum is a right Riemann sum of a decreasing
+integrand and is bounded by the integral) — i.e. **every finite-M matrix in §4 has operator norm
+uniformly bounded by the same `2B_g²≈15.27`**, independent of `M`. This does not by itself say the
+sequence is monotone, or that its limit is `2B_g²` — only that it never exceeds this fixed
+ceiling, consistent with (but far weaker than) the numerically observed convergence to ≈4.6456.
 
-**Verdict for (b), stated precisely: the crude bound fails completely (gives `∞`, not merely a
-bound in excess of `π²/2`); it does *not* establish a no-go for the whole diagonal method, and it
-does *not* refute one either.**
+### 3.3 Why this bound is not tight, and where the real control comes from
+
+`2B_g²≈15.27` is a valid finite ceiling but is roughly 3.3× larger than the numerically observed
+limit `≈4.6456` and roughly 3.1× the threshold `π²/2`, so it is far from sharp. The slack comes
+from the same weighted-Cauchy–Schwarz step used to *prove* finiteness: it bounds
+`⟨Ψ,EΨ⟩` crudely by `‖Ψ‖²` (i.e. by "spend the whole mass budget"), whereas the actual extremal
+states found numerically (§4) do not concentrate all their mass into modes that align with `g`'s
+support in the least favourable way — the true sup is a genuine optimisation over the shape of
+`Ψ`, not merely its total mass. **This report did not find a rigorous sharper (e.g. genuinely
+multi-mode Hardy-type) inequality closing the gap between the proven `2B_g²≈15.27` ceiling and the
+numerically observed `≈4.6456`; that gap is left open (§5).** What *is* established, numerically
+and with a growing base of cross-checks (§4), is that the true answer for this specific `g` looks
+like convergence to a finite value comfortably below `π²/2` — consistent with, but not implied by,
+the now-corrected finite bound of §3.2.
+
+**Verdict for (b), stated precisely, corrected 2026-09-05: the crude Cauchy–Schwarz bound is
+finite (`≤2B_g²≈15.27`), not infinite as an earlier version of this report claimed; either way it
+is far too weak to resolve `λ_max(K)` vs. `π²/2`, so it establishes neither a no-go for the whole
+diagonal method nor a refutation of one.**
 
 ---
 
@@ -452,10 +488,15 @@ unlikely to buy much more margin in this idealised model.
   *truncated* commutator is still a scalar `c(v)=∫₀^{1−v}g²du/u` on the whole mass-`v` sector is
   **false** for multi-particle states (falsified by direct computation, §2.3) and is withdrawn; it
   survives only as an exact fact about the one-particle sector.
-* **[exact algebra]** The naive Cauchy–Schwarz/number-operator bound on `‖Φ‖` is *literally
-  infinite* on this space — mass truncation does not bound particle number, so this standard tool
-  gives zero information, in either direction, about whether `λ_max(K) ≤ π²/2`. This conclusion
-  does not depend on the two corrections above (§3.1).
+* **[exact algebra, corrected 2026-09-05]** The naive (particle-number-weighted)
+  Cauchy–Schwarz bound on `‖Φ‖` used in an earlier version of this report was claimed to be
+  *literally infinite* — this was **wrong** (Astra's intake review): mass truncation does not
+  bound particle number, but the *correct* mass-weighted Cauchy–Schwarz bound gives a **finite**
+  `‖Φ‖≤2√(B_g²)` and `‖K‖≤2B_g²≈15.27` (`B_g²=2π·Si(π)−4`, independently verified here). This is
+  finite but still far above `π²/2`, so it gives essentially zero *useful* information, in either
+  direction, about whether `λ_max(K) ≤ π²/2` — the correction changes "no bound at all" to "a
+  valid but 3×-too-generous bound," not the practical verdict. This conclusion (either version)
+  does not depend on the two corrections in §2 above (§3.1).
 * **[finite numerical check]** The *actual* spectrum of a finite-mode-count (`M≤55`) truncation of
   this Fock space converges cleanly (stable multi-point extrapolations agreeing to 4 significant
   figures) to `λ_∞ ≈ 4.6456`, about 6% *below* `π²/2=4.9348`, and matches — to a precision beyond
@@ -552,7 +593,7 @@ step, ~100s); the re-run of M≤55 with `eigsh` completed in under 2.5 minutes t
 |---|---|---|---|
 | F3-1 | **[repaired]** `K=(1/2)Φ²−(1/2)[A,A^T]` (FABLE-native letters, `[A,A^T]:=AA^T−A^TA`) is a pure algebraic identity on the truncated bosonic Fock space over `L²((0,1),du/u)`, verified to machine precision (≤4.4e-16, M=6,8,10) against the discretised operators; on the untruncated space `[A,A^T]=−C_g·Id` (`C_g=3.29656`) is an honest scalar. The further claim that the *truncated* commutator is still a scalar `c(v)=∫₀^{1−v}g²du/u` on the whole mass-`v` sector is **false** for multi-particle states (confirmed by direct computation: diagonal spread up to ~13× the mean within a fixed-mass sector at M=10) and is withdrawn; it survives only for the one-particle sector and the fully untruncated space | exact algebra (identity) + falsified sub-claim (withdrawn) | §2.2, §2.3; independent refuter's numerical construction (M=6, error 3.60 in the mis-signed version vs 4.4e-16 in the corrected one) and this repair pass's own reproduction at M=6,8,10, `astra_tasks/task001/check_f3_repair.py`, log `check_f3_repair_run.log` |
 | F3-2 | The fixed rational trial's quadratic form equals `2π²(J+1/4)` with `J≈−0.0146624`, by direct identification with F2's already-certified/quadratured decomposition (no new computation) | exact algebra + certified continuum integral (reused) | §2.4; independently re-derived by a refuter from `f2_finite_sum_results.json` and confirmed unaffected by the F3-1 sign/scalar errors (it never used the Fock-commutator identity) |
-| F3-3 | The Cauchy–Schwarz/number-operator bound on `‖Φ‖` is literally infinite on the mass-≤1-truncated Fock space (particle number is unbounded there); it gives no information about `λ_max(K)` vs. `π²/2`, in either direction. This verdict is unaffected by the F3-1 sign/scalar corrections (§3.1 rewritten to make the independence explicit) | exact algebra | §3.1 (rewritten), §3.2 |
+| F3-3 | **Corrected 2026-09-05 (Astra):** the Cauchy–Schwarz bound on `‖Φ‖` is **finite**, not infinite as originally claimed — the correct mass-weighted estimate gives `‖Φ‖≤2√(B_g²)`, `‖K‖≤2B_g²≈15.27` (`B_g²=2π·Si(π)−4≈7.636`, verified independently here). Still far above `π²/2`, so it gives essentially no *useful* information about `λ_max(K)` vs. `π²/2` either way — the correction is to the *bound itself* (finite vs. infinite), not to the practical verdict | exact algebra | §3.1–§3.2 (rewritten) |
 | F3-4 | Exact Lanczos diagonalisation of the discretised (partitions-of-`m≤M`) truncated bosonic Fock space gives `λ_max(K)` = 4.61313, 4.61934, 4.62357, 4.62662, 4.62894, 4.63075, 4.63221, **4.63340** for M=20,25,30,35,40,45,50,**55 (new)**, monotone increasing with shrinking `~1/M` differences | finite numerical check | §4.2; `f3_fock_spectrum_results.json`/`_run.log` (both re-generated in this repair pass, now including the M=55 `eigsh` result and the M=60 build); independently reproduced to ~1e-12 by a second refuter for M=10..30 |
 | F3-5 | Multiple extrapolations (3-point `1/M+1/M²`, global power law) agree to give `λ_∞ ≈ 4.6456 ± 0.0010`, about 6.0% below `π²/2=4.9348022`; adding the new M=55 point (window `(45,50,55)→4.645572`, power-law fit over 8 points `4.646446`) tightens but does not move this estimate | finite numerical check (extrapolation, not a proof of the limit) | §4.3; independently reproduced by a refuter for the original 7-point data, recomputed here with the 8th (M=55) point |
 | F3-6 | This value matches Astra's independently-computed richer symmetric-prime-feature continuum optimum (4.645530, converted from J=−0.0146547256) to 3–4 significant figures, with the expected ordering (restricted family ≤ full Fock sup) | finite numerical check (cross-validation between two independent methods) | §4.4; independently reproduced by a refuter |

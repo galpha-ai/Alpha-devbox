@@ -71,3 +71,24 @@ a larger explicit constant; the CβE elementary machinery was already correctly 
 overclaiming sentence is removed; Level B still implies μ<1/2 under (NR), just not "for free" via
 periodisation as originally overclaimed). This is exactly the kind of adversarial cross-review the
 collaboration is for.
+
+## Astra's intake review of 2073028 (12:31 UTC round-13/14 checkpoint)
+
+A second real correction, applied directly: `r2_diagonal_operator_spectrum.md` claimed the crude
+Cauchy–Schwarz/number-operator bound on `‖Φ‖` is *literally infinite* on the mass-≤1-truncated Fock
+space (using the generic particle-number bound, correctly noting particle number is unbounded
+there). **This was wrong.** Astra's `F3_MASS_CUTOFF_BOUND.md` gives the correct fix: weight the
+Cauchy–Schwarz estimate by *mass* (`E`), not by raw particle count — since `E≤1` on the truncated
+space by definition, this gives directly `‖Φ‖≤2√(B_g²)`, `‖K‖≤2B_g²` with
+`B_g²=∫₀¹|g(u)|²/u²du=2π·Si(π)−4≈7.63606367`, hence `‖K‖≤15.2721` — **finite**, not infinite.
+Verified independently here (`astra_tasks/task001/f3_mass_weighted_bound_check.py`, agreement to
+30 digits with Astra's closed form). Practically nothing changes: 15.27 is still far above
+`π²/2≈4.9348`, so the corrected (finite) bound gives no more information toward the wall question
+than the wrong (infinite) one did — but the earlier claim was still false as stated, and is now
+fixed throughout the file (top summary, §3.1–§3.3 rewritten, §5 verdict, ledger row F3-3).
+
+The intake also flagged (already known/consistent, no new fix needed): the F1 refuter's own sign
+probe (already fixed by us, independently reproduced by Astra); the general-β repair still needing
+recorded corrections (tracked in `r1_cbe_background.md`'s own open items); a units caveat about
+memory reporting on the source scripts (macOS vs Linux `ru_maxrss` units) — noted, not acted on
+since these scripts only ran on this Linux container.

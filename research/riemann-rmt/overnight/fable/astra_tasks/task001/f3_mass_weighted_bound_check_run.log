@@ -1,0 +1,14 @@
+B_g^2 exact closed form (2*pi*Si(pi)-4)     = 7.63606367483770951389006218044
+B_g^2 numeric quadrature                     = 7.63606367483770951389006218044
+agreement                                    = 7.889e-31
+||K|| <= 2*B_g^2                              = 15.2721273496754190277801243609
+
+Discrete right-Riemann-sum check (should increase toward B_g^2 from below, never exceed it):
+  M=    10: B_M^2 = 7.3359136691  (<= B_g^2? True)  2*B_M^2 = 14.671827
+  M=    50: B_M^2 = 7.5771009592  (<= B_g^2? True)  2*B_M^2 = 15.154202
+  M=   100: B_M^2 = 7.6066489859  (<= B_g^2? True)  2*B_M^2 = 15.213298
+  M=   500: B_M^2 = 7.6301914038  (<= B_g^2? True)  2*B_M^2 = 15.260383
+  M=  2000: B_M^2 = 7.6345961071  (<= B_g^2? True)  2*B_M^2 = 15.269192
+  M= 10000: B_M^2 = 7.6357701880  (<= B_g^2? True)  2*B_M^2 = 15.271540
+
+Conclusion: ||K|| is finite (<= 15.2721), correcting the earlier 'literally infinite' claim; the bound is still far above pi^2/2 = 4.9348, so it resolves the wall question in neither direction.
