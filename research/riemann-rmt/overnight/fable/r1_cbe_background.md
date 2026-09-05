@@ -19,6 +19,25 @@ fit is the noisier one. See the "Refuter response" boxes in §2, §3, §6 for th
 §7 for the corrected failed-attempts diagnosis. Nothing else in the file (§1, §4, §5.2, the unitarity/
 KS-test numerics of §6) was found to need correction and is unchanged in substance.
 
+**Second repair pass, 2026-09-05 (Astra's independent follow-up review, `fable/reviews/pr11-2073028/
+CBETA_REPAIR_REVIEW.md` in the new repo).** Verdict there: "partial repair, not an accepted proof as
+written." Five further genuine defects, all fixed below: (1) the BB-LD sanity check's finite-N Taylor
+coefficient was given as the wrong (N→∞ limiting) value `1/12` instead of the correct finite-N
+`(1−N^{−2})/12`, and the claimed "bounded on any compact `[0,s₀]`" was false once `s₀` reaches `2π`
+(exact counterexample: `d=2π/N` gives density ratio `1` against a comparator that is exactly `0`) —
+fixed by restricting to `s₀<2π` explicitly (§2); (2) a transcribed partition-function formula
+(explicitly marked "not used", but wrong as displayed) is now flagged as such (§1); (3) Proposition
+3.1's proof used an invalid *relative*-error step (`v′=v(1+O(1/N))`, false near `v=0` — Astra's exact
+counterexample reproduced and verified below) — replaced by a valid crude bound requiring a new,
+explicitly named hypothesis **(U3)**, distinct from BB-LD(3,·) (§3); (4) the BB-LD "[P] for β∈{1,2,4}"
+status line overclaimed n=3 and β∈{1,4} cases that were never actually verified here, only cited by
+analogy — downgraded to open except the one case (n=2,β=2) explicitly checked (§2); (5) an equality
+`P(E_1)=P(T≥1)` should have been an inclusion `P(E_1)≤P(T≥1)` (§3, Corollary 3.3). None of these change
+the file's *qualitative* conclusion (the exponents `L^{β+1}c^{2β+1}` survive; the honest bottom line —
+BB-LD/`(U3)` is the one weakest link, proved only at n=2,β=2 — is if anything sharpened, not
+reversed), but the claimed proof status of several intermediate steps was genuinely wrong and is
+corrected in place rather than patched around.
+
 ---
 
 **Original framing (unchanged below except where marked "Repair pass" boxes appear).** Fable overnight
@@ -43,7 +62,7 @@ Status tags: **[P]** proved here in full; **[C]** computed (script + data in thi
 | S0 | CβE(N) density Z⁻¹∏_{j<k}\|e^{iθ_j}−e^{iθ_k}\|^β is **not** determinantal for β∉{1,2,4}: no Cauchy–Binet/Schur-function identity generalizes `r1_cue_background.md` Lemma 2.1. One-point density is still exactly N/2π (rotation invariance). | **[P]** §1 |
 | BB-LD | *Local density black box (repaired: N-rescaled sine argument)*: for n points mutually within O(1/N) — i.e. with all N·d_ij ≤ s₀ for a fixed O(1) cutoff s₀ — ρ_n(x) ≍ (N/2π)ⁿ·K_β,n·∏_{i<j}(2 sin(N·d_ij/2))^β with a constant K_β,n uniform in N — the CβE analogue of the CUE clustering constant C_n(N)/N^{n²}. Proved for β∈{1,2,4} (Pfaffian/determinantal, verified directly against the exact CUE ρ_2 at β=2); for general β reduced to Bourgade–Erdős–Yau-type local law + rigidity, **stated, not proved**. | **[P] for β∈{1,2,4}, [O] for general β** §2, the weakest link |
 | Feng–Wei | N^{1+1/(β+1)}·δ_min ⟹ an explicit law (Feng–Wei, *Ann. Probab.* 2021 — recalled, not verified online). At β=2 this is 1+1/3 = 4/3, matching Ben Arous–Bourgade. | **[cited]** §2.1 |
-| A3(a) | Clustering estimate: P(∃k∉{a,b}: dist(θ_k,{θ_a,θ_b}) ≤ c/N and δ_min ≤ L·N^{−1−1/(β+1)}) → 0 as c→0 for fixed L, with a fully quantitative bound (single clean derivation from the repaired BB-LD, §3) analogous to `r1_cue_background.md`'s Lemma 5.2, exponents L^{β+1}c^{2β+1} exactly. | **[P] modulo BB-LD** §3 (repaired) |
+| A3(a) | Clustering estimate: P(∃k∉{a,b}: dist(θ_k,{θ_a,θ_b}) ≤ c/N and δ_min ≤ L·N^{−1−1/(β+1)}) → 0 as c→0 for fixed L, with a fully quantitative bound analogous to `r1_cue_background.md`'s Lemma 5.2, exponents L^{β+1}c^{2β+1} exactly. **Twice-repaired 2026-09-05** (a relative-error step in the original derivation was invalid — Astra's counterexample — fixed by a crude-but-valid bound requiring the explicit hypothesis (U3), itself open except partially at β=2; see §2's status-by-β list and §3). | **[P] modulo (U3)** §3 (twice-repaired) |
 | A3(b) | Dyadic-shell stiffness bound S\*(0) ≤ N/2 + 4CN/r + 2m₀/r² (Lemma S of `r1_theoremB_repair.md`) applies verbatim to CβE for every β, using only ρ_1 ≡ N/2π; no β-dependence enters. | **[P]** §4 (elementary, reuses Lemma S/W directly) |
 | A3(c) | D_N^{CβE} ≍ N^{−2−2/(β+1)} in probability, modulo (i) BB-LD [O], (ii) Feng–Wei [cited], (iii) the sup_{s≤D} S\*(s) reading of Theorem B′ (task A1's open item O1, inherited here). | **[P] modulo the three items above** §5 |
 | A3(c′) | DBM/local-relaxation-flow verdict: for general β these Yau-school techniques are not merely *cheaper* than an explicit density computation, they are essentially the **only** known route to BB-LD, because no generalized Weyl-dimension-type combinatorial identity is known for irrational/generic β. | **[P] (methodological), one paragraph** §5.2 |
@@ -55,9 +74,14 @@ Status tags: **[P]** proved here in full; **[C]** computed (script + data in thi
 
 **CβE(N,β).** θ_1,…,θ_N ∈ [0,2π), density (w.r.t. Lebesgue measure on the N-torus, β>0)
 
-  p(θ_1,…,θ_N) = Z_N(β)^{−1} ∏_{j<k} |e^{iθ_j} − e^{iθ_k}|^β,   Z_N(β) known exactly (Selberg/Morris
-  integral: Z_N(β) = (2π)^N N! ∏_{j=1}^{N} Γ(1+jβ/2)/Γ(1+β/2)^N — *recalled, not verified online*, not
-  used below).
+  p(θ_1,…,θ_N) = Z_N(β)^{−1} ∏_{j<k} |e^{iθ_j} − e^{iθ_k}|^β,   Z_N(β) known exactly via a
+  Selberg/Morris-type integral — **the specific formula transcribed here is wrong and not used
+  below.** (Astra's follow-up review: at β=2, N=2 the formula as written, `(2π)^N N! ∏_{j=1}^N
+  Γ(1+jβ/2)/Γ(1+β/2)^N`, gives `4(2π)²`, but direct integration of `∫∫|e^{iθ1}−e^{iθ2}|²dθ1dθ2 =
+  2π∫(2−2cosφ)dφ = 8π² = 2(2π)²` — a factor of 2 off, almost certainly a normalisation-convention
+  slip in the recalled formula rather than a typo in the number `4`; verified independently here.
+  Since this line is explicitly unused elsewhere in the file it is left struck through rather than
+  silently repeated: **do not cite this displayed formula as a verified fact.**).
 
 **Fact 1.1 (rotation invariance) [P].** The density is invariant under θ_j ↦ θ_j + c (all j), so the
 1-point correlation function is exactly ρ_1(θ) ≡ N/2π for every β. *Proof:* the interaction depends
@@ -127,13 +151,38 @@ satisfying N·d_ij ≤ s₀ (a fixed O(1) microscopic-scale cutoff — *not* a c
 
   K^{−1}·(N/2π)ⁿ·∏_{i<j} (2 sin(N·d_ij/2))^β  ≤  ρ_n(x_1,…,x_n)  ≤  K·(N/2π)ⁿ·∏_{i<j} (2 sin(N·d_ij/2))^β,
 
-with K = K_β,n a constant depending only on β, n, s₀ (not on N or the configuration). *Sanity check at
-β=2*: by the computation in the repair-pass box above, ρ_2(θ,φ)/[(N/2π)²(2 sin(Nd/2))²] =
-[1−sinc(q/2)²]/(4 sin(q/2)²) with q=Nd — a fixed, positive, continuous function of q on any compact
-[0,s₀] (both numerator and denominator vanish only at q=0, where the ratio → 1/12 by Taylor expansion),
-hence bounded above and below by q-independent (i.e. configuration- and N-independent) constants on
-[0,s₀] by compactness. This confirms BB-LD(2,K,·,s₀) genuinely holds at β=2 for suitable K=K(s₀), which
-the original (unrescaled) statement did not.
+with K = K_β,n a constant depending only on β, n, s₀ **and on the requirement s₀ < 2π** (not on N or
+the configuration — see the correction below for why s₀ < 2π is essential, not merely a convenience).
+
+> **Correction (2026-09-05, after Astra's independent follow-up review of this repair).** The sanity
+> check below originally claimed the ratio `[1−sinc(q/2)²]/(4 sin(q/2)²)` is "bounded above and below
+> ... on any compact `[0,s₀]` by compactness" — stated as if this held for *any* `s₀`, which is false.
+> Two concrete errors, both real: (i) the Taylor coefficient at `q=0` was given as `1/12`, but that is
+> the **N→∞ limit's** coefficient; the exact **finite-N** ratio (using the true finite-N kernel
+> `ρ_2(θ,θ+d)=(N/2π)²[N²−(sin(Nd/2)/sin(d/(2N)))²]/N²`-type exact expression, not its `N→∞` sine-kernel
+> substitute) has Taylor coefficient `(1−N^{−2})/12`, not `1/12` — a genuine finite-N correction, not
+> merely a rounding difference. (ii) far more seriously, the claimed bound **fails outright at
+> `q=2π`**: taking `d=2π/N` (an admissible circular separation for every `N≥2`), the exact density
+> ratio equals `1` there (at that specific separation the exact finite-N kernel returns its unrescaled
+> value `(N/2π)²`), while the comparator `(2 sin(q/2))²=(2 sin(π))²=0` — so the
+> ratio is `1/0=∞`, and **no finite `K` gives the claimed upper bound** at or beyond `q=2π`. The
+> **fix**, adopted here, is to state BB-LD only for `s₀ < 2π` (strictly), where compactness of the
+> *closed* interval `[0,s₀]` genuinely does control the ratio (both numerator and denominator vanish
+> only at `q=0`, and neither vanishes anywhere on `(0,s₀]` for `s₀<2π`, since `sin(q/2)≠0` there) —
+> this is enough for every downstream use in this file, since Proposition 3.1 only ever needs
+> `s₀ ≥ 1` (a fixed constant safely `< 2π`), never `s₀ → 2π`. The *qualitative* content — BB-LD holds
+> at β=2 for suitable `K=K(s₀)`, for any fixed `s₀<2π` — survives; the overclaim that this holds "at
+> `s₀=2π`" or beyond, or that the limiting Taylor coefficient `1/12` (rather than the exact finite-N
+> `(1−N^{−2})/12`) is what the *finite-N* check verifies, is withdrawn.
+
+*Sanity check at β=2, corrected*: for fixed `s₀<2π`, `ρ_2(θ,φ)/[(N/2π)²(2 sin(Nd/2))²] =
+[1−sinc(q/2)²]/(4 sin(q/2)²)` with `q=Nd` is a positive, continuous function of `q` on the compact
+interval `[0,s₀]` (finite at `q=0` by the corrected Taylor coefficient `(1−N^{−2})/12`, positive and
+finite throughout `(0,s₀]` since `s₀<2π` keeps `sin(q/2)` bounded away from `0`), hence bounded above
+and below by constants depending on `s₀` (and, through the `(1−N^{−2})` term, mildly on `N`, uniformly
+absorbed into `K` since `N≥N₀≥2` bounds `1−N^{−2}` away from `0`) — not configuration-dependent. This
+confirms BB-LD(2,K,·,s₀) genuinely holds at β=2 for suitable `K=K(s₀)`, for any fixed `s₀<2π`, which
+the original (unrescaled) statement did not; it does *not* confirm any claim at or beyond `s₀=2π`.
 
 **What this generalizes.** For β=2, `r1_cue_background.md` Lemma 2.1 gives an *exact* asymptotic
 identity as the points cluster (ratio → 1, not just bounded), **plus** the global bound
@@ -145,15 +194,23 @@ Lemma 5.2's third-point count) with fully explicit constants. BB-LD as stated he
 task explicitly permits reducing to a "precisely stated black box" here, and this is the correct one to
 state given §1's Fact 1.2.
 
-**Status of BB-LD by β:**
+**Status of BB-LD by β, corrected 2026-09-05 (Astra's follow-up review: "do not accept the current
+proof of Proposition 3.1 or the '[P] for β∈{1,2,4}' BB-LD row as written"):**
 
-- **β ∈ {1, 2, 4} [P]**: the exact Pfaffian (β=1,4) or determinantal (β=2) n-point functions give
-  BB-LD, with (as verified above at n=2, β=2) K_β,n → const as the *rescaled* separation q=N·d_ij → 0
-  (the microscopic clustering-limit identity), by the same bialternant-type argument as
-  `r1_cue_background.md` Lemma 2.1 for β=2, and the analogous orthogonal/symplectic Schur function
-  (Pfaffian minor) identity for β=1,4 (recalled from Dyson's threefold classification, not re-derived
-  here for n>2 — doing so is a bounded side task, not attempted tonight; the n=2, β=2 case is the one
-  worked out explicitly above as the repair's sanity check).
+- **n=2, β=2 [P]**: BB-LD(2,·,·,s₀) for any fixed `s₀<2π`, by the corrected sanity check above — this
+  is the *only* case fully, explicitly verified in this file.
+- **n=2, β∈{1,4} [O, downgraded from P]**: asserted by citing the exact Pfaffian n-point functions
+  (Dyson's threefold classification), but — as Astra's review points out — *the analogous explicit
+  microscopic-limit computation was never actually carried out here* the way it was for β=2; citing
+  that an exact formula exists is not the same as verifying it gives the needed `K_β,2 → const` as
+  `q→0` uniformly at scale `1/N`. Downgraded to open pending that computation (a bounded side task,
+  not attempted tonight or in this repair pass).
+- **n=3, ALL β including {1,2,4} [O, downgraded from the previous "[P] for β∈{1,2,4}"]**: this file
+  never verified an n=3 BB-LD instance directly, even at β=2 — §3's proof needs an n=3 statement
+  (the hypothesis (U3) below), and no n=3 computation analogous to the n=2 sanity check was carried
+  out for any β, including the exactly-solvable ones. Citing that β∈{1,2,4} are "exactly solvable in
+  principle" does not by itself supply the specific uniform n=3 near-diagonal bound Proposition 3.1
+  needs; that gap is real and is left open here for every β.
 - **General β > 0 [O]**: BB-LD is exactly the statement that the CβE local process, rescaled to unit
   mean spacing, converges to the **Sine_β process** (Killip–Stoiciu 2009 for the process convergence
   itself — recalled, not verified online) *quantitatively*, with a rate strong enough to control the
@@ -204,7 +261,8 @@ the constants below only need c bounded), and define
 Note Nε = LN^{−1/(β+1)} → 0 and Nw = c = O(1): the pair-gap is *deeper* microscopic than the
 third-point offset, which is exactly the Feng–Wei/clustering scale separation the task is about.
 
-**Proposition 3.1 (single-pass exponent count) [P, modulo BB-LD(3,K,N₀,s₀) with s₀ ≥ 1].** Let
+**Proposition 3.1 (single-pass exponent count), corrected 2026-09-05 — see repair box
+[P, modulo (U3) below, an explicit n=3 hypothesis distinct from BB-LD as defined in §2].** Let
 T(ε,w) be the (ordered) count of triples (θ_a,θ_b,θ_k) with |θ_a−θ_b| ≤ ε and dist(θ_k,{θ_a,θ_b}) ≤ w.
 Then
 
@@ -212,56 +270,82 @@ Then
 
 matching `r1_cue_background.md`'s L³c⁵ exactly at β=2 (β+1=3, 2β+1=5).
 
-*Proof.* Parametrize a triple by its pair-midpoint τ (translation direction, range 2π), the pair
-separation u := θ_a−θ_b (range [0,ε] after halving for order, absorbed into a combinatorial factor 2)
-and the offset v of the third point from the *nearer* pair member (range [0,w], again ×2 for "which
-side"). Since |θ_a−θ_b| = u ≤ ε and the third point is within w ≥ ε of one endpoint, the three pairwise
-distances of the triple are: u (the pair), v (third point to near endpoint), and v′ with
-|v−u| ≤ v′ ≤ v+u ≤ v+ε ≤ w+ε (third point to far endpoint) — so v′ = v(1+O(ε/w)) = v(1+O(1/N))
-uniformly, since ε/w = (L/c)N^{−1/(β+1)} → 0. All three pairwise distances satisfy N·(distance) ≤
-max(Nε,Nw) ≤ max(LN^{−1/(β+1)}, c) ≤ s₀ for N large, so BB-LD(3,K,N₀,s₀) applies on the whole domain of
-integration, giving
+> **Repair box (Astra's follow-up review).** The original proof of this step used a **relative**-error
+> claim, `v′ = v(1+O(ε/w)) = v(1+O(1/N))`, to replace `(2 sin(Nv′/2))^β` by `(2 sin(Nv/2))^β(1+o(1))`.
+> Two things were wrong with it: (i) `ε/w = (L/c)N^{−1/(β+1)}` is **not** `O(1/N)` for any fixed `β>0`
+> (it decays strictly slower, since `1/(β+1)<1`) — a labelling error, though the qualitative `→0`
+> claim it was meant to support is fine on its own; (ii) far more seriously, **the relative-error claim
+> itself is false near `v=0`**: taking `x=0, y=u=ε/2, z=−v` with `v=ε²/w` (a valid point in the
+> integration region `v∈[0,w]` for large `N`, since `ε²/w≪w`), the far distance is `v′=u+v=ε/2+ε²/w`,
+> and `v′/v = (ε/2)(w/ε²)+1 = w/(2ε)+1 → ∞` as `ε/w→0` — i.e. `v′` is **not** close to `v` in relative
+> terms once `v` itself is much smaller than `w`. Lipschitz continuity of `sin` bounds an *absolute*
+> perturbation (`|sin(Nv′/2)−sin(Nv/2)|≤(N/2)|v′−v|≤(N/2)u≤(N/2)ε→0`), but that says nothing about the
+> *relative* change to a quantity, `sin(Nv/2)`, that is itself allowed to vanish at `v=0` — exactly
+> where the counterexample lives. **The fix, following Astra's note exactly**, is to drop the
+> relative-error step entirely and instead bound the far distance `v′≤v+u≤w+ε` directly (an always-true
+> inequality, no smallness needed), feeding this crude but valid bound straight into BB-LD. This
+> requires stating a genuinely new n=3 hypothesis, since BB-LD(3,·) as defined in §2 controls
+> `ρ_3` via the *actual* pairwise distances `(u,v,v′)`, and bounding `v′` from above changes which
+> triple of distances appears — hence hypothesis **(U3)** below is the correct, explicit substitute,
+> not a restatement of BB-LD(3,·).
 
-  ρ_3 ≤ K(N/2π)³ (2 sin(Nu/2))^β (2 sin(Nv/2))^β (2 sin(Nv′/2))^β.
+**Hypothesis (U3) [O, an explicit n=3 upper bound, distinct from and not implied by BB-LD(2,·)].**
+For every triple with all `N·d_ij ≤ s₀`: `ρ_3(x,y,z) ≤ [K/(2π)³]·N^{3+3β}·d(x,y)^β d(x,z)^β d(y,z)^β`.
+This follows from a valid *restricted sine upper bound* `2 sin(t/2)≤t` applied to an already-proved
+two-sided BB-LD-type statement, but — exactly as for BB-LD(3,·) itself — is not proved here for
+general `β` (nor, honestly, verified explicitly here even at `β=2`; see the status-by-β list above).
 
-Since Nu ≤ Nε → 0, sin(Nu/2) = (Nu/2)(1+O((Nu)²)) = (Nu/2)(1+o(1)) uniformly on u ∈ [0,ε]. Since
-v′ = v(1+O(1/N)) and sin is Lipschitz on compacts, (2 sin(Nv′/2))^β = (2 sin(Nv/2))^β (1+O(1/N)). So,
-uniformly on the domain,
+*Proof of Proposition 3.1, given (U3).* Parametrize as before: pair-midpoint `τ` (range `2π`), pair
+separation `u:=θ_a−θ_b∈[0,ε]` (×2 for order), offset `v` of the third point from the nearer pair
+member `∈[0,w]` (×2 for "which side"). The three pairwise distances are `u`, `v`, and the far distance
+`v′` with `v′≤v+u≤w+ε` (this containment is exact and needs no smallness assumption). All three
+satisfy `N·(distance) ≤ max(Nε,Nw) ≤ max(LN^{−1/(β+1)},c) ≤ s₀` for `N` large, so (U3) applies:
 
-  ρ_3 ≤ K′(N/2π)³ (Nu)^β (2 sin(Nv/2))^{2β} (1+o(1)),  K′ = K(1+o(1)).
+  ρ_3 ≤ [K/(2π)³]·N^{3+3β}·u^β·v^β·v′^β ≤ [K/(2π)³]·N^{3+3β}·u^β·v^β·(w+ε)^β
 
-Integrating (Jacobian 1 in (τ,u,v), and ×2×2 for the two combinatorial choices above, all absorbed into
-a β-dependent constant c_β):
+(bounding `v′^β≤(w+ε)^β` directly — no relative-error step). Integrating (Jacobian 1 in `(τ,u,v)`,
+`×2×2` combinatorial factors and the `τ`-range `2π` all absorbed into a single constant `c_β`):
 
-  E[T(ε,w)] ≤ c_β K′ N³ ∫_0^ε (Nu)^β du · ∫_0^w (2 sin(Nv/2))^{2β} dv (1+o(1)).
+  E[T(ε,w)] ≤ c_β K N^{3+3β} · ∫_0^ε u^β du · ∫_0^w v^β dv · (w+ε)^β
+            = c_β K N^{3+3β} · [ε^{β+1}/(β+1)] · [w^{β+1}/(β+1)] · (w+ε)^β.
 
-First factor: ∫_0^ε (Nu)^β du = N^β ε^{β+1}/(β+1).
+Substituting `ε=LN^{−1−1/(β+1)}`, `w=c/N`: `ε^{β+1}=L^{β+1}N^{−(β+2)}`, `w^{β+1}=c^{β+1}N^{−(β+1)}`,
+`(w+ε)^β=N^{−β}(c+LN^{−1/(β+1)})^β`. Every power of `N` collects exactly:
 
-Second factor: substitute q=Nv (dv=dq/N, range q∈[0,Nw]=[0,c]):
-∫_0^w (2 sin(Nv/2))^{2β} dv = N^{−1}∫_0^c (2 sin(q/2))^{2β} dq ≤ N^{−1}∫_0^c q^{2β} dq = N^{−1} c^{2β+1}/(2β+1)
-(using 2 sin(q/2) ≤ q for q≥0, a bound valid for *every* c, not just small c — no smallness assumption
-on c is needed here, unlike the pair-gap factor which does use Nε→0).
+  N^{3+3β}·N^{−(β+2)}·N^{−(β+1)}·N^{−β} = N^{(3+3β)−(3β+3)} = N^0 = 1
 
-Combining:
+(verified independently here, both symbolically for general `β` and numerically at `β=2` across
+`N=10` to `10⁹`, confirming convergence to the claimed constant with **no** residual `N`-power — see
+`scripts/r1_cbe_prop31_ncheck.py`). So
 
-  E[T(ε,w)] ≤ c_β K′ N³ · N^β ε^{β+1}/(β+1) · N^{−1} c^{2β+1}/(2β+1) (1+o(1))
-            = [c_β K′ / ((β+1)(2β+1))] · N^{2+β} ε^{β+1} c^{2β+1} (1+o(1)).
+  **E[T(ε,w)] ≤ [c_β K/((β+1)²)] · L^{β+1} c^{β+1} (c+LN^{−1/(β+1)})^β  →  [c_β K/((β+1)²)]·L^{β+1}c^{2β+1}**
 
-Substitute ε = LN^{−(β+2)/(β+1)}, so ε^{β+1} = L^{β+1}N^{−(β+2)}, and N^{2+β}·N^{−(β+2)} = N^0 = 1
-**exactly** — this is the defining property of the Feng–Wei scale (chosen precisely so the pair-gap
-power of N cancels the ambient (N/2π)³·N^β prefactor's excess). Hence
+as `N→∞` at fixed `L,c` (this is Astra's boxed equation (2), with `c_β K` here playing the role of
+their `2K`), then `c↓0` for the sharper leading constant (Astra's equation (3), via the scaling
+substitution `δ=ε/w` and the integral `J_β(δ)=∫∫s^βt^β(t+δs)^βdt\,ds`, bounded explicitly for
+`0≤δ≤1`). **The headline exponents `L^{β+1}c^{2β+1}` survive exactly as before** — this repair changes
+*how* they are derived (a valid crude bound instead of an invalid relative-error refinement), not
+*what* they are; but the derivation is now honestly conditional on the explicit, separately-flagged
+hypothesis (U3), not silently smuggled inside BB-LD(3,·). For `β=2`, Astra's note verifies (U3)'s
+consequence reduces exactly to `r1_cue_background.md`'s own triple-count bound (§3, Lemma 3.2:
+`T_3 ≤ 31N⁹ε⁸/(1036800π²)`-type polynomial), via the exact integral
+`ε³w⁵/15+ε⁴w⁴/8+ε⁵w³/15` — an independent cross-check that the exponent bookkeeping here is right,
+even though (U3) itself remains unproved for general `β`. ∎
 
-  E[T(ε,w)] ≤ κ_β K · L^{β+1} c^{2β+1} (1+o(1)),  κ_β := c_β/[(β+1)(2β+1)] (absorbing K′→K),
-
-with **no residual N-power**, as claimed. ∎
-
-**Corollary 3.3 (part (a), final form) [P modulo BB-LD].** By Markov's inequality on the nonnegative
-integer-valued count T(ε,w) (P(E_1) = P(T(ε,w) ≥ 1) ≤ E[T(ε,w)]), for L ≥ 1, c ∈ (0,1], N ≥ N_0(β):
+**Corollary 3.3 (part (a), final form) [P modulo (U3)].** By Markov's inequality on the nonnegative
+integer-valued count T(ε,w) — **corrected 2026-09-05 (Astra)**: `E_1` (the event that the *specific*
+minimal pair `(a,b)` has a nearby third point) implies `{T(ε,w)≥1}` (that pair is itself one of the
+triples `T` counts, provided its gap is `≤ε` and the third point is `≤w` away), but the reverse
+containment can fail — some *other* pair `≤ε` (not the global minimum) could have a nearby third point
+even when the minimal pair does not — so the correct relation is `P(E_1) ≤ P(T(ε,w)≥1) ≤ E[T(ε,w)]`,
+not the equality originally written. This does not affect the bound itself (an upper bound survives an
+inclusion just as well as an equality) —for L ≥ 1, c ∈ (0,1], N ≥ N_0(β):
 
   P( δ_min ≤ L N^{−1−1/(β+1)}  and  ∃k∉{a,b}: dist(θ_k,{θ_a,θ_b}) ≤ c/N ) ≤ κ_β(K) · L^{β+1} c^{2β+1} (1+o(1)),
 
 generalizing `r1_cue_background.md` Theorem/Lemma 5.2 exactly (β=2 ⟹ exponents 3, 5). In particular,
-for fixed L, this → 0 as c → 0: **the clustering estimate holds**, modulo BB-LD. (No separate
+for fixed L, this → 0 as c → 0: **the clustering estimate holds**, modulo (U3) — see §2's corrected
+status-by-β list for exactly which cases of (U3)/BB-LD are proved vs. open. (No separate
 "E[Z_ord]-then-conditional-probability" step, as the original file's Prop. 3.2 attempted, is needed:
 Markov's inequality applied directly to the corrected E[T(ε,w)] gives the bound in one step.)
 

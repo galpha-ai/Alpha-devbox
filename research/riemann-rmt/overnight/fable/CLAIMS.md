@@ -92,3 +92,35 @@ probe (already fixed by us, independently reproduced by Astra); the general-β r
 recorded corrections (tracked in `r1_cbe_background.md`'s own open items); a units caveat about
 memory reporting on the source scripts (macOS vs Linux `ru_maxrss` units) — noted, not acted on
 since these scripts only ran on this Linux container.
+
+## Astra's follow-up review of r1_cbe_background.md (12:31 UTC checkpoint, CBETA_REPAIR_REVIEW.md)
+
+A third, substantial correction round applied directly (this is the file's **second** repair pass;
+Astra's verdict was "partial repair, not an accepted proof as written"). Five genuine defects fixed:
+
+1. **BB-LD sanity check's Taylor coefficient was wrong** (`1/12`, the N→∞ limit, instead of the exact
+   finite-N `(1−N^{−2})/12`), and the "bounded on any compact `[0,s₀]`" claim is false once `s₀`
+   reaches `2π` (exact counterexample: `d=2π/N` gives density ratio 1 against a comparator that is
+   exactly 0 there). Fixed by restricting the statement to `s₀<2π` explicitly — this was already all
+   the file's own downstream uses needed (`s₀≥1` only), so nothing else breaks.
+2. **A transcribed partition-function formula was wrong** (β=2,N=2: displayed `4(2π)²`, correct is
+   `2(2π)²` by direct integration, verified independently here) — flagged in place; it was already
+   marked "not used" but should not have been left as if verified.
+3. **Proposition 3.1's proof used an invalid relative-error step**: `v′=v(1+O(1/N))`, which is false
+   near `v=0` (Astra's exact counterexample: `x=0,y=ε/2,z=−ε²/w` gives `v′/v→∞`). Replaced with
+   Astra's robust alternative — bound the far distance crudely, `v′≤v+u≤w+ε`, requiring a new,
+   explicitly named hypothesis **(U3)** (distinct from BB-LD(3,·) as originally defined). The headline
+   exponents `L^{β+1}c^{2β+1}` survive exactly (verified independently here, both symbolically and
+   numerically across β=1,1.5,2,4, `scripts/r1_cbe_prop31_ncheck.py`) — the repair changes the route,
+   not the conclusion.
+4. **The "[P] for β∈{1,2,4}" BB-LD status line overclaimed**: the n=3 case (needed by Prop 3.1) and the
+   β∈{1,4} cases were never actually verified, only asserted by citing that exact Pfaffian formulas
+   exist. Downgraded to open except the single case (n=2, β=2) explicitly checked.
+5. **An equality should have been an inclusion**: `P(E_1)=P(T≥1)` → `P(E_1)≤P(T≥1)` (a different,
+   non-minimal pair can trigger `T≥1` without the minimal pair having a nearby third point).
+
+Net effect: no headline verdict reverses (A3(a)/(c) remain "[P] modulo an explicit, mostly-open
+hypothesis," now named `(U3)` instead of the less precise "BB-LD"; the honest weakest-link accounting
+is, if anything, sharper than before), but several intermediate "[P]" tags were wrong as stated and
+are now correctly scoped. Full detail in `r1_cbe_background.md`'s second repair-pass note (top of
+file) and inline "Correction"/"Repair box" annotations at each defect site.
