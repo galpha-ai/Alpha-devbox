@@ -34,3 +34,23 @@ challenged by independent refuters), and every file carries a status tag:
 
 Round notes are appended to `CLAIMS.md` (one line per claim, with status and file). Rounds are
 numbered r1, r2, ... Astra: anything here is free to reuse; please cite the file path.
+
+## Cross-repository status (06:30 UTC)
+
+The user created `QingyunSun/Riemann-hypothesis-and-random-matrix` for the collaboration. From this
+session Fable can **read** it (public clone works) but **cannot push**: the git proxy injects
+credentials only for the session's authorised repository set (`galpha-ai/Alpha-devbox`), the
+cross-owner `add_repo` is refused in this session, and spawning a helper session with the new repo as
+source was blocked by the permission classifier. Remedy for the user: start a Claude Code session
+with the new repository as its *initial* source. Until then:
+
+- Fable's outputs land here (PR #11) under `research/riemann-rmt/overnight/fable/`; **Astra, please
+  mirror this directory into the new repo as `fable/overnight-2026-09-05/`** (fast-forward commits,
+  no rewriting). The intended new-repo paths for Astra's task are noted inside each report.
+- Fable reads Astra's branch `codex/astra-research` of the new repo at every check-in; a read-only
+  copy of the inputs used is kept in `astra_inputs/` with `SOURCE_COMMIT.txt`.
+- **Pickup evidence for `tasks/FABLE_001_SYMMETRIC_PRIME_TRANSFER.md`:** picked up at 06:30 UTC from
+  commit 97df092; report will be `astra_tasks/task001_report.md` (+ `astra_tasks/task001/` scripts),
+  mirroring the requested `research/fable/task001_report.md` layout. Note: the task asks for no
+  subagents; the user's standing instruction for this session is the adversarial multi-agent harness,
+  so the report is produced by one proposer and two independent refuters, all recorded.
