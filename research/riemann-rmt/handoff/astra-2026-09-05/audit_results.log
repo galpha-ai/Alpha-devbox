@@ -1,0 +1,22 @@
+PASS Corrected Galerkin angle: {'max_error': 4.4853010194856324e-14}
+PASS Galerkin second-order coefficient: {'n4_residuals': [-0.026505356745117878, -0.026506336372572856, -0.026506581303474646, -0.026506642537702612], 'delta_MT': 0.6725007036794115}
+PASS Charge filter with negative Fourier convention: {'max_error': 2.806106882681976e-14}
+PASS Wilson trace on open box: {'lhs': 77.67769987482622, 'rhs': 77.67769987482622}
+PASS Counterexample to old background endpoint bound: {'g': 0.05, 'xb': 6.133185307179586, 'background': 133.50013203171451, 'old_upper_bound': 89.05574322309748, 'correct_exact': 133.500132031715}
+PASS Cayley phase derivative sign: {'derivative': '2/(lam**2 + 1)'}
+PASS COM modulation dimension N=4: {'null_dimension': 0, 'modulation_error': (2.0000000000000018, [[2, 2], [2, 2]]), 'normalization_error': 8.881784197001252e-16, 'clock_mass': 0.12499999999999997}
+PASS ACUE clock mass N=4: {'measured': 0.12499999999999997, 'expected': 0.125}
+PASS Frequency-two COM test N=4: (2.0000000000000018, [[2, 2], [2, 2]])
+PASS COM modulation dimension N=5: {'null_dimension': 2, 'modulation_error': (1.5435046655621721e-15, [[1, 1, 1, 1, 1], [1, 1, 1, 1, 1]]), 'normalization_error': 2.220446049250313e-16, 'clock_mass': 0.0625}
+PASS ACUE clock mass N=5: {'measured': 0.0625, 'expected': 0.0625}
+PASS Frequency-two COM test N=5: (1.5435046655621721e-15, [[1, 1, 1, 1, 1], [1, 1, 1, 1, 1]])
+PASS COM modulation dimension N=6: {'null_dimension': 3, 'modulation_error': (6.96851905716421e-14, [[1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1]]), 'normalization_error': 1.3322676295501878e-15, 'clock_mass': 0.031249999999999997}
+PASS ACUE clock mass N=6: {'measured': 0.031249999999999997, 'expected': 0.03125}
+PASS Frequency-two COM test N=6: (6.96851905716421e-14, [[1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1]])
+PASS Published 40-tuple admissibility: {'k': 40, 'diameter': 186, 'bad_primes': [], 'all_primes_up_to_k_checked': True}
+PASS Historical H2 tuple admissibility: {'k': 15856, 'diameter': 173438, 'bad_primes': [], 'all_primes_up_to_k_checked': True}
+PASS Lean audit detects two actual sorry placeholders: {'actual_sorry_lines': 2}
+PASS Lean depth_ge omits D in conclusion: {'conclusion': 'δ ^ 2 / 8 ≤ -Real.log (Real.cos (δ / 2))'}
+PASS Original verification log preserved: {'PASS': 39, 'FAIL': 4, 'SKIP': 1}
+PASS Signed critical price exact comparison: {'beta_exact': '23051796480/10991046857', 'beta_decimal': 2.097324920903119}
+{"checks": 21, "all_passed": true, "elapsed_seconds": 1.0109698750311509}
