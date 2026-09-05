@@ -30,7 +30,7 @@ Format: `| id | claim | status | file | notes |`. Status in {P, C, R, O}. Refute
 | A3 | CβE background bound (β general) | not started (credit exhaustion; queued) | — |
 | B2 | CGG mollifier limits on μ | not started | — |
 | B3 | zeta-zero depth numerics | not started | — |
-| C1 | what 0.6725 is / pair+triple LP ceiling | not started | — |
+| C1 | what 0.6725 is / pair+triple LP ceiling | mixed P/C/O: delta_MT closed form + Euler-Lagrange derivation P/C (50dp mpmath + reused verify-codex log); repo's "PairCeiling 0.6818287" is R/repaired-in-place — it is a specific stability-inequality witness (`joint_context_v2.md`, unverified EnclOK hash, already flagged unreproducible by `final_verified_paper.md`), NOT the sharp F>=0 pair-correlation LP, whose sharp value is C: two independent computations agree at ~0.679 (below 0.6818287); triple RS-band data raises the exact small-lattice (P<=8) ceiling by ~3-7%, shrinking with resolution, continuum limit O; honest verdict: 19/27 (recalled) is not beaten by any correlation-only construction here or known, since it comes from mollified moments not a correlation LP | r1_simple_zeros.md | reused pre-existing but unreported scripts/data (r1_pair_lp.py, r1_pair_dual_lp.py, r1_triple_lp.py + json/log outputs) that were apparently computed in an earlier, uncredited C1 attempt; added scripts/r1_c1_verify.py for the closed-form re-derivation and extrapolation |
 | D2 | sub-186 wall k=38-40 | not started (Astra's prime186 rounds 4-6 supersede much of this) | — |
 | B4-B6 | LR hard-core LP / function-field / DBM relaxation | not started | — |
 | F1/F3 | Astra task001 arithmetic transfer / diagonal-operator spectrum (Astra §12) | not started (queued next) | — |
