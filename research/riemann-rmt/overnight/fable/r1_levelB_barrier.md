@@ -19,8 +19,10 @@ exactly the two-body collision time of a gap of one half mean spacing, and the f
 line is one-to-one with no small-gap approximation. (ii) Theorem A transfers to the line (Theorem A′,
 §2.1) under one explicit hypothesis (NR) on the non-real zeros formed elsewhere before the window
 collides; under (NR), Level B ⟹ μ ≤ √(2c)/π < ½ where c = liminf (log T)²D_T (§2.2), so any proof of
-Level B is a proof of μ < ½ — which is open, the record being μ ≤ 0.515396. For the periodised
-(finite-polynomial) version of Level B the implication is unconditional (Theorem A). (iii) The converse
+Level B is a proof of μ < ½ — which is open, the record being μ ≤ 0.515396. (For the periodised
+(finite-polynomial) version, an unconditional implication was originally claimed here but is wrong —
+see the §2.2 repair note; it reduces to the same (NR)-type hypothesis via a non-wrap-witness
+condition that is not supplied.) (iii) The converse
 fails: a gap λ ∈ (λ*, ½) does **not** break the floor. In a clock background the threshold is
 λ* = 0.4719538 (exact N-body, N-independent to 10⁻⁸; a one-dimensional quadrature gives 0.4718999 and
 the closed-form expansion ρ = 1 + (π²/4 − 2)λ² + …), and in a random CUE background λ* is again ≈ 0.47
@@ -159,7 +161,7 @@ on the line is the non-real zeros produced by earlier collisions elsewhere, and 
 condition under which their kernel is still monotone across the critical segment. On the circle,
 where no root has left the circle before D, Theorem A needs no hypothesis.
 
-### 2.2 Level B ⟹ μ < ½ [P under (NR); unconditional for the periodised version]
+### 2.2 Level B ⟹ μ < ½ [P under (NR); the periodised "unconditional" route is repaired below to [O]]
 
 **Corollary.** Suppose the multiple zero at D_T is formed by two zeros a, b with γ_a(0) ∈ W_T that are
 real and simple on [0, D_T) (the generic case; the codimension-two alternative — a real zero meeting a
@@ -178,14 +180,39 @@ non-real zero lie inside [γ_b, γ_a] while v ≠ 0 immediately after, violating
 g(0)² ≤ 8D_T. Since the pair lies within one gap of W_T, log(T_ab/2π) = (1 + o(1)) log(T/2π) for
 H_T = o(T), and (1.4) gives the bound. ∎
 
-**Periodised version [P, no hypothesis].** For any N-point circle configuration Theorem A gives
-N²D ≥ N²δ_min²/8 = π²λ_min²/2 (λ_min = δ_min N/2π), so 𝔇^{per} < π²/8 ⟹ λ_min < ½ outright. Hence
-liminf 𝔇_T^{per} < π²/8 ⟹ μ < ½ with no hypothesis at all.
+**Periodised version [P for the circle statement; O for its transfer to an actual zeta gap — see
+repair note].** For any N-point circle configuration Theorem A gives N²D ≥ N²δ_min²/8 = π²λ_min²/2
+(λ_min = δ_min N/2π), so 𝔇^{per} < π²/8 ⟹ λ_min < ½ outright: this half is unconditional and correct.
+But λ_min here is the minimal gap of the *periodised* configuration — the N points of the window glued
+into a circle of circumference N·(mean spacing) — and one of those N circular gaps is the **wrap gap**,
+H_T − (γ_last − γ_first) (the distance from the last window zero back around to the first), which is an
+artifact of the window boundary, not a gap between two consecutive zeta zeros. If the wrap gap happens
+to be the circle's minimiser, 𝔇^{per} < π²/8 says only that the *wrap* gap is small — nothing about any
+actual consecutive pair of zeros — so μ < ½ does **not** follow without separately excluding or bounding
+the wrap gap.
 
-**Consequence for AH.** AH-strong ⟹ all normalised gaps ≥ ½ − o(1) ⟹ (Theorem A′ under (NR), or Theorem
-A for the periodised version) 𝔇_T ≥ π²/8 − o(1): this is Theorem C(i) on the line. Level B is the
-negation, and by the Corollary it *contains* μ < ½ — which already refutes AH-strong statically, with no
-flow. So whatever proves Level B proves μ < ½ and refutes AH-strong without the flow.
+> **Repair note (2026-09-05, after Astra's intake review).** Astra gave the sharp counterexample: N
+> real points 0,1,…,N−1 glued into a window of length N−1+ε (ε small) have every *internal* gap equal to
+> 1 (large, normalised ≈1) and only the wrap gap equal to ε — so the periodised circle's λ_min ≈ 0 while
+> the window's actual (internal) consecutive gaps are all ≈ 1, nowhere near ½. This exactly disproves the
+> unqualified inference "𝔇^{per} < π²/8 ⟹ an actual zeta gap < ½." The claim above is corrected from
+> "[P, no hypothesis]" to conditional on a **non-wrap witness**: 𝔇^{per} < π²/8 ⟹ μ < ½ *provided* the
+> circle's minimising pair is not the wrap pair (equivalently, provided some genuine internal gap is
+> already this small, which is circular as a hypothesis for proving Level B in the first place) — or
+> provided H_T is chosen with γ_first, γ_last controlled so the wrap gap is provably not the minimiser
+> (e.g. H_T fixed at an argument where Z(t) has a zero very close to both ends, which is itself an
+> unproved density-of-zeros-near-a-target-height statement). No such non-wrap witness or boundary
+> construction is supplied here; this half of the Corollary is downgraded to **[O]**. The (NR)-conditioned
+> version in the main text above (Theorem A′ / the un-periodised Corollary) is unaffected: it works
+> directly with the actual real zeros γ_a, γ_b of ζ on the line, has no window boundary, and so has no
+> wrap gap to exclude — that derivation stands as originally proved, under (NR).
+
+**Consequence for AH, corrected.** AH-strong ⟹ all normalised gaps ≥ ½ − o(1) ⟹ (Theorem A′ under (NR))
+𝔇_T ≥ π²/8 − o(1) on the line: this is Theorem C(i), unaffected by the repair above. The *periodised*
+half of "Level B ⟹ μ < ½ with no flow" is the one that needed (NR) all along in different clothing (the
+wrap-gap exclusion is doing the same job (NR) does on the line: ruling out a spurious witness) — so the
+honest statement is: whatever proves Level B on the line proves μ < ½ under (NR); the periodised/circle
+route was not actually a hypothesis-free shortcut around that, and should not be cited as one.
 
 ### 2.3 What (NR) excludes, and the obstruction to removing it [O]
 
@@ -316,8 +343,7 @@ distance to be covered is 0.5154 → 0.472, not 0.5154 → 0.5.
 
 **Relabelling, and a strictly harder one.**
 
-1. *Logic.* Level B ⟹ μ < ½ (Corollary 2.2; unconditional for 𝔇^{per}, under (NR) for the true flow).
-   Every proof of Level B is a proof of μ < ½. There is no reading under which Level B is "easier".
+1. *Logic.* Level B ⟹ μ < ½ (Corollary 2.2), under (NR) — the periodised route that was claimed to give this "with no hypothesis at all" is wrong (§2.2 repair note: Astra's wrap-gap counterexample), so (NR) is not avoidable by that shortcut. Every proof of Level B *under (NR)* is a proof of μ < ½. There is no reading under which Level B is "easier".
 2. *Converse.* μ < ½ ⇏ Level B: gaps in (λ*, ½) satisfy the floor (§3). Level B ⊂ {μ ≤ λ* ≈ 0.472}.
 3. *Information.* Handoff §9.1 hopes to prove Level B from bandwidth-≤1 pair correlation plus
    "energy/variance inputs of Rodgers–Tao type". Any input consistent with AH-strong is consistent with
@@ -391,7 +417,8 @@ identity error 4.8·10⁻¹¹; rigid direct-vs-closed RHS 6.3·10⁻¹³. CUE: �
 | B1-4 | 𝔇 = π²λ²/2 two-body; λ = ½ ⟺ 𝔇 = π²/8; Theorem C floor is the N → ∞ half-gap two-body time | [P] |
 | B1-5 | definition of the local depth D_T; global collision time is 0 by Λ ≥ 0 (recalled) + RH | [P] (definition) |
 | B1-6 | Theorem A′ on the line under (NR) | [P] |
-| B1-7 | Level B ⟹ μ ≤ √(2c)/π < ½ (under (NR) for the true flow; unconditional for 𝔇^{per}) | [P] |
+| B1-7 | Level B ⟹ μ ≤ √(2c)/π < ½ under (NR) for the true flow (line version, §2.2 first Corollary) | [P] |
+| B1-7′ | The *periodised* route to the same conclusion "with no hypothesis at all" is **wrong** as originally stated (Astra's wrap-gap counterexample, §2.2 repair note): a small circular minimum gap can be purely the window-boundary wrap gap, not an actual zeta gap. Downgraded to a non-wrap-witness hypothesis that is not supplied. | [R] repaired to [O] |
 | B1-8 | (NR) cannot be removed by the ODE for Im w alone; needs zero-count rigidity at scale Δ_T | [O] |
 | B1-9 | Σ_k cot((x+2πk/N)/2) = N cot(Nx/2) | [P] |
 | B1-10 | rigid reduction (3.1)–(3.3), clock equilibrium, ρ_rigid = 1 + (π²/4−2)λ² + 0.3109λ⁴ + 0.2331λ⁶ + … | [P] |

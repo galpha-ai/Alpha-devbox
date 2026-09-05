@@ -31,12 +31,12 @@ difference quotient when x_b^k > π).
 
 | # | statement | status |
 |---|---|---|
-| T1 | **Theorem 1.** For every N ≥ 3 and M ≥ 1, P(S\* > M·N²) ≤ 1055·M^{−1/2}. Uniform in N. | **[P]** §5 |
-| T1′ | The shell/Markov route of the task brief gives the weaker P(S\* > M N²) ≤ 1055·M^{−3/8}, also uniform in N, with no log factor. | **[P]** §5 |
-| C1 | P(S\* > N² log N) ≤ 1055 (log N)^{−1/2} → 0; more generally P(S\* > ω_N N²) → 0 for any ω_N → ∞. | **[P]** §5 |
+| T1 | **Theorem 1.** For every N ≥ 3 and M ≥ 1, P(S\* > M·N²) ≤ 4087·M^{−1/2}. Uniform in N. (Constant repaired 2026-09-05, see below.) | **[P]** §5 |
+| T1′ | The shell/Markov route of the task brief gives the weaker P(S\* > M N²) ≤ 4087·M^{−3/8}, also uniform in N, with no log factor. | **[P]** §5 |
+| C1 | P(S\* > N² log N) ≤ 4087 (log N)^{−1/2} → 0; more generally P(S\* > ω_N N²) → 0 for any ω_N → ∞. | **[P]** §5 |
 | P1 | Exact 3-point structure: ρ_3(x,y,z) = (2π)^{−3} ∏_{i<j}\|z_i−z_j\|² Σ_{m_1<m_2<m_3} \|s_λ(z)\|², hence the **global** bound ρ_3 ≤ C_3(N)∏_{i<j}\|z_i−z_j\|² with C_3(N) = N³(N²−1)²(N²−4)/(69120 π³), sharp as the three points cluster. In density-1 units the clustering constant is π⁶/135 (and π²/3 for ρ_2). | **[P]** §2 |
 | P2 | E[#ordered triples (x,y,z): d(x,y) ≤ L N^{−4/3}, dist(z,{x,y}) ≤ c/N] ≤ (4320π²)^{−1}[L³c⁵/15 + L⁴c⁴N^{−1/3}/8 + L⁵c³N^{−2/3}/15]; the exponents are explained (L³ from ∫u² du, c⁵ from ∫v⁴ dv). | **[P]** §4 |
-| P3 | Self-contained: P(δ_min > L N^{−4/3}) ≤ 1054/L³ for all N ≥ 2, L > 0 (second moment with ρ_2, ρ_3, ρ_4; Fischer's inequality replaces the ρ_4 asymptotics). First moment: E[#gaps ≤ xN^{−4/3}] = (x³/72π)(1 − N^{−2})(1 + O(x²N^{−2/3})), which pins the constant 72π of the Ben Arous–Bourgade law in our normalisation. | **[P]** §3 |
+| P3 | Self-contained: P(δ_min > L N^{−4/3}) ≤ 4086/L³ for all N ≥ 2, L > 0 (second moment with ρ_2, ρ_3, ρ_4; Fischer's inequality replaces the ρ_4 asymptotics). **Constant repaired 2026-09-05** after Astra's intake review caught a reversed inequality in the original regime-2 argument (see the Repair note at Proposition 3.3); the exponent −3 and the whole proof strategy are unaffected. First moment: E[#gaps ≤ xN^{−4/3}] = (x³/72π)(1 − N^{−2})(1 + O(x²N^{−2/3})), which pins the constant 72π of the Ben Arous–Bourgade law in our normalisation. | **[P]** §3 |
 | T2 | **Theorem 2 (CUE depth law).** N^{8/3} D_N ⇒ G²/8, P(G > x) = exp(−x³/72π). Inputs: Theorem A [P, cited from `depth_scaling_theorem.md`], Assumption B\* (task A1's repaired Theorem B, *assumed*), Ben Arous–Bourgade [C, recalled], and Theorem 1 [P]. Also ρ_N − 1 := 8N^{8/3}D_N/(N^{4/3}δ_min)² − 1 = O_P(N^{−2/3}). | **[P] modulo B\* and the citation** §6 |
 | N1 | Monte Carlo (N = 64/128/256; 4000/2000/800 samples): median S\*/N² ≈ 0.13, q99 ≈ 0.45, max ≈ 1.5; fraction with S\* > N² log N is 0 in all 6800 samples; lower tail of N·d_3 consistent with exponent 5 and with the predicted constant c⁵/(3600π) once the midpoint correction is applied. | **[C]** §7 |
 | O1 | Theorem 2 uses S\* at s = 0; the repaired Theorem B may need sup_{s ≤ D} S\*(s). A short-time stability lemma (all points move by o(1/N) during the collision window) is stated but not proved. | **[O]** §8 |
@@ -164,7 +164,7 @@ cancellation-free evaluation 1 − S_N² = (1−S_N)(1+S_N), 1 − S_N = (2/N)Σ
 
 ---
 
-## 3. Step (ii): the smallest gap is ≤ L·N^{−4/3} with probability ≥ 1 − 1054/L³ [P]
+## 3. Step (ii): the smallest gap is ≤ L·N^{−4/3} with probability ≥ 1 − 4086/L³ [P, repaired]
 
 Fix ε ∈ (0, π] and let Z := #{ unordered pairs {i,j} : d(θ_i,θ_j) ≤ ε }, and Z_ord := 2Z the number of
 ordered pairs. Since δ_min is the minimum over *adjacent* pairs and every pair has distance ≥ δ_min,
@@ -196,9 +196,23 @@ u = y−x, v = z−x ∈ [−ε,ε]: ρ_3 ≤ C_3(N)·u²v²(y−z)² and |y −
 T_3 ≤ 2π C_3(N)∫_{−ε}^{ε}∫_{−ε}^{ε} u²v²(|u|+|v|)² du dv = 2πC_3·4·(31ε⁸/120) = (31π/15)C_3ε⁸, using
 ∫_0^ε∫_0^ε u²v²(u+v)² = 2ε⁸/15 + ε⁸/8 = 31ε⁸/120. Insert C_3 ≤ N⁹/(69120π³). ∎
 
-**Proposition 3.3 [P].** For every N ≥ 2 and every L > 0,
+**Proposition 3.3 [P, repaired].** For every N ≥ 2 and every L > 0,
 
-  **P(δ_min > L·N^{−4/3}) ≤ 1054 / L³.**
+  **P(δ_min > L·N^{−4/3}) ≤ 4086 / L³.**
+
+> **Repair note (2026-09-05, after Astra's intake review of `89393d5`).** The original regime-2 proof
+> ended "... ≤ 16.47/N < 16.47·64/L³ = 1053.8/L³ since N < (L/4)³" — but N < (L/4)³ = L³/64 gives
+> **1/N > 64/L³**, the *opposite* direction (reciprocating an upper bound on N does not give an upper
+> bound on 1/N). As written the claimed bound genuinely fails: for fixed small N and L → ∞, the true
+> P(δ_min > LN^{−4/3}) is eventually 0 but 16.47/N stays a positive constant, so no C/L³ bound of this
+> form can come from that step alone. The proof below repairs it exactly as Astra suggested: split
+> regime 2 at the *deterministic* threshold L = 2πN^{1/3}, where the pigeonhole bound δ_min ≤ 2π/N
+> already forces the probability to vanish, and use the reciprocal correctly (N ≥ (L/2π)³ ⟹
+> 1/N ≤ 8π³/L³) only in the remaining bounded sub-range. Nothing else in this file used the flawed
+> step directly (Lemmas 5.1/5.2's own regime-2 computations bound N⁴ε³ or N⁹ε⁸ terms directly in terms
+> of L³ from the regime-2 *hypothesis* L³ > 64N, which is the correct direction and was never
+> reciprocated), so only this proposition's constant — and everything below that cites it verbatim —
+> needed updating; no exponent, no other lemma's proof, and no qualitative conclusion changes.
 
 *Proof.* By Chebyshev, P(Z = 0) ≤ P(|Z − EZ| ≥ EZ) ≤ Var(Z)/E[Z]² ≤ 1/E[Z] + T_3/E[Z]².
 
@@ -210,14 +224,30 @@ N ≥ (L/4)³. Total ≤ 1053.8/L³.
 
 *Regime 2: L > 4N^{1/3}.* Then LN^{−4/3} > 4/N, so P(δ_min > LN^{−4/3}) ≤ P(δ_min > 4/N), and we take
 ε = 4/N (N²ε² = 16 < 24, ε ≤ 2 < π). Lemma 3.1: E[Z] ≥ (17/25)·64(N²−1)/(72πN) ≥ 0.1443·N (N ≥ 2), and
-T_3 ≤ 31·4⁸N/(1036800π²) = 0.1986·N. So P(δ_min > 4/N) ≤ 6.93/N + 9.54/N = 16.47/N < 16.47·64/L³ =
-1053.8/L³ since N < (L/4)³. ∎ (Constants assembled in the script, item S8.)
+T_3 ≤ 31·4⁸N/(1036800π²) = 0.1986·N. So **P(δ_min > 4/N) ≤ 6.93/N + 9.54/N = 16.47/N**. This bound is
+uniform in N and does not by itself decay in L; converting it correctly needs a genuine *lower* bound
+on N in terms of L, not the regime's upper bound N < (L/4)³. Split regime 2 at L₀ := 2πN^{1/3}:
+
+  *Regime 2b, L ≥ 2πN^{1/3}* (i.e. LN^{−4/3} ≥ 2π/N): for N points on the circle the N gaps sum to 2π,
+  so deterministically δ_min ≤ 2π/N ≤ LN^{−4/3}, hence P(δ_min > LN^{−4/3}) = 0 ≤ 4086/L³ trivially.
+
+  *Regime 2a, 4N^{1/3} < L < 2πN^{1/3}* (i.e. 4/N < LN^{−4/3} < 2π/N, a bounded window since 2π ≈ 6.28):
+  here N > (L/2π)³, so **1/N < 8π³/L³** (the reciprocal of a genuine lower bound on N — this is the
+  correctly-directed analogue of the original's step). Hence
+  P(δ_min > LN^{−4/3}) ≤ P(δ_min > 4/N) ≤ 16.47/N < 16.47·8π³/L³ = 4085.39.../L³ < 4086/L³.
+
+Both sub-regimes give ≤ 4086/L³, so Regime 2 in full satisfies P(δ_min > LN^{−4/3}) ≤ 4086/L³. ∎
+(Regime 1's bound, 1053.8/L³, is unaffected by this repair and is dominated by Regime 2's 4086/L³, so
+4086/L³ is the constant for the whole proposition. Constants re-assembled in the script, item S8;
+see `scripts/r1_cue_background_prop33_repair_check.py` for the numeric verification of both sub-regimes
+and a Monte Carlo spot-check that the repaired bound is never violated.)
 
 *Remarks.* (1) Nothing here is asymptotic: the statement is uniform in N ≥ 2 and L > 0 (it is vacuous
-for L³ < 1054). (2) The proof also shows P(δ_min > 4/N) ≤ 17/N: CUE has a gap below four mean
-spacings with probability → 1 at rate 1/N, without any citation. (3) The second-moment method with
-Fischer's inequality avoids the ρ_4 cluster asymptotics that a Poisson-limit proof needs; this is why
-the tail bound comes for free while the limit *law* (§6) is cited.
+for L³ < 4086). (2) The proof also shows P(δ_min > 4/N) ≤ 17/N: CUE has a gap below four mean
+spacings with probability → 1 at rate 1/N, without any citation (this sub-statement did not depend on
+the repaired step and is unaffected). (3) The second-moment method with Fischer's inequality avoids the
+ρ_4 cluster asymptotics that a Poisson-limit proof needs; this is why the tail bound comes for free
+while the limit *law* (§6) is cited.
 
 ---
 
@@ -302,15 +332,15 @@ E[W] ≤ Σ_j r_j^{−2}(N/2π)4r_j E[Z_ord] = (2N/π)E[Z_ord]Σ_j r_j^{−1} = 
 Note the wrap-around: "dist(z,{x,y})" is the circular distance to the nearer endpoint, so the arcs on
 both sides of *both* endpoints are included; nothing is lost when x_a^k is near 2π.
 
-**Theorem 1′ (shell/Markov version) [P].** For all N ≥ 3 and M ≥ 1, P(S\* > M N²) ≤ 1055·M^{−3/8}.
+**Theorem 1′ (shell/Markov version) [P].** For all N ≥ 3 and M ≥ 1, P(S\* > M N²) ≤ 4087·M^{−3/8}.
 
 *Proof.* {S\* > MN²} ⊂ E_δ ∪ E_1 ∪ ({S\* > MN²} ∩ E_good). With L := M^{1/8} ≥ 1 and c := L^{−2}:
-P(E_δ) ≤ 1054/L³ (Proposition 3.3, monotone in the threshold in regime 2), P(E_1) ≤ 3.9·10^{−5}/L³
+P(E_δ) ≤ 4086/L³ (Proposition 3.3, repaired, monotone in the threshold in regime 2), P(E_1) ≤ 3.9·10^{−5}/L³
 (Lemma 5.2), and by Markov and Lemmas 5.1, 5.3,
 
   P(S\* > MN², E_good) ≤ E[(π²/2)W]/(MN²) ≤ (π²/2)(4/(πc))·(L³/(36π))/M = L³/(18cM) = L⁵/(18M) = 1/(18L³).
 
-Altogether P(S\* > MN²) ≤ (1054 + 0.0000383 + 0.0556)/L³ ≤ 1055·M^{−3/8}. ∎
+Altogether P(S\* > MN²) ≤ (4086 + 0.0000383 + 0.0556)/L³ ≤ 4087·M^{−3/8}. ∎
 
 There is no log N: Markov is applied once to the geometric sum Σ_j r_j^{−2}n_j, whose expectation is
 dominated by the innermost shell. (Applying Markov shell by shell with weights 2^{−j}, as in the task
@@ -329,24 +359,24 @@ g̃(z) = g_η(dist(z,{x,y})). Now ∫g̃ dz ≤ 2·2∫_{η/N}^{∞}v^{−2}dv =
 
 **Theorem 1 [P].** For all N ≥ 3 and M ≥ 1,
 
-  **P( S\* > M·N² ) ≤ 1055·M^{−1/2}.**
+  **P( S\* > M·N² ) ≤ 4087·M^{−1/2}.**
 
-*Proof.* Take L := M^{1/6}, η := M^{−1/3}, and decompose as before with w = η/N. P(E_δ) ≤ 1054/L³ =
-1054·M^{−1/2}. Lemma 5.2's computation with c = η gives (for η ≤ 1, in both regimes)
+*Proof.* Take L := M^{1/6}, η := M^{−1/3}, and decompose as before with w = η/N. P(E_δ) ≤ 4086/L³ =
+4086·M^{−1/2} (Proposition 3.3, repaired). Lemma 5.2's computation with c = η gives (for η ≤ 1, in both regimes)
 P(E_1) ≤ (49/30)(4320π²)^{−1}L³η³ = 3.83·10^{−5}·M^{−1/2}. On E_good, S\* > MN² forces B > 2MN²/π², so by
 Chebyshev–Markov on the square and Proposition 5.4 with Lemma 5.1,
 
   P(S\* > MN², E_good) ≤ (L³/(36π))·[2N⁴/(3πη³) + 4N⁴/(π²η²)]·(π²/(2MN²))² = (L³/M²)(π⁴/4)(1/36π)[2/(3πη³) + 4/(π²η²)]
                         ≤ (π³/144)(2/(3π) + 4/π²)·L³η^{−3}/M² = 0.133·M^{1/2}·M/M² = 0.133·M^{−1/2}
 
-(using η^{−2} ≤ η^{−3} for η ≤ 1). Sum: (1054 + 0.00004 + 0.133)M^{−1/2} ≤ 1055·M^{−1/2}. ∎
+(using η^{−2} ≤ η^{−3} for η ≤ 1). Sum: (4086 + 0.00004 + 0.133)M^{−1/2} ≤ 4087·M^{−1/2}. ∎
 
-**Corollary 5.5 [P].** P(S\* > N² log N) ≤ 1055·(log N)^{−1/2} → 0; and S\*/N² is tight: for any
+**Corollary 5.5 [P].** P(S\* > N² log N) ≤ 4087·(log N)^{−1/2} → 0; and S\*/N² is tight: for any
 ω_N → ∞, P(S\* > ω_N N²) → 0. The old hypothesis "S ≤ A·N² throughout" of Theorem B is thus replaced by
-a quantitative statement about the initial repaired stiffness, true with probability ≥ 1 − 1055 A^{−1/2}
+a quantitative statement about the initial repaired stiffness, true with probability ≥ 1 − 4087 A^{−1/2}
 for every N.
 
-*What is lossy.* The 1055 comes from Proposition 3.3's crude constants (the true P(δ_min > LN^{−4/3}) is
+*What is lossy.* The 4087 comes from Proposition 3.3's crude constants (the true P(δ_min > LN^{−4/3}) is
 ≈ e^{−L³/72π}); the exponent 1/2 comes from a second moment on the bulk sum whose mean is dominated by
 the innermost allowed shell. Higher moments (ρ_{2+p} ≤ ρ_2(N/2π)^p, same proof) push the exponent up
 towards the third-point value 5/2 but never reach it; a proof of the exact tail M^{−5/2} would need the
@@ -398,8 +428,9 @@ configuration and X_N := N^{4/3}δ_min, A_N := S\*/N². Then, with G as in (E-BA
 
   **N^{8/3} D_N ⟹ G²/8,**  and more precisely  X_N²/8 ≤ N^{8/3}D_N ≤ (X_N²/8)·(1 + q_N/2) on {q_N ≤ 2},
 
-where q_N := A_N X_N² N^{−2/3} = S\*·δ_min² satisfies P(q_N > t) ≤ 1055·(t N^{2/3})^{−1/4}·1054^{1/2}… — more
-simply q_N = O_P(N^{−2/3}); in particular the ratio ρ_N := 8D_N/δ_min² satisfies ρ_N − 1 = O_P(N^{−2/3}).
+where q_N := A_N X_N² N^{−2/3} = S\*·δ_min² satisfies P(q_N > t) → 0 as N → ∞ for fixed t (quantified
+just below, with the repaired constants); more simply q_N = O_P(N^{−2/3}); in particular the ratio
+ρ_N := 8D_N/δ_min² satisfies ρ_N − 1 = O_P(N^{−2/3}).
 
 *Proof.* Lower bound: (E-A) gives D_N ≥ δ_min²/8, i.e. N^{8/3}D_N ≥ X_N²/8, deterministically.
 
@@ -410,13 +441,13 @@ Upper bound: on {q_N < 4}, (E-B\*) gives, with 1/(2A_N N²) = δ_min²/(2q_N),
 Since −log(1 − t) ≤ t/(1−t) for t ∈ [0,1), φ(q) ≤ 1/(1 − q/4) ≤ 1 + q/2 for q ≤ 2. This is the
 two-sided inequality.
 
-Tightness: by Theorem 1, P(A_N > M) ≤ 1055M^{−1/2}; by Proposition 3.3, P(X_N > L) ≤ 1054L^{−3}, both for
-all N. Hence for any t > 0 and any M ≥ 1,
+Tightness: by Theorem 1, P(A_N > M) ≤ 4087M^{−1/2}; by Proposition 3.3 (repaired), P(X_N > L) ≤ 4086L^{−3},
+both for all N. Hence for any t > 0 and any M ≥ 1,
 
-  P(q_N > t) ≤ P(A_N > M) + P(X_N² > tN^{2/3}/M) ≤ 1055M^{−1/2} + 1054·(M/(tN^{2/3}))^{3/2},
+  P(q_N > t) ≤ P(A_N > M) + P(X_N² > tN^{2/3}/M) ≤ 4087M^{−1/2} + 4086·(M/(tN^{2/3}))^{3/2},
 
 which tends to 0 as N → ∞ for every fixed t, M → ∞ slowly (e.g. M = N^{1/3} gives
-P(q_N > t) ≤ 1055N^{−1/6} + 1054 t^{−3/2}N^{−1/2}); so q_N → 0 in probability, and since A_N and X_N are
+P(q_N > t) ≤ 4087N^{−1/6} + 4086 t^{−3/2}N^{−1/2}); so q_N → 0 in probability, and since A_N and X_N are
 tight, q_N = O_P(N^{−2/3}). Therefore N^{8/3}D_N = (X_N²/8)(1 + O_P(N^{−2/3})).
 
 Limit law: X_N ⟹ G by (E-BAB), so X_N²/8 ⟹ G²/8 by the continuous mapping theorem, and

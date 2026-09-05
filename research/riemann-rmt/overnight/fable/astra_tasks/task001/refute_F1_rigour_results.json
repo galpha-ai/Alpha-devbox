@@ -1,9 +1,9 @@
 {
   "a": "1.13777777777778",
-  "direct_diff_probe_-zz3(1+eps)*eps^4_should_tend_to_6": {
-    "0.001": "-6.0",
-    "0.0002": "-6.0",
-    "5.0e-5": "-6.0"
+  "direct_diff_probe_+zz3(1+eps)*eps^4_should_tend_to_6_CORRECTED": {
+    "0.001": "6.0",
+    "0.0002": "6.0",
+    "5.0e-5": "6.0"
   },
   "Pi4 leading coefficient, correct (a * h4_zeta_part = 6a)": "6.82666666666667",
   "Pi4 leading coefficient, as literally stated in the .md prose (6a^2)": "7.76722962962963",

@@ -47,13 +47,25 @@ a = ELL ** 2
 # ---- (i) pure-zeta fact used elsewhere in f1_selberg_delange_expansion.py: leading eps^-4 coeff of
 # sum_p (log p)^4 p^{-s} at s=1+eps. Checked directly via high-precision numerical differentiation of
 # zeta'/zeta (the same identity the proposer's script uses, sum_n Lambda(n)(log n)^3 n^{-s} relation):
-# f(s) := -zeta'/zeta(s) has a *simple* pole at s=1 with f(s) ~ 1/eps, so f'''(s) ~ -6/eps^4 + O(1), and
-# sum_p (log p)^4 p^{-s} = -f'''(s) - (prime-power correction, finite at s=1) = 6/eps^4 + O(1).
+# CORRECTED after Astra's intake review (see astra_tasks/task001/SIGN_CORRECTION_NOTE.md): zeta'/zeta(s)
+# itself has the simple pole zeta'/zeta(1+eps) ~ -1/eps + O(1) (residue of zeta at 1 is +1, zeta' ~
+# -1/eps^2, ratio ~ -1/eps). Differentiating THIS function three times in s (= three times in eps):
+# d/deps(-1/eps)=1/eps^2, d^2=-2/eps^3, d^3=6/eps^4, so zz3(1+eps) := d^3/ds^3(zeta'/zeta)(1+eps) ~
+# +6/eps^4 + O(1) directly (no extra sign flip). Separately, -zeta'/zeta(s) = sum_n Lambda(n) n^{-s},
+# and d^3/ds^3[n^{-s}] = -(log n)^3 n^{-s}, so d^3/ds^3[-zeta'/zeta](s) = -sum_n Lambda(n)(log n)^3 n^{-s};
+# since d^3/ds^3[-zeta'/zeta] = -zz3, this gives zz3(s) = sum_n Lambda(n)(log n)^3 n^{-s}, whose leading
+# (prime, not prime-power) part is exactly sum_p (log p)^4 p^{-s} ~ 6/eps^4 + O(1) -- i.e. zz3 ITSELF,
+# with no extra minus sign, is already (to leading order) the quantity Pi_4's zeta-part needs.
+# The original version of this script computed "-zz3(1+eps)*eps**4" and labelled it "should tend to 6";
+# it actually tends to -6 (confirmed independently both by Astra's intake review and by re-running the
+# original code here), a sign error in this diagnostic's OWN self-check that Astra caught. It never
+# affected pi4_leading_correct (hardcoded below as 6*a, not derived from this probe), so no downstream
+# numeric conclusion in this file's verdict changes -- only the probe's labelling/sign was wrong.
 def zz3(s):
     return mp.diff(lambda t: mp.zeta(t, derivative=1) / mp.zeta(t), s, 3)
 probe_vals = {}
 for eps in (mp.mpf('1e-3'), mp.mpf('2e-4'), mp.mpf('5e-5')):
-    probe_vals[mp.nstr(eps, 6)] = mp.nstr(-zz3(1 + eps) * eps ** 4, 12)
+    probe_vals[mp.nstr(eps, 6)] = mp.nstr(zz3(1 + eps) * eps ** 4, 12)
 h4_zeta_part = mp.mpf(probe_vals[mp.nstr(mp.mpf('5e-5'), 6)])   # numerically 6, to the displayed precision
 
 # ---- (ii) leading coefficient of rho_p is exactly a (this is literally what the proposer's own script
@@ -69,7 +81,7 @@ m4_hardcoded_in_script = a * a + 6 * a                             # literally f
 
 out = {
     "a": mp.nstr(a, 15),
-    "direct_diff_probe_-zz3(1+eps)*eps^4_should_tend_to_6": probe_vals,
+    "direct_diff_probe_+zz3(1+eps)*eps^4_should_tend_to_6_CORRECTED": probe_vals,
     "Pi4 leading coefficient, correct (a * h4_zeta_part = 6a)": mp.nstr(pi4_leading_correct, 15),
     "Pi4 leading coefficient, as literally stated in the .md prose (6a^2)": mp.nstr(pi4_leading_as_written_in_md, 15),
     "m4 implied by the .md's own stated Pi4 coefficient (a^2 + 6a^2 = 7a^2)": mp.nstr(m4_from_written_prose, 15),

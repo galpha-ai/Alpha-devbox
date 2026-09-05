@@ -61,10 +61,23 @@ Status tags: **[P]** proved here in full; **[C]** computed (script + data in thi
 
 **Fact 1.1 (rotation invariance) [P].** The density is invariant under θ_j ↦ θ_j + c (all j), so the
 1-point correlation function is exactly ρ_1(θ) ≡ N/2π for every β. *Proof:* the interaction depends
-only on differences. ∎ This is the *only* exact structural fact about CβE used in part (b) below, and
-it is enough because Lemma S of `r1_theoremB_repair.md` needs nothing more than a linear bound on the
-1-sided counting function N_ab(ρ), which for CβE follows from ρ_1 ≡ N/2π exactly as it does for CUE
-(§4).
+only on differences. ∎
+
+> **Correction (2026-09-05, after Astra's intake review).** An earlier version of this fact's
+> "consequence" clause claimed that ρ_1 ≡ N/2π alone gives "a linear bound on the 1-sided counting
+> function N_ab(ρ)... for CβE, exactly as it does for CUE." That is false, and Astra gave the right
+> counterexample: take any deterministic configuration with an arbitrarily tight cluster (so N_ab(ρ) is
+> badly non-linear at small ρ for that realization) and average over a uniform random rotation of the
+> *whole* configuration — every marginal 1-point law is still exactly ρ_1 ≡ N/2π, yet every single
+> realization still contains the same tight cluster. So ρ_1 is a **first-moment / on-average** fact; it
+> constrains E[N_ab(ρ)] linearly (E[N_ab(ρ)] = ρ_1·(2ρ)·N-ish, an averaged statement), but it says
+> nothing about the counting function of the *specific* realized near-collision pair, which is exactly
+> the harder, genuinely β-dependent, high-probability statement that §2's BB-LD (plus a counting-function
+> version of Feng–Wei, §3) is needed for. Fact 1.1 is retained here only for its correct content —
+> ρ_1 ≡ N/2π exactly, used below solely as an input to bounding E[Z_ord]-type first moments, never as a
+> stand-in for the realized-configuration hypothesis (H_C)/N_ab(ρ) itself. §4's own text already scoped
+> Lemma S/W correctly (as a deterministic implication with (H_C) as an explicit, unproved-except-via-BB-LD
+> hypothesis); this correction removes the one place that stated it more strongly than that.
 
 **Fact 1.2 (no exact n-point formula for general β) [P, negative].** For β = 2 the process is
 determinantal (kernel K_N, `r1_cue_background.md` §1); for β ∈ {1,4} it is Pfaffian (orthogonal/

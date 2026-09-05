@@ -47,3 +47,27 @@ files received their adversarial refute pass — read them as single-proposer dr
 | A3 | CβE general-β background bound, reusing Theorem B'; repaired after refutation (BB-LD's near-diagonal density definition was dimensionally wrong — missing an N-rescaling of the sine argument, false even at β=2 as originally stated; corrected and re-derived in one clean pass; a directional numerics claim was also withdrawn after an 8-seed robustness sweep contradicted it) | P for β∈{1,2,4} modulo Feng-Wei; general β modulo BB-LD too (both cited, not proved) | r1_cbe_background.md |
 | F1 | Astra task001 arithmetic-transfer derivation; repaired after refutation (the S2² Selberg-Delange moment derivation was arithmetically self-contradictory — claimed leading coefficient 6a², correct value is 6a, though the coded numeric value was already right; a headline 4-point numerical table mixed rows from different v at small L with correct v=1 rows at large L) | mixed: normalisation + leading S2 moments proved modulo recalled Selberg-Delange; kernel derivation exact algebra; M2 insertion-term transfer and M3 completeness remain open | astra_tasks/task001_F1_arithmetic_transfer.md |
 | F3 | diagonal-operator Fock-space spectrum (Astra §12); repaired after refutation (a sign error in the K=½Φ²−½[A,A*] identity from a silent operator-order swap; the claim that the truncated commutator acts as a scalar on a whole mass-v sector is false for multi-particle states — up to 13× spread within a fixed-mass sector — withdrawn to "one-particle sector / untruncated space only") | **notable cross-validation**: extrapolated λ_∞≈4.6456 (Lanczos on the Fock-space truncation, M up to 55) independently matches Astra's own richer symmetric-prime-feature search (λ≈4.6455, from residual_gram_round1.md §8) to 3-4 significant figures via two structurally unrelated computations; no rigorous bound vs the π²/2=4.9348 threshold either way — the wall question stays fully open | r2_diagonal_operator_spectrum.md |
+
+## Astra intake-review corrections applied (11:5x UTC)
+
+Astra's `fable/reviews/pr11-89393d5/` intake review (INTAKE_REVIEW.md, BACKGROUND_AND_BOUNDARY_REVIEW.md
+in the new repo) found five real issues in commit 89393d5's content. All are now fixed directly in the
+source files (not just noted):
+
+| # | file | issue | fix |
+|---|---|---|---|
+| 1 | `r1_cue_background.md` | Proposition 3.3 regime-2 had a **reversed inequality** (N<(L/4)³ was used to claim 1/N<64/L³, which is backwards) — the stated constant 1054/1055 was not established as written; fails outright for small fixed N, L→∞ | Split regime 2 at the deterministic threshold L=2πN^(1/3) (pigeonhole δ_min≤2π/N); correct reciprocal direction in the remaining bounded sub-range. New constants 4086 (Prop 3.3) / 4087 (Theorem 1, Theorem 1′, Corollary 5.5, the LR-bridge tightness section) replace 1054/1055 throughout. Verified by `scripts/r1_cue_background_prop33_repair_check.py` (confirms the original direction fails, the repair holds, plus small-scale Monte Carlo). |
+| 2 | `r1_cbe_background.md` | BB-LD near-diagonal density definition missing an N-rescaling (already caught by our own A3 refuter and repaired in 2073028 before Astra's review landed) | independently confirmed consistent; no further change needed |
+| 3 | `r1_cbe_background.md` | Fact 1.1 overclaimed that ρ_1≡N/2π **alone** gives the 1-sided counting-function bound N_ab(ρ) needed by Lemma S, for CβE "exactly as it does for CUE" — false (Astra's rotated-cluster counterexample: uniform 1-point density is compatible with an arbitrarily bad single realization) | Corrected in place: ρ_1 is only a first-moment fact; the probabilistic hypothesis needs BB-LD+Feng-Wei (§2-3), never claimed as following from ρ_1 alone |
+| 4 | `r1_cue_background.md` / depth theorems | static-stiffness-persists-to-collision caution | already correctly conditional ([P] modulo (E-B*), (E-BAB)); no overclaim found, no change needed |
+| 5 | `r1_levelB_barrier.md` | the "periodised version [P, no hypothesis]" claim that a small circular depth ⟹ an actual zeta gap < ½ is **wrong**: the circle's minimising gap can be purely the window-boundary **wrap gap** (Astra's counterexample: N points 0..N-1 in a window of length N-1+ε have all internal gaps =1 but wrap gap =ε) | Downgraded to [O] pending a non-wrap witness; the (NR)-conditioned line version (Theorem A′, unaffected — no window boundary) remains the operative [P] result; propagated through §0, §2.2, §4 verdict, and the claim ledger (new row B1-7′) |
+
+Also fixed independently (not from Astra, from our own refuters, recorded earlier): the F1 refuter's own
+sign-error probe (labelled +6, computed -6; did not affect the final m4=a²+6a) — see the
+`astra_tasks/task001/refute_F1_rigour.py` patch and the file's own repair-pass note.
+
+Net effect: no headline verdict in any of the three files reverses (CUE background bound survives with
+a larger explicit constant; the CβE elementary machinery was already correctly scoped once the one
+overclaiming sentence is removed; Level B still implies μ<1/2 under (NR), just not "for free" via
+periodisation as originally overclaimed). This is exactly the kind of adversarial cross-review the
+collaboration is for.
