@@ -46,15 +46,25 @@ def jmax(n, c, Xfar, h, penalty=False):
         bounds = [(-1, 1)]*nv; bounds[n] = (0, 0)
         res = linprog(cost, A_ub=A_ub, b_ub=b_ub, bounds=bounds, method='highs')
         return -res.fun, res.x[:nv]
-    # with tail penalty: variables phi (nv), d_k >= |phi'_k| (n).  tau = (1/pi^2) sum d_k (1/c+1)/(Xfar-1)
-    cost = np.concatenate([-J, np.full(n, (1/np.pi**2)*(1/c + 1)/(Xfar - 1))])
-    A1 = np.hstack([B, np.zeros((B.shape[0], n))])
-    # d_k >= n(phi_{k+1}-phi_k) and d_k >= -n(phi_{k+1}-phi_k)
-    Dm = np.zeros((n, nv)); 
-    for k in range(n): Dm[k, k+1] = n; Dm[k, k] = -n
-    A2 = np.hstack([Dm, -np.eye(n)]); A3 = np.hstack([-Dm, -np.eye(n)])
+    # with tail penalty.  Exact representation (two integrations by parts, phi(1)=0):
+    #   T(x) = -(2/(2 pi x)^2) [ phi'(0+) - phi'(1-) cos(2 pi x) + sum_{k=1}^{n-1} s_k cos(2 pi a_k x) ],
+    #   s_k = phi'_k - phi'_{k-1} = n (phi_{k+1} - 2 phi_k + phi_{k-1}),
+    # so |T(x)| <= M_T / x^2 with M_T = (1/(2 pi^2)) [ |phi'_0| + |phi'_{n-1}| + sum |s_k| ].
+    # Hard core c => at most 1/c + 1 points per unit interval, so the tail loss is
+    #   int_{Xfar}^inf g T <= M_T (1/c + 1) sum_{m>=0} 1/(Xfar+m)^2 <= M_T (1/c+1)/(Xfar-1) =: tau.
+    # variables: phi (nv), d (n+1) with d_0 >= |phi'_0|, d_n >= |phi'_{n-1}|, d_k >= |s_k| (1<=k<=n-1)
+    nd = n + 1
+    coef = (1/(2*np.pi**2))*(1/c + 1)/(Xfar - 1)
+    cost = np.concatenate([-J, np.full(nd, coef)])
+    A1 = np.hstack([B, np.zeros((B.shape[0], nd))])
+    Dm = np.zeros((nd, nv))
+    Dm[0, 1] = n; Dm[0, 0] = -n                      # phi'_0
+    Dm[n, n] = n; Dm[n, n-1] = -n                    # phi'_{n-1}
+    for k in range(1, n):
+        Dm[k, k+1] = n; Dm[k, k] = -2*n; Dm[k, k-1] = n
+    A2 = np.hstack([Dm, -np.eye(nd)]); A3 = np.hstack([-Dm, -np.eye(nd)])
     A_ub = np.vstack([A1, A2, A3]); b_ub = np.zeros(A_ub.shape[0])
-    bounds = [(-1, 1)]*nv + [(0, None)]*n; bounds[n] = (0, 0)
+    bounds = [(-1, 1)]*nv + [(0, None)]*nd; bounds[n] = (0, 0)
     res = linprog(cost, A_ub=A_ub, b_ub=b_ub, bounds=bounds, method='highs')
     return -res.fun, res.x[:nv]
 
