@@ -1,0 +1,99 @@
+== disloc
+/home/user/Alpha-devbox/research/riemann-rmt/overnight/fable/push/heat_depth.py:25: RuntimeWarning: overflow encountered in exp
+  ph=np.exp(1j*np.outer(np.atleast_1d(x),self.m))*np.exp(s*self.w)
+/home/user/Alpha-devbox/research/riemann-rmt/overnight/fable/push/heat_depth.py:25: RuntimeWarning: invalid value encountered in multiply
+  ph=np.exp(1j*np.outer(np.atleast_1d(x),self.m))*np.exp(s*self.w)
+N=   8  N^2D=1.419557827238  pair=1  t=10.0s
+N=  12  N^2D=1.419624262938  pair=1  t=8.9s
+N=  16  N^2D=1.419635278203  pair=1  t=7.7s
+N=  24  N^2D=1.419639344752  pair=1  t=7.9s
+N=  32  N^2D=1.419640026531  pair=1  t=8.3s
+N=  48  N^2D=1.419640279380  pair=1  t=9.1s
+N=  64  N^2D=1.419640321888  pair=1  t=9.6s
+/home/user/Alpha-devbox/research/riemann-rmt/overnight/fable/push/heat_depth.py:27: RuntimeWarning: overflow encountered in multiply
+  if deriv==2: ph=ph*(-(self.m**2))
+/home/user/Alpha-devbox/research/riemann-rmt/overnight/fable/push/heat_depth.py:28: RuntimeWarning: invalid value encountered in matmul
+  return np.real(ph@self.c)
+N=  96  N^2D=1.419640337671  pair=1  t=11.3s
+N= 128  N^2D=1.419640340326  pair=1  t=11.8s
+N= 192  N^2D=1.419640341312  pair=1  t=14.6s
+N= 256  N^2D=1.419640341478  pair=1  t=17.3s
+N= 384  N^2D=1.419640341540  pair=1  t=22.3s
+== quad5
+N=   8  N^2D=1.930069601369  pair=0  t=0.6s
+N=  12  N^2D=1.949094986731  pair=0  t=0.7s
+N=  16  N^2D=1.955315781436  pair=2  t=0.9s
+N=  24  N^2D=1.959630457608  pair=2  t=1.1s
+N=  32  N^2D=1.961116054786  pair=2  t=1.5s
+N=  48  N^2D=1.962169549651  pair=0  t=1.7s
+N=  64  N^2D=1.962536779519  pair=0  t=2.2s
+N=  96  N^2D=1.962798614650  pair=2  t=2.7s
+N= 128  N^2D=1.962890164119  pair=2  t=3.0s
+N= 192  N^2D=1.962955527561  pair=0  t=3.7s
+N= 256  N^2D=1.962978398464  pair=2  t=4.4s
+N= 384  N^2D=1.962994718477  pair=0  t=5.6s
+== block5
+N=   8  N^2D=1.955926275077  pair=0  t=0.6s
+N=  12  N^2D=1.981027258236  pair=0  t=0.9s
+N=  16  N^2D=1.989441801096  pair=0  t=1.2s
+N=  24  N^2D=1.995342712552  pair=0  t=1.6s
+N=  32  N^2D=1.997387114683  pair=0  t=2.0s
+N=  48  N^2D=1.998840874841  pair=0  t=2.4s
+N=  64  N^2D=1.999348415139  pair=0  t=3.0s
+N=  96  N^2D=1.999710539298  pair=0  t=3.2s
+N= 128  N^2D=1.999837203348  pair=0  t=3.5s
+N= 192  N^2D=1.999927723973  pair=0  t=4.2s
+N= 256  N^2D=1.999959072334  pair=0  t=5.0s
+N= 384  N^2D=1.999981692149  pair=0  t=5.6s
+== halfblock
+N=   8  N^2D=1.444549284489  pair=0  t=10.0s
+N=  12  N^2D=1.279454695474  pair=0  t=8.6s
+N=  16  N^2D=2.116086177305  pair=1  t=8.2s
+N=  24  N^2D=1.561378494203  pair=1  t=8.2s
+N=  32  N^2D=1.657836383348  pair=2  t=8.7s
+N=  48  N^2D=2839.130851573536  pair=47  t=8.8s
+N=  64  N^2D=0.139804286957  pair=1  t=10.0s
+N=  96  N^2D=2838.515795163738  pair=95  t=11.6s
+N= 128  N^2D=2836.356758682879  pair=127  t=12.8s
+N= 192  N^2D=2832.960973932397  pair=191  t=14.8s
+N= 256  N^2D=2830.576347788715  pair=255  t=18.0s
+N= 384  N^2D=2827.323317075060  pair=383  t=22.0s
+== pair_far
+N=   8  N^2D=1.418215513314  pair=1  t=2.9s
+N=  12  N^2D=1.419374468293  pair=1  t=5.7s
+N=  16  N^2D=1.419557827238  pair=1  t=9.8s
+N=  24  N^2D=1.419624262938  pair=1  t=9.4s
+N=  32  N^2D=1.419635278203  pair=1  t=8.6s
+N=  48  N^2D=1.419639344752  pair=1  t=9.1s
+N=  64  N^2D=1.419640026531  pair=1  t=9.9s
+N=  96  N^2D=1.419640279380  pair=1  t=11.6s
+N= 128  N^2D=1.419640321888  pair=1  t=13.0s
+N= 192  N^2D=1.419640337671  pair=1  t=14.7s
+N= 256  N^2D=1.419640340326  pair=1  t=18.6s
+N= 384  N^2D=1.419640341312  pair=1  t=22.4s
+== block_3adj3
+N=   8  N^2D=1.856238707937  pair=2  t=2.8s
+N=  12  N^2D=1.856592185048  pair=2  t=0.5s
+N=  16  N^2D=1.856649823422  pair=2  t=0.5s
+N=  24  N^2D=1.856670957461  pair=2  t=0.5s
+N=  32  N^2D=1.856674486821  pair=2  t=0.6s
+N=  48  N^2D=1.856675792037  pair=2  t=0.6s
+N=  64  N^2D=1.856676012438  pair=2  t=0.7s
+N=  96  N^2D=1.856676091925  pair=2  t=0.8s
+N= 128  N^2D=1.856676106339  pair=2  t=0.9s
+N= 192  N^2D=1.856676108111  pair=2  t=1.0s
+N= 256  N^2D=1.856676110411  pair=2  t=1.3s
+N= 384  N^2D=1.856676105144  pair=2  t=1.5s
+== block_4adj
+N=   8  N^2D=1.796638203636  pair=1  t=10.2s
+N=  12  N^2D=1.796789380084  pair=1  t=8.2s
+N=  16  N^2D=1.796815328358  pair=1  t=7.9s
+N=  24  N^2D=1.796825025945  pair=1  t=8.0s
+N=  32  N^2D=1.796826663062  pair=1  t=8.5s
+N=  48  N^2D=1.796827271892  pair=1  t=9.0s
+N=  64  N^2D=1.796827374413  pair=1  t=10.1s
+N=  96  N^2D=1.796827412505  pair=1  t=12.0s
+N= 128  N^2D=1.796827418915  pair=1  t=12.2s
+N= 192  N^2D=1.796827421298  pair=1  t=14.9s
+N= 256  N^2D=1.796827421698  pair=1  t=17.1s
+N= 384  N^2D=1.796827421850  pair=1  t=21.6s
