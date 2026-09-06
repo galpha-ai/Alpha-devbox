@@ -1,0 +1,22 @@
+== block7 (robust solver)
+  collision of pair at x=(0.119265,0.119300), extremum x=0.119290
+N= 129  N^2D=2.037870579847  t=7.5s
+  collision of pair at x=(0.017861,0.018012), extremum x=0.017931
+N= 193  N^2D=2.037905349727  t=8.4s
+  collision of pair at x=(0.013381,0.013574), extremum x=0.013463
+N= 257  N^2D=2.037735127246  t=8.3s
+== block9 (robust solver)
+Traceback (most recent call last):
+  File "/home/user/Alpha-devbox/research/riemann-rmt/overnight/fable/push/heat_depth_robust.py", line 90, in <module>
+    d=depth_robust(H,window=win,verbose=True)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/Alpha-devbox/research/riemann-rmt/overnight/fable/push/heat_depth_robust.py", line 64, in depth_robust
+    assert good(lo)
+           ^^^^^^^^
+AssertionError
+== two3 (robust solver)
+  collision of pair at x=(0.012270,0.012274), extremum x=0.012272
+N= 256  N^2D=1.999959413409  t=11.0s
+== block5 (robust solver)
+  collision of pair at x=(0.012219,0.012230), extremum x=0.012224
+N= 257  N^2D=1.999959727377  t=9.2s

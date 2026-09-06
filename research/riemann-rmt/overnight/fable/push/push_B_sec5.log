@@ -1,0 +1,19 @@
+== Section 5: Riccati lower bound on ACUE data and the (N^2/2) conjecture
+  N= 4: min D/[(1/C_N)log(1+C_N/A_0)] = 1.4496 (max 4.5);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0546  (N^2 D_min=1.3863)
+  N= 5: min D/[(1/C_N)log(1+C_N/A_0)] = 1.6194 (max 6.3);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0564  (N^2 D_min=1.3726)
+  N= 6: min D/[(1/C_N)log(1+C_N/A_0)] = 1.7782 (max 8.2);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0571  (N^2 D_min=1.3531)
+  N= 7: min D/[(1/C_N)log(1+C_N/A_0)] = 1.9296 (max 10.1);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0573  (N^2 D_min=1.3426)
+  N= 8: min D/[(1/C_N)log(1+C_N/A_0)] = 2.0754 (max 12.1);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0575  (N^2 D_min=1.3304)
+  N= 9: min D/[(1/C_N)log(1+C_N/A_0)] = 2.2168 (max 14.0);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0575  (N^2 D_min=1.3229)
+  N=10: min D/[(1/C_N)log(1+C_N/A_0)] = 2.3545 (max 16.0);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0576  (N^2 D_min=1.3146)
+  N=11: min D/[(1/C_N)log(1+C_N/A_0)] = 2.4891 (max 18.0);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0576  (N^2 D_min=1.3091)
+  N=12: min D/[(1/C_N)log(1+C_N/A_0)] = 2.6209 (max 20.0);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0576  (N^2 D_min=1.3032)
+  test of A' - A^2 <= (N^2/2) A  [ratio (A'-A^2)/A / (N^2/2)]:
+    N= 3: max over random configs = 1.111108   (ACUE lattice sample max 0.825397)
+    N= 4: max over random configs = 1.158514   (ACUE lattice sample max 0.796119)
+    N= 5: max over random configs = 1.181009   (ACUE lattice sample max 0.788109)
+    N= 6: max over random configs = 1.132516   (ACUE lattice sample max 0.785229)
+    N= 8: max over random configs = 1.097225   (ACUE lattice sample max 0.783393)
+    N=12: max over random configs = 0.959573   (ACUE lattice sample max -17.632505)
+    N=20: max over random configs = 0.901348   (ACUE lattice sample max -inf)
+total time 2.0s

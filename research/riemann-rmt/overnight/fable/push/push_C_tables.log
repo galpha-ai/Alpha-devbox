@@ -1,0 +1,52 @@
+Table 1: max N^2D by (N, longest occupied run L); entries: max N^2D [argmax gaps]
+N= 4:  L=2:1.45190 L=3:1.84839 L=4:1.77899
+N= 5:  L=2:1.45762 L=3:1.94388 L=4:1.79064 L=5:1.80008
+N= 6:  L=2:1.47321 L=3:1.95263 L=4:1.89986 L=5:1.81603 L=6:1.81176
+N= 7:  L=2:1.47729 L=3:1.97210 L=4:1.90598 L=5:1.92826 L=6:1.82088 L=7:1.81884
+N= 8:  L=2:1.48597 L=3:1.97612 L=4:1.93007 L=5:1.93587 L=6:1.94475 L=7:1.83039 L=8:1.82344
+N= 9:  L=2:1.48785 L=3:1.98329 L=4:1.93341 L=5:1.96139 L=6:1.95016 L=7:1.95523 L=8:1.83067 L=9:1.82660
+N=10:  L=2:1.49110 L=3:1.98546 L=4:1.94262 L=5:1.96547 L=6:1.97988 L=7:1.96167 L=8:1.96232 L=9:1.83522 L=10:1.82885
+N=11:  L=2:1.49213 L=3:1.98887 L=4:1.94890 L=5:1.97554 L=6:1.98314 L=7:1.99181 L=8:1.96698 L=9:1.96737 L=10:1.83464 L=11:1.83052
+N=12:  L=2:1.49569 L=3:1.99017 L=4:1.96129 L=5:1.97798 L=6:1.99515 L=7:1.99561 L=8:2.00002 L=9:1.97273 L=10:1.97109 L=11:1.83718 L=12:1.83179
+
+Table 2: max N^2D on structure classes
+ N   unique 1-gap [gaps]            isolated 1-gaps (L<=2) [gaps]        L=3 (3-blocks) [gaps]        L>=4 [gaps]
+ 4  1.45190 [1, 2, 3, 2]               1.45190 [1, 2, 3, 2]                 1.84839 [1, 1, 3, 3]           1.77899 [1, 1, 1, 5]
+ 5  1.45762 [1, 2, 2, 3, 2]            1.45762 [1, 2, 2, 3, 2]              1.94388 [1, 1, 2, 4, 2]        1.80008 [1, 1, 1, 1, 6]
+ 6  1.46423 [1, 2, 2, 3, 2, 2]         1.47321 [1, 2, 1, 2, 4, 2]           1.95263 [1, 1, 2, 3, 3, 2]     1.89986 [1, 1, 1, 2, 5, 2]
+ 7  1.46630 [1, 2, 2, 2, 3, 2, 2]      1.47729 [1, 2, 1, 2, 3, 3, 2]        1.97210 [1, 1, 2, 2, 4, 2, 2]  1.92826 [1, 1, 1, 1, 2, 6, 2]
+ 8  1.46859 [1, 2, 2, 2, 3, 2, 2, 2]   1.48597 [1, 2, 1, 2, 2, 4, 2, 2]     1.97612 [1, 1, 2, 2, 3, 3, 2, 2] 1.94475 [1, 1, 1, 1, 1, 2, 7, 2]
+ 9  1.46956 [1, 2, 2, 2, 2, 3, 2, 2, 2] 1.48785 [1, 2, 1, 2, 2, 3, 3, 2, 2]  1.98329 [1, 1, 2, 2, 2, 4, 2, 2, 2] 1.96139 [1, 1, 1, 1, 2, 2, 6, 2, 2]
+10  1.47061 [1, 2, 2, 2, 2, 3, 2, 2, 2, 2] 1.49110 [1, 2, 1, 2, 2, 2, 4, 2, 2, 2] 1.98546 [1, 1, 2, 2, 2, 3, 3, 2, 2, 2] 1.97988 [1, 1, 1, 1, 1, 2, 2, 7, 2, 2]
+11  1.47115 [1, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2] 1.49213 [1, 2, 1, 2, 2, 2, 3, 3, 2, 2, 2] 1.98887 [1, 1, 2, 2, 2, 2, 4, 2, 2, 2, 2] 1.99181 [1, 1, 1, 1, 1, 1, 2, 2, 8, 2, 2]
+12  1.47172 [1, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2] 1.49569 [1, 2, 1, 2, 1, 2, 2, 2, 5, 2, 2, 2] 1.99017 [1, 1, 2, 2, 2, 2, 3, 3, 2, 2, 2, 2] 2.00002 [1, 1, 1, 1, 1, 1, 1, 2, 2, 9, 2, 2]
+
+Table 3: Nyquist row.  For each N: max N^2D as a function of |p_N|^2 (parity imbalance^2), and the ACUE-mass-weighted mean
+N= 4:  p2=0: max 1.8484 mean 1.5061 n=5 | p2=4: max 1.7947 mean 1.4733 n=4 |
+N= 5:  p2=1: max 1.8536 mean 1.4898 n=20 | p2=9: max 1.9439 mean 1.4861 n=5 |
+N= 6:  p2=0: max 1.8999 mean 1.4657 n=34 | p2=4: max 1.9526 mean 1.4844 n=39 | p2=16: max 1.9324 mean 1.4918 n=6 |
+N= 7:  p2=1: max 1.9558 mean 1.4540 n=175 | p2=9: max 1.9428 mean 1.4779 n=63 | p2=25: max 1.9721 mean 1.4961 n=7 |
+N= 8:  p2=0: max 1.9572 mean 1.4412 n=309 | p2=4: max 1.9467 mean 1.4454 n=392 | p2=16: max 1.9761 mean 1.4732 n=100 | p2=36: max 1.9664 mean 1.4987 n=8 |
+N= 9:  p2=1: max 1.9579 mean 1.4322 n=1764 | p2=9: max 1.9780 mean 1.4399 n=786 | p2=25: max 1.9712 mean 1.4690 n=144 | p2=49: max 1.9833 mean 1.5007 n=9 |
+N=10:  p2=0: max 1.9799 mean 1.4233 n=3176 | p2=4: max 1.9790 mean 1.4265 n=4420 | p2=16: max 1.9734 mean 1.4359 n=1440 | p2=36: max 1.9855 mean 1.4657 n=205 | p2=64: max 1.9800 mean 1.5020 n=10 |
+N=11:  p2=1: max 1.9831 mean 1.4175 n=19404 | p2=9: max 1.9771 mean 1.4225 n=9900 | p2=25: max 1.9918 mean 1.4331 n=2475 | p2=49: max 1.9826 mean 1.4628 n=275 | p2=81: max 1.9889 mean 1.5030 n=11 |
+N=12:  p2=0: max 2.0000 mean 1.4118 n=35594 | p2=4: max 1.9902 mean 1.4135 n=52272 | p2=16: max 1.9956 mean 1.4197 n=20439 | p2=36: max 1.9944 mean 1.4310 n=4036 | p2=64: max 1.9902 mean 1.4605 n=366 | p2=100: max 1.9868 mean 1.5038 n=12 |
+
+Table 4: correlation of N^2D with |p_N|^2/N^2 and with Q0/N^3 over non-clock orbits (Pearson, Spearman)
+N= 4: corr(N^2D,|p_N|^2/N^2): pearson +0.077 spearman +0.175;  corr(N^2D,Q0/N^3): pearson +0.677 spearman +0.536; |p_N|^2 of argmax = 0, of the 3-block: see Table 1
+N= 5: corr(N^2D,|p_N|^2/N^2): pearson +0.206 spearman +0.278;  corr(N^2D,Q0/N^3): pearson +0.362 spearman +0.185; |p_N|^2 of argmax = 9, of the 3-block: see Table 1
+N= 6: corr(N^2D,|p_N|^2/N^2): pearson +0.236 spearman +0.202;  corr(N^2D,Q0/N^3): pearson +0.269 spearman +0.153; |p_N|^2 of argmax = 4, of the 3-block: see Table 1
+N= 7: corr(N^2D,|p_N|^2/N^2): pearson +0.218 spearman +0.198;  corr(N^2D,Q0/N^3): pearson +0.246 spearman +0.136; |p_N|^2 of argmax = 25, of the 3-block: see Table 1
+N= 8: corr(N^2D,|p_N|^2/N^2): pearson +0.191 spearman +0.154;  corr(N^2D,Q0/N^3): pearson +0.247 spearman +0.115; |p_N|^2 of argmax = 16, of the 3-block: see Table 1
+N= 9: corr(N^2D,|p_N|^2/N^2): pearson +0.170 spearman +0.147;  corr(N^2D,Q0/N^3): pearson +0.234 spearman +0.091; |p_N|^2 of argmax = 49, of the 3-block: see Table 1
+N=10: corr(N^2D,|p_N|^2/N^2): pearson +0.155 spearman +0.125;  corr(N^2D,Q0/N^3): pearson +0.220 spearman +0.068; |p_N|^2 of argmax = 36, of the 3-block: see Table 1
+N=11: corr(N^2D,|p_N|^2/N^2): pearson +0.142 spearman +0.120;  corr(N^2D,Q0/N^3): pearson +0.208 spearman +0.048; |p_N|^2 of argmax = 25, of the 3-block: see Table 1
+N=12: corr(N^2D,|p_N|^2/N^2): pearson +0.131 spearman +0.106;  corr(N^2D,Q0/N^3): pearson +0.196 spearman +0.031; |p_N|^2 of argmax = 0, of the 3-block: see Table 1
+
+Table 5: upper envelope: for N=12, sorted by |p_N|^2, the max N^2D; and the max N^2D among |p_N|^2=0 vs >0
+  |p_N|^2=  0: max N^2D 2.000018 [1, 1, 1, 1, 1, 1, 1, 2, 2, 9, 2, 2]   min N^2D 1.303176
+  |p_N|^2=  4: max N^2D 1.990249 [1, 1, 1, 1, 1, 2, 2, 2, 6, 3, 2, 2]   min N^2D 1.305147
+  |p_N|^2= 16: max N^2D 1.995605 [1, 1, 1, 1, 1, 1, 2, 2, 5, 5, 2, 2]   min N^2D 1.311673
+  |p_N|^2= 36: max N^2D 1.994446 [1, 1, 1, 1, 1, 1, 2, 2, 4, 6, 2, 2]   min N^2D 1.325145
+  |p_N|^2= 64: max N^2D 1.990167 [1, 1, 2, 2, 2, 2, 3, 3, 2, 2, 2, 2]   min N^2D 1.352477
+  |p_N|^2=100: max N^2D 1.986759 [1, 1, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2]   min N^2D 1.419624

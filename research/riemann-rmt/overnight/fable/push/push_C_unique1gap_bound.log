@@ -1,0 +1,34 @@
+elementary bounds (v),(iv) verified on 2000-point grids at 30 digits
+N, tau_1(N) = rigorous upper bound on N^2 D for unique-1-gap configurations
+  N=    4  tau_1 = 2.821010
+  N=    5  tau_1 = 2.357158
+  N=    6  tau_1 = 2.164275
+  N=    7  tau_1 = 2.055944
+  N=    8  tau_1 = 1.986107
+  N=    9  tau_1 = 1.937222
+  N=   10  tau_1 = 1.901047
+  N=   11  tau_1 = 1.873180
+  N=   12  tau_1 = 1.851046
+  N=   16  tau_1 = 1.794738
+  N=   24  tau_1 = 1.744253
+  N=   32  tau_1 = 1.720906
+  N=   64  tau_1 = 1.687993
+  N=  128  tau_1 = 1.672410
+  N=  256  tau_1 = 1.664823
+  N=  512  tau_1 = 1.661080
+  N= 1024  tau_1 = 1.659220
+  N= 2048  tau_1 = 1.658293
+  N->inf limit: tau_1(inf) = 1.657369
+  (frozen stiffness N^2/6, not rigorous): 1.589177;  two-body only: 1.233701
+  (frozen stiffness N^2/6, not rigorous): 1.589177;  two-body only: 1.233701
+
+Rigorous piecewise-frozen majorant (4000 pieces, each piece solved in closed form):
+  N=    8  tau_1^rig = 1.986325
+  N=    9  tau_1^rig = 1.937412
+  N=   10  tau_1^rig = 1.901220
+  N=   12  tau_1^rig = 1.851198
+  N=   16  tau_1^rig = 1.794871
+  N=   32  tau_1^rig = 1.721018
+  N=   64  tau_1^rig = 1.688095
+  N=  256  tau_1^rig = 1.664920
+  N= 1024  tau_1^rig = 1.659315
