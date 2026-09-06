@@ -1,5 +1,7 @@
 # Riemann zeta / random-matrix / prime-gap research artifacts
 
+**Start here:** `PROGRAMME_PAPER.md` — the consolidated, mathematician-readable account of every major result, key idea and correction across the whole programme (August–September 2026, with GPT-6 Astra), with [P]/[C]/[R]/[O] status tags and a file index.
+
 Session outputs (Bill (Qingyun) Sun, GPT5.6SOL, Fable — August 2026):
 
 - `rmt_zeta_survey.md` — The Bandwidth-One Ceiling (survey, round 1)
