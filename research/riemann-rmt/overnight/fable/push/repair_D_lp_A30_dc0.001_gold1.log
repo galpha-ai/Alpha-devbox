@@ -1,0 +1,5 @@
+A=30.0 dc=0.001 gold=1 it=0 W=0.017366 ncons=2001 minR=-15.0040 nviol=1569 [18s]
+A=30.0 dc=0.001 gold=1 it=1 W=0.017367 ncons=3501 minR=-10.1983 nviol=1583 [45s]
+A=30.0 dc=0.001 gold=1 it=2 W=0.018887 ncons=5001 minR=-1.1051 nviol=730 [175s]
+A=30.0 dc=0.001 gold=1 it=3 W=0.018902 ncons=5729 minR=-0.0140 nviol=271 [223s]
+A=30.0 dc=0.001 gold=1 it=4 W=0.018902 ncons=6000 minR=-0.0317 nviol=64 [559s]

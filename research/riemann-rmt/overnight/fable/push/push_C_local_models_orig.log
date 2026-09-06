@@ -1,0 +1,6 @@
+k=1 inserted=['0.0pi']  block length 3: tau*=2.0 colliding pair ('-3.1416', '0.0')
+k=2 inserted=['0.0pi', '2.0pi']  block length 5: tau*=2.0 colliding pair ('-3.1416', '0.0')
+k=3 inserted=['-2.0pi', '0.0pi', '2.0pi']  block length 7: tau*=1.84312335914304 colliding pair ('-9.4248', '-6.2832')
+k=4 inserted=['-2.0pi', '0.0pi', '2.0pi', '4.0pi']  block length 9: tau*=1.74134983612962 colliding pair ('-9.4248', '-6.2832')
+k=5 inserted=['-4.0pi', '-2.0pi', '0.0pi', '2.0pi', '4.0pi']  block length 11: tau*=1.66913171580793 colliding pair ('-15.708', '-12.566')
+k=6 inserted=['-4.0pi', '-2.0pi', '0.0pi', '2.0pi', '4.0pi', '6.0pi']  block length 13: tau*=1.61436591865938 colliding pair ('-15.708', '-12.566')

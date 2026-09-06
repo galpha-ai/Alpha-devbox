@@ -1,0 +1,16 @@
+k=1: q(0)*e^(tau/4) = 0
+       q'(0)*e^(tau/4) = -(tau - 2)/2   -> at tau=2: 0
+k=2: q(0)*e^(tau/4) = -tau*(tau - 2)
+       q'(0)*e^(tau/4) = pi*(tau - 2)   -> at tau=2: 0
+k=3: q(0)*e^(tau/4) = 6*pi*tau*(tau - 2)
+       q'(0)*e^(tau/4) = -(-tau**3 + 12*tau**2 - 12*tau + 8*pi**2*tau - 16*pi**2)/2   -> at tau=2: -8
+k=4: q(0)*e^(tau/4) = -tau*(-tau**3 + 12*tau**2 - 12*tau + 44*pi**2*tau - 88*pi**2)
+       q'(0)*e^(tau/4) = 6*pi*(-tau**3 + 12*tau**2 - 12*tau + 4*pi**2*tau - 8*pi**2)   -> at tau=2: 96*pi
+k=5: q(0)*e^(tau/4) = 20*pi*tau*(-tau**3 + 12*tau**2 - 12*tau + 20*pi**2*tau - 40*pi**2)
+       q'(0)*e^(tau/4) = -(tau**5 - 30*tau**4 - 140*pi**2*tau**3 + 180*tau**3 - 120*tau**2 + 1680*pi**2*tau**2 - 1680*pi**2*tau + 384*pi**4*tau - 768*pi**4)/2   -> at tau=2: -1120*pi**2 - 256
+k=6: q(0)*e^(tau/4) = -tau*(tau**5 - 30*tau**4 - 340*pi**2*tau**3 + 180*tau**3 - 120*tau**2 + 4080*pi**2*tau**2 - 4080*pi**2*tau + 4384*pi**4*tau - 8768*pi**4)
+       q'(0)*e^(tau/4) = 15*pi*(tau**5 - 30*tau**4 - 60*pi**2*tau**3 + 180*tau**3 - 120*tau**2 + 720*pi**2*tau**2 - 720*pi**2*tau + 128*pi**4*tau - 256*pi**4)   -> at tau=2: 7680*pi + 14400*pi**3
+k=7: q(0)*e^(tau/4) = 42*pi*tau*(tau**5 - 30*tau**4 - 140*pi**2*tau**3 + 180*tau**3 - 120*tau**2 + 1680*pi**2*tau**2 - 1680*pi**2*tau + 1344*pi**4*tau - 2688*pi**4)
+       q'(0)*e^(tau/4) = -(-tau**7 + 56*tau**6 - 840*tau**5 + 700*pi**2*tau**5 - 21000*pi**2*tau**4 + 3360*tau**4 - 25984*pi**4*tau**3 - 1680*tau**3 + 126000*pi**2*tau**3 - 84000*pi**2*tau**2 + 311808*pi**4*tau**2 - 311808*pi**4*tau + 46080*pi**6*tau - 92160*pi**6)/2   -> at tau=2: -207872*pi**4 - 179200*pi**2 - 8448
+k=2: q_tau(u) e^{tau/4} = -tau**2*cos(u/2) - 2*tau*u*sin(u/2) + 2*pi*tau*sin(u/2) + 2*tau*cos(u/2) + u**2*cos(u/2) - 2*pi*u*cos(u/2)
+k=2: q_2(u) e^{1/2} = u**2*cos(u/2) - 4*u*sin(u/2) - 2*pi*u*cos(u/2) + 4*pi*sin(u/2) ; series at u=0: -u**2 + pi*u**3/6 + O(u**4)
