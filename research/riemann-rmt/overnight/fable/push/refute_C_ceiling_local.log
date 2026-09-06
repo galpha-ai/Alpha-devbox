@@ -1,0 +1,17 @@
+== local section: finite-L local models, first double zero tau*_L (numpy scan + mp Newton)
+  L= 3 (odd, k=1): tau* = 2.0000000000  u* = -0.0000000 pi  (pair before: 0.0000,0.0493 pi at tau=1.996; count 7 -> 5; q_uu=0.0000)  mp-refined: tau* = 2.0, u*/pi = -1.52172652e-12
+  L= 5 (odd, k=2): tau* = 2.0000000000  u* = -0.0000000 pi  (pair before: -0.0271,0.0298 pi at tau=1.996; count 9 -> 5; q_uu=-1.2131)  mp-refined: tau* = 2.0, u*/pi = -4.17890326e-32
+  L= 7 (odd, k=3): tau* = 2.0381260536  u* = -0.1015003 pi  (pair before: -0.1215,-0.0800 pi at tau=2.036; count 11 -> 7; q_uu=-14.4784)  mp-refined: tau* = 2.038126053591, u*/pi = -0.101500308
+  L= 9 (odd, k=4): tau* = 2.0573579730  u* = -0.1714711 pi  (pair before: -0.1875,-0.1543 pi at tau=2.056; count 13 -> 9; q_uu=-261.1518)  mp-refined: tau* = 2.057357973044, u*/pi = -0.171471103
+  L=11 (odd, k=5): tau* = 2.0688935596  u* = -0.2246455 pi  (pair before: -0.2377,-0.2108 pi at tau=2.068; count 15 -> 11; q_uu=-6318.7992)  mp-refined: tau* = 2.068893559646, u*/pi = -0.22464551
+  L=13 (odd, k=6): tau* = 2.0765718768  u* = -9.7325379 pi  (pair before: -9.7436,-9.7220 pi at tau=2.076; count 17 -> 13; q_uu=191949.2918)  mp-refined: tau* = 2.076571876782, u*/pi = -9.73253793
+  L=15 (odd, k=7): tau* = 2.0820475371  u* = -11.6967293 pi  (pair before: -11.7180,-11.6773 pi at tau=2.080; count 19 -> 15; q_uu=7020245.4693)  mp-refined: tau* = 2.082047537104, u*/pi = -11.6967293
+  L=17 (odd, k=8): tau* = 2.0861484051  u* = -0.3340288 pi  (pair before: -0.3539,-0.3121 pi at tau=2.084; count 21 -> 17; q_uu=-300324157.6625)  mp-refined: tau* = 2.086148405138, u*/pi = -0.334028769
+  L=19 (odd, k=9): tau* = 2.0893340572  u* = -15.6390229 pi  (pair before: -15.6561,-15.6232 pi at tau=2.088; count 23 -> 19; q_uu=14714084777.3245)  mp-refined: tau* = 2.089334057245, u*/pi = -15.6390229
+  L=21 (odd, k=10): tau* = 2.0918799149  u* = -17.6150493 pi  (pair before: -17.6450,-17.5890 pi at tau=2.088; count 25 -> 21; q_uu=812434261928.9509)  mp-refined: tau* = 2.091879914838, u*/pi = -17.6150493
+  L= 4 (even, m=2): tau* = 1.9630078004  u* = 0.9263024 pi  (pair before: 0.9007,0.9501 pi at tau=1.960; count 8 -> 4; q_uu=0.0559)  mp-refined: tau* = 1.963007800431, u*/pi = 0.926302381
+      [61s]
+  L= 6 (even, m=3): tau* = 2.0227887030  u* = 1.0562652 pi  (pair before: 1.0315,1.0790 pi at tau=2.020; count 10 -> 6; q_uu=-0.4998)  mp-refined: tau* = 2.022788703036, u*/pi = 1.05626517
+      [80s]
+  L= 8 (even, m=4): tau* = 2.0491130283  u* = 1.1392021 pi  (pair before: 1.1087,1.1664 pi at tau=2.045; count 12 -> 8; q_uu=7.4846)  mp-refined: tau* = 2.04911302835, u*/pi = 1.13920212
+      [105s]

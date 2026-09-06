@@ -1,0 +1,6 @@
+== BLOCKS: finite-N (2k+1)-blocks, symmetric compensation, exact coefficients by polynomial division
+  9-block: local model tau* = 2.057357973, u* = 8.8860856
+   9-block N=  33  tau_N = 2.0518685265439  u* = +8.863245 (+2.82126 pi)  |Q|+|Qx| = 3.1e-51  |Im Q| = 1.7e-51  Qxx = 6.106e-12  max|a_j| = 3.01e+3  division remainder = 2.2e-41  zeros in window: 13 until tau_N-1e-4, 9 at tau_N+1e-4; earlier drops: []  -> FIRST collision verified  [76s]
+        N=  33  N^2 D_N = 2.051868526544   N^2(tau_N - tau*) = -5.9780
+   9-block N=  65  tau_N = 2.0560026000076  u* = +8.880286 (+2.82668 pi)  |Q|+|Qx| = 1.0e-63  |Im Q| = 2.0e-64  Qxx = 3.543e-22  max|a_j| = 2.35e+4  division remainder = 2.8e-44  zeros in window: 13 until tau_N-1e-4, 9 at tau_N+1e-4; earlier drops: []  -> FIRST collision verified  [122s]
+        N=  65  N^2 D_N = 2.056002600008   N^2(tau_N - tau*) = -5.7265

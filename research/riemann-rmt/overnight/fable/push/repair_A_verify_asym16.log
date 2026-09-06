@@ -1,0 +1,2 @@
+   N=   16  tau_N = 1.99300804179871  u* = 0.0456096  |Q|+|Qx| = 3.3e-35  N^2(2-tau) = 1.7899413  (N^2(2-tau)-4/3) N^(2/3) = 2.89928  first-collision: verified (drops at earlier tau: [], count after = 3)
+   (direct seed u*=0.057, tau=1.993008; the double-precision seed of the main run diverged at this N)

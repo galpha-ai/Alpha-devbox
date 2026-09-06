@@ -1,0 +1,13 @@
+== fourier section: exact finite-N collision time of the edge pair from the Fourier representation
+  N= 12 gaps=[1^-9...] dps=40: Q_0 check |Q-prod|/|prod| = 1.0;  N^2 D(pair 0) = 0.1500000000000000083259950583308706128684  (doc 2.00001772, diff -1.85e+00);  extremum at x = 15.6755 pi/N  [2s]
+  N= 11 gaps=[1^-8...] dps=40: Q_0 check |Q-prod|/|prod| = 2.0;  N^2 D(pair 0) = 1.991810477768102429782533042584975425384  (doc 1.9918104778, diff -3.19e-11);  extremum at x = 1.13609 pi/N  [0s]
+Traceback (most recent call last):
+  File "/home/user/Alpha-devbox/research/riemann-rmt/overnight/fable/push/refute_C_ceiling.py", line 636, in <module>
+    globals()["section_" + sec]()
+  File "/home/user/Alpha-devbox/research/riemann-rmt/overnight/fable/push/refute_C_ceiling.py", line 364, in section_fourier
+    r = F.pair_collision(pair)
+        ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/Alpha-devbox/research/riemann-rmt/overnight/fable/push/refute_C_ceiling.py", line 332, in pair_collision
+    assert hs > 0
+           ^^^^^^
+AssertionError

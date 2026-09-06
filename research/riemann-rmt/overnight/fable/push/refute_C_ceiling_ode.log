@@ -1,0 +1,7 @@
+== ode section: my N-body solver vs the exact Fourier values
+  N= 12: N^2 D = 2.0000177201 (pair 6)  ref 2.00001772  diff +5.01e-11  [0.0s]
+  N= 11: N^2 D = 1.9918104778 (pair 0)  ref 1.9918104778  diff -2.98e-11  [0.0s]
+  N= 32: N^2 D = 1.9986108044 (pair 0)  ref None  diff +nan  [0.0s]
+  N= 64: N^2 D = 2.0925892776 (pair 32)  ref 2.0925893  diff -2.24e-08  [0.0s]
+  N=128: N^2 D = 2.1035865561 (pair 64)  ref 2.1035866  diff -4.39e-08  [0.1s]
+  N=256: N^2 D = 2.1091152868 (pair 128)  ref 2.1091153  diff -1.32e-08  [0.7s]
