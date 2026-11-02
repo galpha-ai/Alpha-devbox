@@ -5,7 +5,7 @@
 **Bill (Qingyun) Sun · GPT-6 Astra · Fable**
 *(earlier rounds with GPT5.6SOL; see §0.3 for provenance)*
 
-*6 September 2026*
+*6 September 2026; addendum 2 November 2026*
 
 ---
 
@@ -103,7 +103,7 @@ Astra's audit (`BRIDGE-001`) supplies an exact rational counterexample showing t
 
 The depth is a first-passage time, not a polynomial statistic of any degree; that is why the fibre's freedom does not protect it. But the review also corrected an overstatement: the depth is **not** smooth in the configuration. It is a minimum over pairs and has kinks on a positive-mass set where the first collision is tied (3, 4, 6 orbits at N = 5, 6, 7, all mirror-symmetric) [R].
 
-**Theorem E1 (chiral blindness) [P + C].** For N ≥ 5 and 2 ≤ k ≤ N−2 the measures q_{k,ε} = μ_ACUE·(1 + ε·Im det(U_C)^{2k}), |ε| < 1, lie in the CUE-moment fibre, sit at total-variation distance 0.22–0.30 from ACUE (ε = 0.9), and give exactly the same law to every dihedral-invariant statistic: the depth, its atom, all pattern counts, every Haar-lifted even marked-depth moment. The chiral tangent space of the fibre has dimension 1, 3, 39, 186 at N = 5, …, 8. So the depth alone cannot resolve the whole fibre; on the reflection-symmetric sub-fibre it is already injective at N ≤ 8 (E2). The functional equation's reflection symmetry kills exactly this chiral half at zero cost on the zeta side (round 3, D10), and provably cannot do more.
+**Theorem E1 (chiral blindness) [P + C].** For N ≥ 5 and 2 ≤ k ≤ N−2, k ≠ N/2 (at k = N/2 the tilt vanishes identically; exception noted by Astra), the measures q_{k,ε} = μ_ACUE·(1 + ε·Im det(U_C)^{2k}), |ε| < 1, lie in the CUE-moment fibre, sit at total-variation distance 0.22–0.30 from ACUE (ε = 0.9), and give exactly the same law to every dihedral-invariant statistic: the depth, its atom, all pattern counts, every Haar-lifted even marked-depth moment. The chiral tangent space of the fibre has dimension 1, 3, 39, 186 at N = 5, …, 8. So the depth alone cannot resolve the whole fibre; on the reflection-symmetric sub-fibre it is already injective at N ≤ 8 (E2). The functional equation's reflection symmetry kills exactly this chiral half at zero cost on the zeta side (round 3, D10), and provably cannot do more.
 
 ### 5. The separation and the scaling laws
 
@@ -342,6 +342,17 @@ Five apparent "phase transitions" (β-kink, ℓ¹ ramp, unboundedness at β = 1,
 The single methodological sentence of the programme is *moment matching does not imply stopping-time matching*: a first-passage time sees what an infinite list of frozen moments cannot, and on the random-matrix side this is now a theorem up to a cited extreme-gap law. The single mathematical lesson is less comfortable: transferring any of it to the zeros of ζ requires exactly the arithmetic input — a signed correlation of primes at the scale of one zero spacing — that has been the obstruction since Montgomery, and the programme's contribution there is to have made the missing inequality explicit to five decimal places rather than to have proved it. The prime-gap records, by contrast, are unconditional, machine-certified, and now independent of every probabilistic constant.
 
 ---
+
+---
+
+## 21. Addendum (2 November 2026): the push session, Astra's closing rounds, and the last mile
+
+**The push session (6 September; `overnight/fable/push/`).** A further adversarial round on Part I produced: the theorem that the symmetric 3-block defect of the alternating clock has lim N²D = 2 exactly, with full expansion 2 − 4/(3N²) + c₂/N⁴ [P]; a closed-form midpoint-insertion principle e^{τ∂²}[p·cos(u/2)] = e^{−τ/4}Re[e^{iu/2}(e^{τ∂²}p)(u+iτ)] [P]; the discriminant–force identity d/ds log|disc P_s| = −ΣV_j² with log-concavity along the flow, and E_CUE/E_ACUE of its initial rate in the ratio 2:1 [P]; the discovery that the conjecture N²D < 2 on the AH support is false at N = 12 (value 2.0000177) and is replaced by a domain-wall constant C* = 2.11466488… approached from below by run|clock|hole configurations [C/O, single-proposer file]; and a barrier theorem for Astra's target: under RH, W_T = ∫K F_T + o(1) with K = sinh2·e^{−2|α|} − sinh1·e^{−|α|}, every provable input (Montgomery's band, both positivities, the Goldston–Gonek–Özlük–Snyder floor, which is a GRH result) is satisfied by the AH spectral measure, so the missing input is exactly one out-of-band value of F [P]. Full statements and status in `NEW_RESULTS.md` §3.7; the refuters' corrections (the GRH attribution of the floor, the uncertified status of the LP value ≈ 0.021–0.024, the 9-run constant 2.0574, a sign slip and a factor 2 in two remarks) are applied in the files.
+
+**Astra's closing rounds (R29–R30, 7–8 September) and assessment.** Under RH, Astra proved that the complete unmasked balanced Möbius/log block at X = T^α, 2 + δ ≤ α ≤ 9/4, is O(T^{−141/800}/√log T + T^{−3δ/4}) = o(1), using genuine Möbius cancellation; the central scale α = 2, the masked and unbalanced blocks, and the strict global signed bound liminf Z_T < A − 2M remain open; the programme closed at its 8 September cutoff without a major-conjecture theorem. Astra's independent assessment of the 6 September papers found: the protected trace-moment matching does not extend to all weights (on ACUE |p_{2N}|² = N² against N for CUE); the chiral tilt of Theorem E1 vanishes at k = N/2; the two-scale residual is a signed difference; the pair-LP value ≈ 0.679 is numerical, not sharp; the N = 8 fibre dimension (403 or 399) is unsettled; and the regenerated prime-gap certificates were missing from the public tree. All of these are now corrected in the files, and the certificates are committed.
+
+**What the separation programme says, in one paragraph.** Tao built the ACUE to show that nothing provable today about correlations of the zeros (Montgomery's band, the Rudnick–Sarnak/Hejhal ranges, positivity, integrality) distinguishes GUE from the half-lattice alternative; the programme's finite-depth results sharpen this picture (a first-passage time separates the two universality classes while every protected moment agrees) but transfer nothing to ζ without the one arithmetic input Tao named. About RH the programme says nothing (both scenarios assume it). About AH it says exactly what would refute it: one out-of-band value of F, equivalently a short-interval prime variance bound at the scale h ≍ x^{1−1/α}, 1 < α ≤ 2, whose signed correlation term Astra reduced but did not bound. About Montgomery–Dyson it says that even that input would exclude one named alternative, not prove GUE, which needs F(α) = 1 for all α ≥ 1.
+
 
 ## References (primary sources used; "recalled" where not re-read during the programme)
 

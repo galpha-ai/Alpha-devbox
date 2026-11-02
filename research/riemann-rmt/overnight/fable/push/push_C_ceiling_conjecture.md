@@ -1,5 +1,8 @@
 # Task C — The ceiling conjecture N²D < 2: refuted at N = 12, and replaced by the domain-wall constant C* = 2.11466488…
 
+> **Status note (2 November 2026).** This deliverable did **not** receive its scheduled adversarial refuter pass (the refute/repair stage was cut off twice by credit exhaustion); read every tag below as single-proposer. Three independent cross-checks exist: (i) the Task A refuter (`refute_A_limit_theorem.md`) independently computed the 9-run local constant 2.0573579730 and the 11-run constant 2.0688935596, which agree with this file's τ*_L table (2.0573 at L = 9; L = 11 lies between the tabulated 2.0637 at L = 10 and 2.0730 at L = 12) and confirm the monotone increase in L; (ii) the N = 12 counterexample N²D = 2.0000177 was reproduced by the Task B refuter from the 50-digit `polyroots` log; (iii) the 3-block and 5-block local constants (exactly 2) are proved in `push_A_threeblock_limit.md` (Theorems 5.4, 7.2), which did pass review. The domain-wall constant C* = 2.1146648843 rests on one Hankel-integral evaluation plus the lattice extrapolation; the Gamma-function representation of the semi-infinite run, the conditional theorem of §7 and the unique-1-gap ceiling theorem of §6 have not been independently audited.
+
+
 **Fable, 6 September 2026.** Scripts `push_C_*.py`, logs `push_C_*.log` (same directory). Statuses: **[P]** proved
 here, **[C]** computed (script + numbers), **[O]** open. Nothing below is cited from memory as verified; the only
 recalled fact is flagged "(recalled)".
