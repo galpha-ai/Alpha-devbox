@@ -1,0 +1,45 @@
+== block33 (robust solver)
+  collision of pair at x=(0.196346,0.196346), extremum x=0.196346
+N=  16  N^2D=1.994613076607  t=1.6s
+  collision of pair at x=(0.098173,0.098173), extremum x=0.098173
+N=  32  N^2D=1.998686921087  t=3.1s
+== block7 (robust solver)
+  collision of pair at x=(0.902681,0.902681), extremum x=0.902681
+N=  17  N^2D=2.021979178838  t=2.7s
+  collision of pair at x=(0.105203,0.105205), extremum x=0.105204
+N=  33  N^2D=2.034196338652  t=4.7s
+  collision of pair at x=(0.053282,0.053282), extremum x=0.053282
+N=  65  N^2D=2.037135310173  t=4.7s
+  collision of pair at x=(0.119290,0.119290), extremum x=0.119290
+N= 129  N^2D=2.037869882584  t=5.0s
+  collision of pair at x=(0.017860,0.018004), extremum x=0.017931
+N= 193  N^2D=2.037905349727  t=5.7s
+== block5 (robust solver)
+  collision of pair at x=(0.185659,0.185659), extremum x=0.185659
+N=  17  N^2D=1.990372454416  t=2.3s
+  collision of pair at x=(0.285483,0.285483), extremum x=0.285483
+N=  33  N^2D=1.997523894507  t=2.4s
+  collision of pair at x=(0.144981,0.144981), extremum x=0.144981
+N=  65  N^2D=1.999367031298  t=3.2s
+  collision of pair at x=(0.073058,0.073058), extremum x=0.073058
+N= 129  N^2D=1.999839626618  t=4.5s
+  collision of pair at x=(0.016278,0.016278), extremum x=0.016278
+N= 193  N^2D=1.999928321837  t=5.1s
+== two3 (robust solver)
+  collision of pair at x=(0.979783,0.979783), extremum x=0.979783
+N=  16  N^2D=1.988014867578  t=1.9s
+  collision of pair at x=(0.098428,0.098428), extremum x=0.098428
+N=  32  N^2D=1.997303715220  t=2.1s
+  collision of pair at x=(0.245405,0.245405), extremum x=0.245405
+N=  64  N^2D=1.999343288988  t=3.0s
+  collision of pair at x=(0.024547,0.024549), extremum x=0.024548
+N= 128  N^2D=1.999836878627  t=4.0s
+  collision of pair at x=(0.016361,0.016366), extremum x=0.016364
+N= 192  N^2D=1.999927444400  t=5.0s
+== block9 (robust solver)
+  collision of pair at x=(0.112216,0.112216), extremum x=0.112216
+N=  33  N^2D=2.051868514973  t=3.2s
+  collision of pair at x=(0.056709,0.056709), extremum x=0.056709
+N=  65  N^2D=2.056003799438  t=3.7s
+  collision of pair at x=(0.028537,0.028538), extremum x=0.028537
+N= 129  N^2D=2.056533203125  t=4.9s

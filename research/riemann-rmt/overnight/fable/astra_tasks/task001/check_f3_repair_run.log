@@ -1,0 +1,24 @@
+M=6: max|K - ((1/2)Phi^2 - (1/2)[A,A^T]_FABLE)| = 4.441e-16  (should be ~machine precision: confirms the FABLE-native identity)
+  M=6 mass=2: n_states=2, diag mean=-2.1846, spread=0.0000, spread/|mean|=0.000
+  M=6 mass=3: n_states=3, diag mean=-1.4346, spread=0.0000, spread/|mean|=0.000
+  M=6 mass=4: n_states=5, diag mean=-0.4846, spread=0.7500, spread/|mean|=1.548  <-- nonzero spread: c(v) is NOT a scalar here
+  M=6 mass=5: n_states=7, diag mean=0.4220, spread=1.1667, spread/|mean|=2.765  <-- nonzero spread: c(v) is NOT a scalar here
+  M=6 mass=6: n_states=11, diag mean=1.3337, spread=0.9410, spread/|mean|=0.706  <-- nonzero spread: c(v) is NOT a scalar here
+M=8: max|K - ((1/2)Phi^2 - (1/2)[A,A^T]_FABLE)| = 4.441e-16  (should be ~machine precision: confirms the FABLE-native identity)
+  M=8 mass=2: n_states=2, diag mean=-2.4788, spread=0.0000, spread/|mean|=0.000
+  M=8 mass=3: n_states=3, diag mean=-1.9098, spread=0.0000, spread/|mean|=0.000
+  M=8 mass=4: n_states=5, diag mean=-1.3567, spread=0.0000, spread/|mean|=0.000
+  M=8 mass=5: n_states=7, diag mean=-0.7062, spread=0.5531, spread/|mean|=0.783  <-- nonzero spread: c(v) is NOT a scalar here
+  M=8 mass=6: n_states=11, diag mean=-0.1026, spread=0.8231, spread/|mean|=8.025  <-- nonzero spread: c(v) is NOT a scalar here
+  M=8 mass=7: n_states=15, diag mean=0.4755, spread=0.9973, spread/|mean|=2.097  <-- nonzero spread: c(v) is NOT a scalar here
+  M=8 mass=8: n_states=22, diag mean=1.0439, spread=0.7179, spread/|mean|=0.688  <-- nonzero spread: c(v) is NOT a scalar here
+M=10: max|K - ((1/2)Phi^2 - (1/2)[A,A^T]_FABLE)| = 2.220e-16  (should be ~machine precision: confirms the FABLE-native identity)
+  M=10 mass=2: n_states=2, diag mean=-2.6514, spread=0.0000, spread/|mean|=0.000
+  M=10 mass=3: n_states=3, diag mean=-2.1992, spread=0.0000, spread/|mean|=0.000
+  M=10 mass=4: n_states=5, diag mean=-1.7455, spread=0.0000, spread/|mean|=0.000
+  M=10 mass=5: n_states=7, diag mean=-1.3092, spread=0.0000, spread/|mean|=0.000
+  M=10 mass=6: n_states=11, diag mean=-0.8331, spread=0.4363, spread/|mean|=0.524  <-- nonzero spread: c(v) is NOT a scalar here
+  M=10 mass=7: n_states=15, diag mean=-0.3819, spread=0.4537, spread/|mean|=1.188  <-- nonzero spread: c(v) is NOT a scalar here
+  M=10 mass=8: n_states=22, diag mean=0.0532, spread=0.6910, spread/|mean|=12.996  <-- nonzero spread: c(v) is NOT a scalar here
+  M=10 mass=9: n_states=30, diag mean=0.4672, spread=0.8478, spread/|mean|=1.814  <-- nonzero spread: c(v) is NOT a scalar here
+  M=10 mass=10: n_states=42, diag mean=0.8588, spread=0.5789, spread/|mean|=0.674  <-- nonzero spread: c(v) is NOT a scalar here

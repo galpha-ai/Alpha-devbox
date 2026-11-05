@@ -1,0 +1,217 @@
+############ ref_sym
+== SYM: symmetric families, independent high-precision first zero of Q_s'(0)
+   coefficient check block4odd  N=  9: max|a_np - a_closed| = 4.20e-15
+   coefficient check block4odd  N= 17: max|a_np - a_closed| = 3.17e-13
+   coefficient check block33    N=  8: max|a_np - a_closed| = 2.05e-15
+   coefficient check block33    N= 16: max|a_np - a_closed| = 1.58e-13
+   coefficient check block4even N=  8: max|a_np - a_closed| = 3.18e-15
+   coefficient check block4even N= 16: max|a_np - a_closed| = 1.41e-13
+  block4odd
+    N=  17  tau_N=1.99536710538719  N^2(tau-2)=-1.338906543  N^4(tau-2+4/3N^2)=-1.61065762   [0.1s]
+    N=  33  tau_N=1.998774283610483  N^2(tau-2)=-1.334805148  N^4(tau-2+4/3N^2)=-1.60280637   [0.2s]
+    N=  65  tau_N=1.999684328472802  N^2(tau-2)=-1.333712202  N^4(tau-2+4/3N^2)=-1.60072185   [0.3s]
+    N= 129  tau_N=1.999919870831536  N^2(tau-2)=-1.333429492  N^4(tau-2+4/3N^2)=-1.60018317   [0.7s]
+    N= 257  tau_N=1.999979812600365  N^2(tau-2)=-1.333357558  N^4(tau-2+4/3N^2)=-1.60004614   [1.3s]
+    N= 513  tau_N=1.999994933524035  N^2(tau-2)=-1.333339413  N^4(tau-2+4/3N^2)=-1.60001158   [1.7s]
+  block33
+    N=  16  tau_N=1.994613077983054  N^2(tau-2)=-1.379052036  N^4(tau-2+4/3N^2)=-11.703988   [0.0s]
+    N=  32  tau_N=1.998686923390463  N^2(tau-2)=-1.344590448  N^4(tau-2+4/3N^2)=-11.5272856   [0.1s]
+    N=  64  tau_N=1.999673794668784  N^2(tau-2)=-1.336137037  N^4(tau-2+4/3N^2)=-11.4839688   [0.1s]
+    N= 128  tau_N=1.999918577050696  N^2(tau-2)=-1.334033601  N^4(tau-2+4/3N^2)=-11.473192   [0.2s]
+    N= 256  tau_N=1.999979652277233  N^2(tau-2)=-1.333508359  N^4(tau-2+4/3N^2)=-11.4705011   [0.5s]
+    N= 384  tau_N=1.99999095722711  N^2(tau-2)=-1.333411119  N^4(tau-2+4/3N^2)=-11.4700029   [0.7s]
+    N= 512  tau_N=1.999994913570071  N^2(tau-2)=-1.333377087  N^4(tau-2+4/3N^2)=-11.4698286   [1.0s]
+   predicted c2: block4odd -8/5 = -1.6 ; block33 -8/5-pi^2 = -11.469604401089358
+   F1 quoted block33 N=128: 1.999918565579, N=256: 1.999979605684, N=384: 1.999990889523
+EXIT 0
+############ ref_asym2
+== ASYM2: block4even (exact closed-form coefficients), first double zero as a 2-D root
+   block4even N=   64  tau_N=1.99963282131129  u*(rel. centre)=0.00832 (0.0026 pi)  counts: before=7 after=5 (n0=7, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=1.0e-38 (scale 3.0e-01)  Qxx/scale=-0.985  |Im|=5.3e-42  scan bracket=[1.999177,1.999177]  [50.5s]
+        N=   64  N^2(2-tau)=1.503963909   (N^2(2-tau)-4/3)N^(2/3)=2.730089
+   block4even N=  128  tau_N=1.99991209969416  u*(rel. centre)=0.00341 (0.0011 pi)  counts: before=7 after=5 (n0=7, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=2.2e-38 (scale 1.5e-01)  Qxx/scale=-1.57  |Im|=4.0e-41  scan bracket=[1.999406,1.999407]  [71.2s]
+        N=  128  N^2(2-tau)=1.440158611   (N^2(2-tau)-4/3)N^(2/3)=2.713193
+   block4even N=  256  tau_N=1.99997863054997  u*(rel. centre)=0.00138 (0.0004 pi)  counts: before=7 after=5 (n0=7, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=7.9e-39 (scale 7.4e-02)  Qxx/scale=-2.49  |Im|=1.5e-40  scan bracket=[1.999464,1.999465]  [197.9s]
+        N=  256  N^2(2-tau)=1.400468277   (N^2(2-tau)-4/3)N^(2/3)=2.706711
+   block4even N=  512  tau_N=1.99999475255446  u*(rel. centre)=0.00056 (0.0002 pi)  counts: before=7 after=5 (n0=7, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=1.1e-37 (scale 3.7e-02)  Qxx/scale=-3.95  |Im|=3.2e-41  scan bracket=[1.999479,1.999479]  [435.8s]
+        N=  512  N^2(2-tau)=1.375586364   (N^2(2-tau)-4/3)N^(2/3)=2.704194
+############ ref_asym2fast
+== ASYM2: block4even (exact closed-form coefficients), first double zero as a 2-D root (verification tau-grid step 0.1)
+   block4even N=  512  tau_N=1.99999475255446  u*(rel. centre)=0.00056 (0.0002 pi)  counts: before=7 after=5 (n0=7, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=1.1e-37 (scale 3.7e-02)  Qxx/scale=-3.95  |Im|=3.2e-41  scan bracket=[1.999479,1.999479]  [5.1s]
+        N=  512  N^2(2-tau)=1.375586364   (N^2(2-tau)-4/3)N^(2/3)=2.704194
+   block4even N= 1024  tau_N=1.99999870305884  u*(rel. centre)=0.00022 (0.0001 pi)  counts: before=7 after=5 (n0=7, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=4.8e-38 (scale 1.8e-02)  Qxx/scale=-6.27  |Im|=5.1e-40  scan bracket=[1.999483,1.999483]  [9.7s]
+        N= 1024  N^2(2-tau)=1.359941375   (N^2(2-tau)-4/3)N^(2/3)=2.703209
+   block4even N= 2048  tau_N=1.99999967811276  u*(rel. centre)=0.00009 (0.0000 pi)  counts: before=7 after=5 (n0=7, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=1.1e-37 (scale 9.2e-03)  Qxx/scale=-9.95  |Im|=8.0e-41  scan bracket=[1.999483,1.999484]  [21.4s]
+        N= 2048  N^2(2-tau)=1.350092946   (N^2(2-tau)-4/3)N^(2/3)=2.702821
+   block4even N= 4096  tau_N=1.99999991989788  u*(rel. centre)=0.00004 (0.0000 pi)  counts: before=7 after=5 (n0=7, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=9.0e-37 (scale 4.6e-03)  Qxx/scale=-15.8  |Im|=2.1e-40  scan bracket=[1.999484,1.999484]  [42.5s]
+        N= 4096  N^2(2-tau)=1.343890630   (N^2(2-tau)-4/3)N^(2/3)=2.702668
+   deliverable predicted limit of the scaled residual: 2*(pi^2/4)^(1/3) = 2.70256769006349
+EXIT 0
+############ ref_blocks79
+== BLOCKS: multi-midpoint families, first collision by the generic fold solver (mp product coefficients)
+  block7: local model tau* = 2.03812605359, predicted N^2(tau_N - tau*) -> -4.1540
+   block7     N=   33  tau_N=2.03419634507059  u*(rel. centre)=-5.95305 (-1.8949 pi)  counts: before=11 after=7 (n0=11, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=1.3e-65 (scale 1.2e-01)  Qxx/scale=-1.53  |Im|=8.1e-69  scan bracket=[2.033517,2.033517]  [40.2s]
+        N=  33  N^2 D_N=2.034196345071   N^2(tau_N - tau*)=-4.2795
+   block7     N=   65  tau_N=2.03713536867863  u*(rel. centre)=-5.96143 (-1.8976 pi)  counts: before=11 after=7 (n0=11, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=1.1e-72 (scale 1.4e-02)  Qxx/scale=-6.61  |Im|=1.1e-72  scan bracket=[2.036721,2.036721]  [44.2s]
+        N=  65  N^2 D_N=2.037135368679   N^2(tau_N - tau*)=-4.1856
+   block7     N=  129  tau_N=2.03787595082163  u*(rel. centre)=5.96358 (1.8983 pi)  counts: before=9 after=7 (n0=11, earlier-drop taus: []) -> NOT VERIFIED  |Q|+|Qx|=4.2e-88 (scale 1.7e-03)  Qxx/scale=26.7  |Im|=2.5e-76  scan bracket=[2.037521,2.037522]  [135.9s]
+        N= 129  N^2 D_N=2.037875950822   N^2(tau_N - tau*)=-4.1620
+   block7     N=  257  tau_N=2.03806313104396  u*(rel. centre)=-5.96413 (-1.8984 pi)  counts: before=89 after=67 (n0=11, earlier-drop taus: [np.float64(1.1360000000000001), np.float64(1.2080000000000002), np.float64(1.2360000000000002)]) -> NOT VERIFIED  |Q|+|Qx|=1.5e-118 (scale 2.2e-04)  Qxx/scale=-107.0  |Im|=4.2e-94  scan bracket=[2.037402,2.037402]  [249.1s]
+        N= 257  N^2 D_N=2.038063131044   N^2(tau_N - tau*)=-4.1560
+  block9: local model tau* = 2.057357973
+   block9     N=   33  tau_N=2.05186852654386  u*(rel. centre)=-8.86325 (-2.8213 pi)  counts: before=11 after=9 (n0=13, earlier-drop taus: []) -> NOT VERIFIED  |Q|+|Qx|=6.1e-65 (scale 7.8e-02)  Qxx/scale=-0.675  |Im|=2.1e-66  scan bracket=[2.051334,2.051334]  [45.6s]
+        N=  33  N^2 D_N=2.051868526544   N^2(tau_N - tau*)=-5.9780
+   block9     N=   65  tau_N=2.05600260000759  u*(rel. centre)=-8.88029 (-2.8267 pi)  counts: before=13 after=9 (n0=13, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=4.8e-72 (scale 4.2e-03)  Qxx/scale=-3.12  |Im|=9.9e-73  scan bracket=[2.055811,2.055811]  [51.7s]
+        N=  65  N^2 D_N=2.056002600008   N^2(tau_N - tau*)=-5.7265
+   block9     N=  129  tau_N=2.05701758209327  u*(rel. centre)=-8.88462 (-2.8281 pi)  counts: before=215 after=167 (n0=13, earlier-drop taus: [np.float64(1.0), np.float64(1.002), np.float64(1.004)]) -> NOT VERIFIED  |Q|+|Qx|=2.5e-86 (scale 2.6e-04)  Qxx/scale=-12.8  |Im|=3.2e-80  scan bracket=[2.056986,2.056986]  [127.3s]
+        N= 129  N^2 D_N=2.057017582093   N^2(tau_N - tau*)=-5.6644
+        N= 257  scan failed: (19, 9)
+EXIT 0
+############ ref_blocks5
+== BLOCKS: multi-midpoint families, first collision by the generic fold solver (mp product coefficients)
+  block5: local model tau* = 2.0, predicted N^2(tau_N - tau*) -> -2.6667
+   block5     N=   65  tau_N=1.9993670316423  u*(rel. centre)=-3.14060 (-0.9997 pi)  counts: before=7 after=5 (n0=9, earlier-drop taus: []) -> NOT VERIFIED  |Q|+|Qx|=4.3e-74 (scale 5.7e-02)  Qxx/scale=-17.5  |Im|=1.3e-71  scan bracket=[1.998882,1.998882]  [54.9s]
+        N=  65  N^2 D_N=1.999367031642   N^2(tau_N - tau*)=-2.6743
+   block5     N=  129  tau_N=1.9998396371242  u*(rel. centre)=3.14134 (0.9999 pi)  counts: before=9 after=5 (n0=9, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=1.4e-90 (scale 1.4e-02)  Qxx/scale=70.0  |Im|=5.6e-76  scan bracket=[1.999330,1.999331]  [96.6s]
+        N= 129  N^2 D_N=1.999839637124   N^2(tau_N - tau*)=-2.6686
+   block5     N=  257  tau_N=1.99995961856846  u*(rel. centre)=3.14153 (1.0000 pi)  counts: before=9 after=5 (n0=9, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=3.4e-120 (scale 3.6e-03)  Qxx/scale=279.0  |Im|=3.1e-90  scan bracket=[1.999444,1.999444]  [235.6s]
+        N= 257  N^2 D_N=1.999959618568   N^2(tau_N - tau*)=-2.6672
+  two3: local model tau* = 2.0, predicted N^2(tau_N - tau*) -> -2.6667
+   two3       N=   64  tau_N=1.99934328876288  u*(rel. centre)=-3.13955 (-0.9994 pi)  counts: before=7 after=5 (n0=9, earlier-drop taus: []) -> NOT VERIFIED  |Q|+|Qx|=3.4e-74 (scale 7.4e-02)  Qxx/scale=13.5  |Im|=1.1e-70  scan bracket=[1.999160,1.999161]  [55.8s]
+        N=  64  N^2 D_N=1.999343288763   N^2(tau_N - tau*)=-2.6899
+   two3       N=  128  tau_N=1.99983688658988  u*(rel. centre)=9.42427 (2.9998 pi)  counts: before=9 after=5 (n0=9, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=1.0e-89 (scale 1.8e-02)  Qxx/scale=55.1  |Im|=2.4e-75  scan bracket=[1.999681,1.999681]  [96.0s]
+        N= 128  N^2 D_N=1.999836886590   N^2(tau_N - tau*)=-2.6725
+   two3       N=  256  tau_N=1.99995928785484  u*(rel. centre)=9.42465 (3.0000 pi)  counts: before=9 after=5 (n0=9, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=6.5e-120 (scale 4.5e-03)  Qxx/scale=221.0  |Im|=2.7e-88  scan bracket=[1.999810,1.999810]  [229.8s]
+        N= 256  N^2 D_N=1.999959287855   N^2(tau_N - tau*)=-2.6681
+  block11: local model tau* = 2.0688935596
+   block11    N=   33  tau_N=2.06168883610709  u*(rel. centre)=-11.82170 (-3.7630 pi)  counts: before=13 after=11 (n0=15, earlier-drop taus: []) -> NOT VERIFIED  |Q|+|Qx|=4.3e-64 (scale 6.1e-02)  Qxx/scale=-0.331  |Im|=3.7e-65  scan bracket=[2.061093,2.061094]  [33.6s]
+        N=  33  N^2 D_N=2.061688836107   N^2(tau_N - tau*)=-7.8459
+   block11    N=   65  tau_N=2.06716439856277  u*(rel. centre)=11.85086 (3.7722 pi)  counts: before=109 after=93 (n0=15, earlier-drop taus: [np.float64(1.008), np.float64(1.034), np.float64(1.062)]) -> NOT VERIFIED  |Q|+|Qx|=8.8e-71 (scale 1.5e-03)  Qxx/scale=1.67  |Im|=2.6e-70  scan bracket=[2.067188,2.067189]  [54.0s]
+        N=  65  N^2 D_N=2.067164398563   N^2(tau_N - tau*)=-7.3057
+        N= 129  scan failed: (39, 11)
+        N= 257  scan failed: (331, 11)
+EXIT 0
+############ ref_polyroots
+== POLYROOTS: mp.polyroots-based depth (independent of every Fourier/heat solver)
+   block7     N= 16  N^2D=2.017717012851   [20.4s]
+   block7     N= 17  N^2D=2.021979178848   [23.2s]
+   block7     N= 24  N^2D=2.030167157485   [31.4s]
+   block7     N= 25  N^2D=2.031122430786   [60.5s]
+   block7     N= 33  N^2D=2.034196345071   [138.2s]
+   block9     N= 17  N^2D=2.032700299359   [25.3s]
+   block9     N= 25  N^2D=2.047356652988   [51.3s]
+   block9     N= 33  N^2D=2.051868526544   [133.1s]
+   block5     N= 17  N^2D=1.990372454420   [26.6s]
+   block5     N= 33  N^2D=1.997523894499   [114.4s]
+   two3       N= 16  N^2D=1.988014867577   [25.2s]
+   two3       N= 32  N^2D=1.997303715214   [95.4s]
+   block4even N= 16  N^2D=1.993008041799   [16.2s]
+   block4even N= 32  N^2D=1.998429050200   [75.6s]
+   block33    N= 16  N^2D=1.994613077983   [19.6s]
+   block33    N= 32  N^2D=1.998686923390   [66.6s]
+   block4odd  N= 17  N^2D=1.995367105387   [25.6s]
+   block4odd  N= 33  N^2D=1.998774283610   [83.0s]
+EXIT 0
+############ ref_verify2
+== re-verification (mirror-aware) of the three NOT VERIFIED cases
+   block5     N=   65  tau_N=1.9993670316423  u*(rel. centre)=-3.14060 (-0.9997 pi)  counts: before=9 after=5 (n0=9, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=4.3e-74 (scale 5.7e-02)  Qxx/scale=-17.5  |Im|=1.3e-71  scan bracket=[1.998882,1.998882]  [31.9s]
+        block5 N=65  N^2 D_N=1.999367031642
+   two3       N=   64  tau_N=1.99934328876288  u*(rel. centre)=-3.13955 (-0.9994 pi)  counts: before=7 after=5 (n0=9, earlier-drop taus: []) -> NOT VERIFIED  |Q|+|Qx|=3.4e-74 (scale 7.4e-02)  Qxx/scale=13.5  |Im|=1.1e-70  scan bracket=[1.999160,1.999161]  [23.2s]
+        two3 N=64  N^2 D_N=1.999343288763
+   block7     N=  129  tau_N=2.03787595082163  u*(rel. centre)=5.96358 (1.8983 pi)  counts: before=11 after=7 (n0=11, earlier-drop taus: []) -> FIRST collision verified  |Q|+|Qx|=4.2e-88 (scale 1.7e-03)  Qxx/scale=26.7  |Im|=2.5e-76  scan bracket=[2.037521,2.037522]  [57.9s]
+        block7 N=129  N^2 D_N=2.037875950822
+EXIT 0
+############ ref_localconv
+== block4odd
+  N=  17  max|q^N-q| = 7.252e-02  (N^2 x = 20.9572)   max|q^N-q-r/N^2| = 1.048e-03  (N^4 x = 87.512)
+  N=  33  max|q^N-q| = 1.905e-02  (N^2 x = 20.7461)   max|q^N-q-r/N^2| = 7.289e-05  (N^4 x = 86.440)
+  N=  65  max|q^N-q| = 4.897e-03  (N^2 x = 20.6902)   max|q^N-q-r/N^2| = 4.827e-06  (N^4 x = 86.157)
+  N= 129  max|q^N-q| = 1.242e-03  (N^2 x = 20.6758)   max|q^N-q-r/N^2| = 3.109e-07  (N^4 x = 86.086)
+  N= 257  max|q^N-q| = 3.130e-04  (N^2 x = 20.6721)   max|q^N-q-r/N^2| = 1.976e-08  (N^4 x = 86.208)
+== block33
+  N=  16  max|q^N-q| = 8.445e-02  (N^2 x = 21.6203)   max|q^N-q-r/N^2| = 3.709e-03  (N^4 x = 243.068)
+  N=  32  max|q^N-q| = 2.041e-02  (N^2 x = 20.9020)   max|q^N-q-r/N^2| = 2.257e-04  (N^4 x = 236.672)
+  N=  64  max|q^N-q| = 5.061e-03  (N^2 x = 20.7283)   max|q^N-q-r/N^2| = 1.401e-05  (N^4 x = 235.126)
+  N= 128  max|q^N-q| = 1.263e-03  (N^2 x = 20.6852)   max|q^N-q-r/N^2| = 8.745e-07  (N^4 x = 234.742)
+  N= 256  max|q^N-q| = 3.155e-04  (N^2 x = 20.6744)   max|q^N-q-r/N^2| = 5.462e-08  (N^4 x = 234.601)
+EXIT 0
+############ rerun_threeblock_exact
+== (1),(2): closed forms of Q_0 and of the coefficients
+  block4odd  N=  7  rel.err Q0 = 1.05e-14   max|a_j - a_j^exact| = 1.86e-15
+  block4odd  N= 11  rel.err Q0 = 2.64e+00   max|a_j - a_j^exact| = 1.05e-14
+  block4even N=  8  rel.err Q0 = 9.84e-15   max|a_j - a_j^exact| = 3.18e-15
+  block4even N= 12  rel.err Q0 = 2.68e-13   max|a_j - a_j^exact| = 1.69e-14
+  block33    N=  8  rel.err Q0 = 9.25e-15   max|a_j - a_j^exact| = 2.05e-15
+  block33    N= 12  rel.err Q0 = 2.47e-13   max|a_j - a_j^exact| = 8.43e-15
+== (3): D from first zero of P_s'(1) vs enumeration files (N<=12)
+  block33 N= 6: enumeration N^2D=1.9526286569  exact-F zero N^2D=1.9526286880  diff=-3.1e-08
+  block33 N= 8: enumeration N^2D=1.9761217503  exact-F zero N^2D=1.9761218138  diff=-6.4e-08
+  block33 N=10: enumeration N^2D=1.9854575487  exact-F zero N^2D=1.9854576378  diff=-8.9e-08
+  block33 N=12: enumeration N^2D=1.9901671516  exact-F zero N^2D=1.9901671829  diff=-3.1e-08
+  block4odd N= 5: enumeration N^2D=1.9438833689  exact-F zero N^2D=1.9438833804  diff=-1.2e-08
+  block4odd N= 7: enumeration N^2D=1.9720950491  exact-F zero N^2D=1.9720950757  diff=-2.7e-08
+  block4odd N= 9: enumeration N^2D=1.9832892135  exact-F zero N^2D=1.9832892689  diff=-5.5e-08
+  block4odd N=11: enumeration N^2D=1.9888690636  exact-F zero N^2D=1.9888696692  diff=-6.1e-07
+== (3b): vs heat_depth.py (independent solver) at N=32,33,64,65
+  block33    N= 32: heat_depth N^2D=1.998686921661  exact-F N^2D=1.998686923391
+  block4odd  N= 33: heat_depth N^2D=1.998774283608  exact-F N^2D=1.998774283610
+  block33    N= 64: heat_depth N^2D=1.999673792112  exact-F N^2D=1.999673794669
+  block4odd  N= 65: heat_depth N^2D=1.999684320700  exact-F N^2D=1.999684328473
+== (4): high precision tau_N and the expansion 2 - 4/(3N^2) + c2/N^4
+  block33
+    N=   16  tau_N=1.99461307798305355  N^2(tau-2)=-1.37905203634  N^4(tau-2+4/(3N^2))=-11.70398797   [0.0s]
+    N=   32  tau_N=1.99868692339046299  N^2(tau-2)=-1.34459044817  N^4(tau-2+4/(3N^2))=-11.52728559   [0.1s]
+    N=   64  tau_N=1.99967379466878391  N^2(tau-2)=-1.33613703666  N^4(tau-2+4/(3N^2))=-11.48396883   [0.1s]
+    N=  128  tau_N=1.99991857705069568  N^2(tau-2)=-1.3340336014  N^4(tau-2+4/(3N^2))=-11.47319204   [0.2s]
+    N=  256  tau_N=1.99997965227723251  N^2(tau-2)=-1.33350835929  N^4(tau-2+4/(3N^2))=-11.47050109   [0.4s]
+    N=  512  tau_N=1.99999491357007119  N^2(tau-2)=-1.33337708726  N^4(tau-2+4/(3N^2))=-11.46982856   [0.7s]
+    N= 1024  tau_N=1.9999987284238132  N^2(tau-2)=-1.33334427165  N^4(tau-2+4/(3N^2))=-11.46966044   [1.6s]
+    N= 2048  tau_N=1.99999968210790923  N^2(tau-2)=-1.3333360679  N^4(tau-2+4/(3N^2))=-11.46961841   [3.0s]
+  block4odd
+    N=   17  tau_N=1.99536710538719002  N^2(tau-2)=-1.3389065431  N^4(tau-2+4/(3N^2))=-1.610657623   [0.0s]
+    N=   33  tau_N=1.99877428361048337  N^2(tau-2)=-1.33480514818  N^4(tau-2+4/(3N^2))=-1.602806372   [0.0s]
+    N=   65  tau_N=1.9996843284728024  N^2(tau-2)=-1.33371220241  N^4(tau-2+4/(3N^2))=-1.600721848   [0.1s]
+    N=  129  tau_N=1.99991987083153605  N^2(tau-2)=-1.33342949241  N^4(tau-2+4/(3N^2))=-1.600183173   [0.2s]
+    N=  257  tau_N=1.99997981260036531  N^2(tau-2)=-1.33335755847  N^4(tau-2+4/(3N^2))=-1.600046144   [0.3s]
+    N=  513  tau_N=1.99999493352403543  N^2(tau-2)=-1.33333941312  N^4(tau-2+4/(3N^2))=-1.600011581   [0.6s]
+    N= 1025  tau_N=1.99999873091268889  N^2(tau-2)=-1.33333485624  N^4(tau-2+4/(3N^2))=-1.600002901   [1.5s]
+    N= 2049  tau_N=1.99999968241868406  N^2(tau-2)=-1.33333371443  N^4(tau-2+4/(3N^2))=-1.600000726   [2.9s]
+EXIT 0
+############ rerun_midpoint_models
+three : q_tau(u) e^{tau/4} = -tau*sin(u/2) + u*cos(u/2)
+  three: zeros in [0,12.566] at tau=0+ : [0.0, 3.141592016969892, 9.424777748562784]
+five : q_tau(u) e^{tau/4} = -tau**2*sin(u/2) + 2*tau*u*cos(u/2) + 2*tau*sin(u/2) + u**2*sin(u/2) - pi**2*sin(u/2)
+  five: zeros in [0,12.566] at tau=0+ : [0.0, 3.141592335279891, 6.283184458353089, 12.566370274828621]
+  five: first double zero at u*=3.14159265358979  tau*=2.0  q_uu(u*,tau*)=-1.21306
+two3 : q_tau(u) e^{tau/4} = -tau**2*cos(u/2) - 2*tau*u*sin(u/2) + 2*tau*cos(u/2) + u**2*cos(u/2) - 4*pi**2*cos(u/2)
+  two3: zeros in [0,12.566] at tau=0+ : [3.141593078003099, 6.283185148024641, 9.424777196825524]
+  two3: first double zero at u*=0.0  tau*=1.95  q_uu(u*,tau*)=0.0
+seven : q_tau(u) e^{tau/4} = tau**3*sin(u/2) - 3*tau**2*u*cos(u/2) - 6*tau**2*sin(u/2) - 3*tau*u**2*sin(u/2) + 6*tau*u*cos(u/2) + 4*pi**2*tau*sin(u/2) + u**3*cos(u/2) - 4*pi**2*u*cos(u/2)
+  seven: zeros in [0,12.566] at tau=0+ : [0.0, 3.1415924413831977, 6.283184829714739, 9.424776984618926]
+  seven: first double zero at u*=5.9643126848125  tau*=2.03812605359085  q_uu(u*,tau*)=14.4784
+two3b : q_tau(u) e^{tau/4} = -tau**2*sin(u/2) + 2*tau*u*cos(u/2) + 2*tau*sin(u/2) + u**2*sin(u/2) - 9*pi**2*sin(u/2)
+  two3b: zeros in [0,12.566] at tau=0+ : [0.0, 6.283185816475532, 9.424777854666084, 12.56636988679359]
+  two3b: first double zero at u*=9.42477796076938  tau*=2.0  q_uu(u*,tau*)=1.21306
+EXIT 0
+############ rerun_fold_constants
+five       psi(u) = u**4/6 - pi**4/6
+           r_tau*(u*) = -3.23483018513405   q_uu(u*,tau*) = -1.21306131942527   =>  N^2 (tau_N - tau*) -> -2.666666667
+two3       psi(u) = u**4/6 - 3*pi**2*u**2/4 + pi**4/3
+           r_tau*(u*) = 3.23483018513405   q_uu(u*,tau*) = 1.21306131942527   =>  N^2 (tau_N - tau*) -> -2.666666667
+seven      psi(u) = u**5/4 - pi**2*u**3/3 - 8*pi**4*u/3
+           r_tau*(u*) = 60.1424709940444   q_uu(u*,tau*) = 14.4783538351177   =>  N^2 (tau_N - tau*) -> -4.153957810
+five_even  psi(u) = u**4/6 + pi*u**3/2 + pi**2*u**2/4 - pi**3*u/2 - 5*pi**4/12
+           r_tau*(u*) = -3.23483018513405   q_uu(u*,tau*) = -1.21306131942527   =>  N^2 (tau_N - tau*) -> -2.666666667
+EXIT 0
+############ rerun_asymptotics
+block4odd : phi_N(u) = u + ( u**3/12 )/N^2 + ( u**5/120 )/N^4 + O(N^-6)
+   a_0(tau) = 1 - tau/2 * e^{-tau/4}
+   a_2(tau) = tau*(tau**2 - 12*tau + 12)/24 * e^{-tau/4}
+   a_4(tau) = -tau**2*(tau**3 - 30*tau**2 + 180*tau - 120)/240 * e^{-tau/4}
+   c1 = -4/3   c2 = -8/5 = -1.60000000000000
+block33 : phi_N(u) = u + ( u**3/12 )/N^2 + ( u**5/120 + pi**2*u**3/16 )/N^4 + O(N^-6)
+   a_0(tau) = 1 - tau/2 * e^{-tau/4}
+   a_2(tau) = tau*(tau**2 - 12*tau + 12)/24 * e^{-tau/4}
+   a_4(tau) = tau*(-2*tau**4 + 60*tau**3 - 360*tau**2 + 15*pi**2*tau**2 - 180*pi**2*tau + 240*tau + 180*pi**2)/480 * e^{-tau/4}
+   c1 = -4/3   c2 = -pi**2 - 8/5 = -11.4696044010894
+EXIT 0
+############ note: polyroots block4odd N=33 may still have been running at consolidation time; it is not needed for any conclusion

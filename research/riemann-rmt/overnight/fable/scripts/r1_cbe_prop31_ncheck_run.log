@@ -1,0 +1,43 @@
+prefactor N-exponent: 3*beta + 3
+eps^(beta+1) N-exponent: -(beta+2)  (symbolic log check: log(L**(beta + 1)*N**(-beta - 2))/log(N))
+w^(beta+1)   N-exponent: -(beta+1)  (symbolic log check: log(N**(-beta - 1)*c**(beta + 1))/log(N))
+(w+eps)^beta N-exponent: -beta (since w+eps = N^-1*(c+L*N^(-1/(beta+1))))
+total N-exponent (should be 0): 0
+
+beta=1.0, L=1.5, c=0.7: target limit (1/(beta+1)^2)*L^(beta+1)*c^(2beta+1) = 0.1929375000
+  N=          10: bound=0.3236779170  ratio to target=1.677631
+  N=         100: bound=0.2342812500  ratio to target=1.214286
+  N=        1000: bound=0.2060115417  ratio to target=1.067763
+  N=       10000: bound=0.1970718750  ratio to target=1.021429
+  N=     1000000: bound=0.1933509375  ratio to target=1.002143
+  N=  1000000000: bound=0.1929505740  ratio to target=1.000068
+  N=1000000000000000: bound=0.1929375131  ratio to target=1.000000
+
+beta=1.5, L=1.5, c=0.7: target limit (1/(beta+1)^2)*L^(beta+1)*c^(2beta+1) = 0.1058620477
+  N=          10: bound=0.2670446809  ratio to target=2.522572
+  N=         100: bound=0.1641393502  ratio to target=1.550502
+  N=        1000: bound=0.1280418135  ratio to target=1.209516
+  N=       10000: bound=0.1145232699  ratio to target=1.081816
+  N=     1000000: bound=0.1072195754  ratio to target=1.012824
+  N=  1000000000: bound=0.1059475314  ratio to target=1.000808
+  N=1000000000000000: bound=0.1058623880  ratio to target=1.000003
+
+beta=2.0, L=1.5, c=0.7: target limit (1/(beta+1)^2)*L^(beta+1)*c^(2beta+1) = 0.0630262500
+  N=          10: bound=0.2507520528  ratio to target=3.978534
+  N=         100: bound=0.1346532722  ratio to target=2.136463
+  N=        1000: bound=0.0929315625  ratio to target=1.474490
+  N=       10000: bound=0.0761872685  ratio to target=1.208818
+  N=     1000000: bound=0.0657563156  ratio to target=1.043316
+  N=  1000000000: bound=0.0632966519  ratio to target=1.004290
+  N=1000000000000000: bound=0.0630289512  ratio to target=1.000043
+
+beta=4.0, L=1.5, c=0.7: target limit (1/(beta+1)^2)*L^(beta+1)*c^(2beta+1) = 0.0122574081
+  N=          10: bound=0.3751335600  ratio to target=30.604640
+  N=         100: bound=0.1445378835  ratio to target=11.791880
+  N=        1000: bound=0.0686308205  ratio to target=5.599130
+  N=       10000: bound=0.0394752690  ratio to target=3.220523
+  N=     1000000: bound=0.0203561691  ratio to target=1.660724
+  N=  1000000000: bound=0.0140093167  ratio to target=1.142927
+  N=1000000000000000: bound=0.0123628098  ratio to target=1.008599
+
+All checks passed: the repaired Proposition 3.1 bound has no residual N-power and converges to the claimed L^(beta+1) c^(2*beta+1) exponents for every tested beta.

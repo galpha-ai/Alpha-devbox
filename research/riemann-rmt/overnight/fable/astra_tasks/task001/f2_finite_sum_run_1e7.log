@@ -1,0 +1,8 @@
+float64 sieve vs exact Fractions, n <= 10000: max relative error 1.52e-15
+L=10000000 fixed     J_full=-0.0312416 J_nopp=-0.0653055 J_clean=-0.0846320 cont=-0.0146624
+L=10000000 massonly  J_full=-0.0400738 J_nopp=-0.0729053 J_clean=-0.0920092 cont=-0.0215653
+L=10000000 one       J_full=-0.0527097 J_nopp=-0.0851868 J_clean=-0.1047752 cont=-0.0333607
+L=10000000 one_ell1  J_full=-0.0496106 J_nopp=-0.0804329 J_clean=-0.0982107 cont=-0.0307565
+L=10000000 deg14     J_full=-0.0320506 J_nopp=-0.0654226 J_clean=-0.0845744 cont=-0.0153580
+L=10000000 N(L)/(C (log L)^a/Gamma(a+1)) = 1.046576  S2 mean ratio=1.03114  S2^2 mean ratio=1.12058  time=207.0s maxrss=1478MB
+EXIT=0

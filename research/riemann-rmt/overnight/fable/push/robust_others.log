@@ -1,0 +1,25 @@
+== block33 (robust solver)
+  collision of pair at x=(0.196055,0.196350), extremum x=0.196179
+N=  16  N^2D=1.994609375000  t=3.0s
+  collision of pair at x=(0.097878,0.098175), extremum x=0.098003
+N=  32  N^2D=1.998671875000  t=5.0s
+  collision of pair at x=(0.049081,0.049088), extremum x=0.049084
+N=  64  N^2D=1.999673767090  t=5.0s
+== block5 (robust solver)
+  collision of pair at x=(0.185562,0.185756), extremum x=0.185659
+N=  17  N^2D=1.990371093750  t=3.6s
+  collision of pair at x=(0.285274,0.285693), extremum x=0.285484
+N=  33  N^2D=1.997500000000  t=3.7s
+  collision of pair at x=(0.144981,0.144982), extremum x=0.144981
+N=  65  N^2D=1.999367031298  t=5.3s
+  collision of pair at x=(0.073058,0.073058), extremum x=0.073058
+N= 129  N^2D=1.999839626566  t=6.9s
+== two3 (robust solver)
+  collision of pair at x=(0.979550,0.980019), extremum x=0.979785
+N=  16  N^2D=1.988007812500  t=2.6s
+  collision of pair at x=(0.098428,0.098428), extremum x=0.098428
+N=  32  N^2D=1.997303715196  t=1.8s
+  collision of pair at x=(0.245345,0.245465), extremum x=0.245405
+N=  64  N^2D=1.999335937500  t=2.7s
+  collision of pair at x=(0.024547,0.024549), extremum x=0.024548
+N= 128  N^2D=1.999836878516  t=3.6s

@@ -1,0 +1,19 @@
+== MODELS: (2k+1)-block local models from the parity rule
+  k=1 (3-block): p = u, L = cos(u/2); zeros in (0,6pi) at tau=0+: [1. 3. 5.] pi  (n0=3)
+     FIRST real double zero: u* = 0.0 = 0.0 pi,  tau* = 2.0,  q_uu = 0.0   [triple zero at u=0]
+     zeros just before (2.000): [0.     2.8606 4.918 ] pi
+  k=2 (5-block): p = u**2 - pi**2, L = sin(u/2); zeros in (0,7pi) at tau=0+: [1. 2. 4. 6.] pi  (n0=4)
+     FIRST real double zero: u* = 3.14159265359 = 1.0 pi,  tau* = 2.0,  q_uu = -1.2130613   [pair started at (0.986pi,1.015pi) at tau=1.999]
+     zeros just before (1.999): [0.9861 1.0146 3.7788 5.8599] pi
+  k=3 (7-block): p = u**3 - 4*pi**2*u, L = cos(u/2); zeros in (0,8pi) at tau=0+: [1. 2. 3. 5. 7.] pi  (n0=5)
+     FIRST real double zero: u* = 5.96431268481 = 1.8985 pi,  tau* = 2.03812605359,  q_uu = 14.478354   [pair started at (1.893pi,1.904pi) at tau=2.038]
+     zeros just before (2.038): [0.8672 1.8935 1.9036 4.7151 6.8111] pi
+  k=4 (9-block): p = u**4 - 10*pi**2*u**2 + 9*pi**4, L = sin(u/2); zeros in (0,9pi) at tau=0+: [1. 2. 3. 4. 6. 8.] pi  (n0=6)
+     FIRST real double zero: u* = 8.88608560413 = 2.82853 pi,  tau* = 2.05735797304,  q_uu = 261.15184   [pair started at (2.820pi,2.837pi) at tau=2.057]
+     zeros just before (2.057): [0.8976 1.7834 2.8202 2.8372 5.666  7.7714] pi
+  k=5 (11-block): p = u**5 - 20*pi**2*u**3 + 64*pi**4*u, L = cos(u/2); zeros in (0,10pi) at tau=0+: [1. 2. 3. 4. 5. 7. 9.] pi  (n0=7)
+     FIRST real double zero: u* = 11.860625931 = 3.77535 pi,  tau* = 2.06889355965,  q_uu = -6318.7992   [pair started at (3.762pi,3.789pi) at tau=2.068]
+     zeros just before (2.068): [0.917  1.8277 2.7227 3.7623 3.7892 6.626  8.7379] pi
+   deliverable: 3-block 2, 5-block 2, 7-block 2.03812605359, '9-block' 2.0689 (polynomial u(u^2-4pi^2)(u^2-16pi^2)cos -> that is k=5)
+   refuter    : 9-block (u^2-pi^2)(u^2-9pi^2) sin: 2.0573579730 at u*=2.8285pi; 11-block 2.0688935596 at 3.7754pi
+EXIT 0
