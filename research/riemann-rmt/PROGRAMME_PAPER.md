@@ -93,7 +93,7 @@ Astra's audit (`BRIDGE-001`) supplies an exact rational counterexample showing t
 
 ### 4. The impostor fibre: why moments cannot see, and why the flow cannot help
 
-**Theorem 4.1 [C, exact arithmetic].** The affine dimension of the set of measures on the ACUE support matching every balanced moment E[∏ p_{m_i} ∏ \bar p_{n_j}] of degree ≤ N is 0, 0, 2, 10, 80, 403, 1804 for N = 3, …, 9. (A tighter-tolerance recount at N = 8 gave 399; an exact recount is on the open list.)
+**Theorem 4.1 [C, exact arithmetic].** The affine dimension of the set of measures on the ACUE support matching every balanced moment E[∏ p_{m_i} ∏ \bar p_{n_j}] of degree ≤ N is 0, 0, 2, 10, 80, 403, 1804 for N = 3, …, 9. (A tighter-tolerance recount at N = 8 had given 399; the value 403 is now exact, by Astra's alternant upper bound 407 for the constraint rank on the 810 rotation orbits together with modular ranks of 407, replayed independently on 6 November 2026; see NEW_RESULTS.md, Theorem 4.1.)
 
 **Theorem 4.2 (centre-of-mass family) [P].** q_g(C) = μ_ACUE(C)·g(X(C)), X = Σ_{c∈C} c mod N, matches every balanced moment of degree ≤ N iff E[g] = 1 and ĝ(±1) = 0: an explicit (N−3)-parameter family at every N. The adversarial review (§5 of `r1_structure_review.md`) identifies this, the determinant-character (secant) family and the parity family as one family, tilts by functions of det(U_C); on the lattice the global rotation is quantised and det² becomes a shape invariant.
 
@@ -292,7 +292,7 @@ Every deliverable was produced by a proposer agent and attacked by at least one 
 | F1 Π_4 | leading coefficient 6a² vs 6a | Fable refuter | 6a; numerics were right |
 | F1 refuter's probe | sign of −zz3·ε⁴ mislabelled | both | fixed, no effect on m_4 |
 | H₂ certifier | committed script not outward-rounded | Astra | arb re-certification; BE-free bound |
-| Fibre count N = 8 | 403 vs 399 at tighter tolerance | round 3 | exact recount pending |
+| Fibre count N = 8 | 403 vs 399 at tighter tolerance | round 3 | settled 6 Nov 2026: 403 exactly (rank 407 on 810 orbits, alternant sandwich) |
 | Galerkin angle | arccos((1−n^{−2})/a_n) misread | round 3 | arccos(1 − n^{−2}/a_n) |
 | Round 1 claim | "0.6725 is the exact LP optimum; AH suboptimal by 0.0301" | own round 5 | retracted: feasible-set conflation |
 
@@ -353,6 +353,8 @@ The single methodological sentence of the programme is *moment matching does not
 
 **What the separation programme says, in one paragraph.** Tao built the ACUE to show that nothing provable today about correlations of the zeros (Montgomery's band, the Rudnick–Sarnak/Hejhal ranges, positivity, integrality) distinguishes GUE from the half-lattice alternative; the programme's finite-depth results sharpen this picture (a first-passage time separates the two universality classes while every protected moment agrees) but transfer nothing to ζ without the one arithmetic input Tao named. About RH the programme says nothing (both scenarios assume it). About AH it says exactly what would refute it: one out-of-band value of F, equivalently a short-interval prime variance bound at the scale h ≍ x^{1−1/α}, 1 < α ≤ 2, whose signed correlation term Astra reduced but did not bound. About Montgomery–Dyson it says that even that input would exclude one named alternative, not prove GUE, which needs F(α) = 1 for all α ≥ 1.
 
+
+**Addendum (7 November 2026).** Two items were settled after the above and are recorded in NEW_RESULTS.md: the N = 8 fibre dimension is exactly 403 (Theorem 4.1, alternant sandwich), and Astra's certified N = 11 construction shows that the depth is not a function of the gap law together with the protected moments (§4, addendum). Both were replayed independently here.
 
 ## References (primary sources used; "recalled" where not re-read during the programme)
 
