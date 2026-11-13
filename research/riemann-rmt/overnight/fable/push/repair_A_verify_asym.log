@@ -1,0 +1,5 @@
+== ASYM: block4even tau_N as a 2-D root (Q = Q_x = 0), closed-form coefficients, mpmath 30 digits
+   N=   16  tau_N = 1.99300804179871  u* = 0.0456096  |Q|+|Qx| = 1.3e-29  |Im Q| = 6.3e-31  N^2(2-tau) = 1.7899413  (N^2(2-tau)-4/3) N^(2/3) = 2.89928  first-collision: verified (grid step 0.005, drops at earlier tau: [], count after = 3)  [1s]
+   N=   32  tau_N = 1.99842905019986  u* = 0.0198419  |Q|+|Qx| = 1.5e-29  |Im Q| = 5.0e-31  N^2(2-tau) = 1.608652595  (N^2(2-tau)-4/3) N^(2/3) = 2.775044  first-collision: verified (grid step 0.005, drops at earlier tau: [], count after = 3)  [1s]
+   N=   64  tau_N = 1.99963282131129  u* = 0.00831745  |Q|+|Qx| = 3.8e-29  |Im Q| = 4.1e-31  N^2(2-tau) = 1.503963909  (N^2(2-tau)-4/3) N^(2/3) = 2.730089  first-collision: verified (grid step 0.005, drops at earlier tau: [], count after = 3)  [2s]
+   N=  128  tau_N = 1.99991209969416  u* = 0.00341259  |Q|+|Qx| = 1.1e-29  |Im Q| = 1.6e-31  N^2(2-tau) = 1.440158611  (N^2(2-tau)-4/3) N^(2/3) = 2.713193  first-collision: verified (grid step 0.005, drops at earlier tau: [], count after = 3)  [4s]

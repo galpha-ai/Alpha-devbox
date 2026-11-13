@@ -1,0 +1,58 @@
+{
+  "lens": "reproduction and code-vs-text",
+  "checks": [
+    {
+      "name": "f1_common self-test",
+      "passed": true,
+      "detail": "d_ell/S~ sieve matches hand definitions to 1e-12..1e-15"
+    },
+    {
+      "name": "independent recompute of norm_ratio_2term at L=1e4 (v=1) vs report's quoted 1.002005",
+      "passed": false,
+      "detail": "recomputed (v=1, L=1e4) = 1.000189; report quotes 1.002005 -- MISMATCH"
+    },
+    {
+      "name": "independent recompute of norm_ratio_2term at L=1e5 (v=1) vs report's quoted 1.000396",
+      "passed": false,
+      "detail": "recomputed (v=1, L=1e5) = 1.000119; report quotes 1.000396 -- MISMATCH"
+    },
+    {
+      "name": "trace report's quoted two-term-ratio numbers to actual rows of f1_moment_results.json",
+      "passed": true,
+      "detail": "{\"1.002005\": [[10000, 0.5]], \"1.000396\": [[10000, 0.75], [1000000, 0.5]], \"1.0000833\": [[1000000, 1.0]], \"1.0000617\": [[10000000, 1.0]]}"
+    },
+    {
+      "name": "does report's quoted 4-number sequence equal the actual v=1 sequence across L=1e4..1e7 in f1_moment_results.json?",
+      "passed": false,
+      "detail": "actual v=1 sequence (L=1e4,1e5,1e6,1e7) = [1.0001888, 1.000119, 1.0000834, 1.0000617]; report's quoted sequence = [1.002005, 1.000396, 1.0000833, 1.0000617]. First two entries of the report's sequence match the (L=1e4, v=0.5) and (L=1e4, v=0.75) rows instead of the (L=1e4, v=1.0) and (L=1e5, v=1.0) rows -- i.e. the report mixes rows from different v at the same L=1e4 into what is presented as a single v=1 sequence across four decades of L. The last two entries (L=1e6, L=1e7 at v=1) are correctly transcribed."
+    },
+    {
+      "name": "C_ell reproducibility (P=1e6 here vs P=1e7 in f1_sd_expansion_results.json)",
+      "passed": true,
+      "detail": "C_ell(P=1e6)=0.99912355 vs reported C=0.99912355 (diff 1.32e-11)"
+    },
+    {
+      "name": "independent re-run of f1_insertion_decomposition.decompose at L=1000 matches f1_insertion_results.json",
+      "passed": true,
+      "detail": "{\"alpha_over_D\": {\"recomputed\": 0.04473929170024863, \"reported_json\": 0.04473929170024863, \"diff\": 0.0}, \"beta_over_D\": {\"recomputed\": 0.08207223465210035, \"reported_json\": 0.08207223465210035, \"diff\": 0.0}, \"gamma_over_D\": {\"recomputed\": 0.0038177006294605083, \"reported_json\": 0.0038177006294605083, \"diff\": 0.0}, \"delta_over_D\": {\"recomputed\": 0.017139922832124274, \"reported_json\": 0.017139922832124274, \"diff\": 0.0}, \"eps_over_D\": {\"recomputed\": 0.050238246502080905, \"reported_json\": 0.050238246502080905, \"diff\": 0.0}, \"check_sum\": {\"recomputed\": 0.0, \"reported_json\": 0.0, \"diff\": 0.0}, \"J_L\": {\"recomputed\": -0.05199260368398534, \"reported_json\": -0.05199260368398534, \"diff\": 0.0}}"
+    },
+    {
+      "name": "exact 5-way identity alpha+beta+gamma+delta+eps=T holds in independent re-run at L=1000",
+      "passed": true,
+      "detail": "check_sum = 0.00e+00"
+    },
+    {
+      "name": "report's printed L=1000 table row (section 5) matches independent recomputation to quoted precision",
+      "passed": true,
+      "detail": "{\"alpha_over_D\": {\"recomputed\": 0.04474, \"report_table\": 0.04474}, \"beta_over_D\": {\"recomputed\": 0.08207, \"report_table\": 0.08207}, \"gamma_over_D\": {\"recomputed\": 0.00382, \"report_table\": 0.00382}, \"delta_over_D\": {\"recomputed\": 0.01714, \"report_table\": 0.01714}, \"eps_over_D\": {\"recomputed\": 0.05024, \"report_table\": 0.05024}}"
+    },
+    {
+      "name": "A[qm,m] formula in f1_insertion_decomposition.py matches task prompt's A[qm,m]=2 sin((pi/2) log q/log L)/(e sqrt q)",
+      "passed": true,
+      "detail": "grep of make_ops() found the exact formula string"
+    }
+  ],
+  "seconds": 0.7318406105041504,
+  "n_checks": 10,
+  "n_failed": 3
+}

@@ -1,0 +1,34 @@
+== Section 6: the 3-block local limit
+  midpoint family N= 5: max |log disc_num - log disc_exact| = 1.3e-14;  D_num = 0.127706405516, log(N/(N-2))/(N-1) = 0.127706405941, N^2 D = 3.192660
+  midpoint family N= 7: max |log disc_num - log disc_exact| = 3.7e-14;  D_num = 0.056078705841, log(N/(N-2))/(N-1) = 0.056078706104, N^2 D = 2.747857
+  midpoint family N=11: max |log disc_num - log disc_exact| = 3.2e-14;  D_num = 0.020067068622, log(N/(N-2))/(N-1) = 0.020067069546, N^2 D = 2.428115
+  midpoint family N=16: max |log disc_num - log disc_exact| = 1.9e-13;  D_num = 0.008902092643, log(N/(N-2))/(N-1) = 0.008902092842, N^2 D = 2.278936
+  local limit, midpoint family: Delta F(tau) N-body vs tau - log 2tau + 2 log|w cos(w/2) - tau sin(w/2)|
+    N= 32: exact-finite-N Delta F = [-0.247114 -0.542834 -1.3613   -2.809196 -4.549318]
+    N= 64: exact-finite-N Delta F = [-0.259876 -0.572138 -1.446149 -3.045061 -5.126421]
+    N=128: exact-finite-N Delta F = [-0.266372 -0.587103 -1.490046 -3.171981 -5.467642]
+    N=256: exact-finite-N Delta F = [-0.26965  -0.594665 -1.512375 -3.237931 -5.655294]
+    Richardson 2*F(256)-F(128)   = [-0.272927 -0.602227 -1.534705 -3.30388  -5.842947]
+    local closed form         = [-0.272946 -0.60228  -1.534965 -3.305646 -5.85639 ]
+    local force energy a(tau) = -dDeltaF/dtau, by root sum: [ 1.192878  1.45618   2.408173  5.356006 14.322812]
+    ... by differentiating the closed form: [ 1.192929  1.45623   2.408223  5.356056 14.322863]
+    a(0) by root sum = 0.999949 (predicted 1);  a(tau)(2-tau) near tau=2: 2.9930, 2.9993 (predicted 3)
+    N-body ODE N=96: tau = [0.   0.25 0.5  0.75 1.   1.25 1.5 ]
+       Delta F (ODE)   = [ 0.       -0.264198 -0.582091 -0.974362 -1.475301 -2.147972 -3.128956]
+       Delta F (exact) = [ 0.       -0.264198 -0.582091 -0.974362 -1.475301 -2.147972 -3.128956]
+       A/N^2 (ODE)     = [0.968967 1.153365 1.403187 1.756966 2.290219 3.173772 4.893374]
+       a(tau) local    = [0.999949 1.192878 1.45618  1.832705 2.408173 3.382597 5.356006]
+  ACUE family [1,1,2,...,2,4,2,...,2]: Delta F = Delta F_block + Delta F_hole + o(1)?
+    N=63: tau = [0.  0.5 1.  1.5]
+      Delta F (ACUE 3-block+hole, ODE) = [ 0.      -0.77456 -1.89183 -3.86103]
+      Delta F_block (closed form)       = [ 0.      -0.60228 -1.53496 -3.30565]
+      Delta F_hole  (pure hole, ODE)    = [ 0.      -0.16452 -0.34114 -0.53096]
+      block + hole                      = [ 0.     -0.7668 -1.8761 -3.8366]
+      A_0/N^2 = 1.33300 (block 1 + hole 1/3 = 1.33333);  hole alone A_0/N^2 = 0.31763
+    N=127: tau = [0.  0.5 1.  1.5]
+      Delta F (ACUE 3-block+hole, ODE) = [ 0.      -0.77464 -1.89183 -3.86042]
+      Delta F_block (closed form)       = [ 0.      -0.60228 -1.53496 -3.30565]
+      Delta F_hole  (pure hole, ODE)    = [ 0.      -0.16846 -0.34903 -0.54281]
+      block + hole                      = [ 0.      -0.77074 -1.88399 -3.84845]
+      A_0/N^2 = 1.33325 (block 1 + hole 1/3 = 1.33333);  hole alone A_0/N^2 = 0.32550
+total time 1.8s

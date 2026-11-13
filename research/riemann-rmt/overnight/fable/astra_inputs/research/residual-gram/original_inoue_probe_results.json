@@ -1,0 +1,135 @@
+{
+  "status": "exploratory floating-point calculation; NOT a theorem",
+  "source": "Inoue arXiv:2604.05733, Theorem 2",
+  "objective": "M_{ell,f}(phi)/I_f(ell) - phi*(1-phi)",
+  "trial_space": "real polynomials of the recorded degree",
+  "ell_optimization_interval": [
+    1.0,
+    2.2
+  ],
+  "baseline_phi": 0.508949,
+  "baseline_ell": 1.15,
+  "baseline_f": "1 - 0.7*x",
+  "baseline_margin": 1.487161813262805e-05,
+  "half_barrier_probes": [
+    {
+      "phi": 0.5,
+      "degree": 2,
+      "quadrature_order": 18,
+      "ell": 1.1720512601316853,
+      "margin": -0.015399433979618682
+    },
+    {
+      "phi": 0.5,
+      "degree": 4,
+      "quadrature_order": 20,
+      "ell": 1.1762750728459195,
+      "margin": -0.015358098050875846
+    },
+    {
+      "phi": 0.5,
+      "degree": 6,
+      "quadrature_order": 24,
+      "ell": 1.1762951266517079,
+      "margin": -0.015357982181676166
+    },
+    {
+      "phi": 0.5,
+      "degree": 10,
+      "quadrature_order": 28,
+      "ell": 1.1762951369619143,
+      "margin": -0.015357981703861379
+    },
+    {
+      "phi": 0.5,
+      "degree": 14,
+      "quadrature_order": 34,
+      "ell": 1.176295088361981,
+      "margin": -0.015357981703848778
+    }
+  ],
+  "other_phi_probes": [
+    {
+      "phi": 0.508949,
+      "degree": 8,
+      "quadrature_order": 26,
+      "ell": 1.186602359358485,
+      "margin": 0.00019827210218953395
+    },
+    {
+      "phi": 0.5088,
+      "degree": 8,
+      "quadrature_order": 26,
+      "ell": 1.186434303391997,
+      "margin": -6.524900091423036e-05
+    },
+    {
+      "phi": 0.505,
+      "degree": 8,
+      "quadrature_order": 26,
+      "ell": 1.182110144939874,
+      "margin": -0.006734514781285367
+    },
+    {
+      "phi": 0.5,
+      "degree": 8,
+      "quadrature_order": 26,
+      "ell": 1.1762949949673687,
+      "margin": -0.015357981706265511
+    },
+    {
+      "phi": 0.499,
+      "degree": 8,
+      "quadrature_order": 26,
+      "ell": 1.1756711883424824,
+      "margin": -0.01528488981241899
+    }
+  ],
+  "ell_grid_at_half": [
+    {
+      "ell": 1.0,
+      "margin": -0.017061216148290842
+    },
+    {
+      "ell": 1.1,
+      "margin": -0.015665418486613236
+    },
+    {
+      "ell": 1.175,
+      "margin": -0.015358067655720065
+    },
+    {
+      "ell": 1.3,
+      "margin": -0.01610098674747762
+    },
+    {
+      "ell": 1.6,
+      "margin": -0.022924491664496394
+    },
+    {
+      "ell": 2.0,
+      "margin": -0.0387761431718015
+    },
+    {
+      "ell": 3.0,
+      "margin": -0.08579729645355197
+    },
+    {
+      "ell": 4.0,
+      "margin": -0.12392574702273065
+    },
+    {
+      "ell": 6.0,
+      "margin": -0.1676885554639027
+    }
+  ],
+  "degree8_numerical_sign_crossing": 0.5088369010523799,
+  "additional_normalized_log_increment_energy_at_half": 0.30315440763231144,
+  "limitations": [
+    "No rigorous quadrature-error bounds.",
+    "No certified optimization over all ell>=1.",
+    "No upper bound over all continuous bounded-variation functions.",
+    "No proof that a proposed extended-support arithmetic estimate holds.",
+    "The small numerical sign crossing is not claimed as a new theorem."
+  ]
+}

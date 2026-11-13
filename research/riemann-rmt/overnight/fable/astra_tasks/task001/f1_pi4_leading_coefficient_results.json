@@ -1,0 +1,62 @@
+{
+  "purpose": "direct prime-sum (no zeta shortcut) check that Pi_4(1+eps)*eps^4 -> 6a (one power of a), not 6a^2 (two powers), refuting the .md's original mis-stated prose and closing the gap the refuter identified (m4's coefficient was previously only a hardcoded literal, never independently derived by any script for its OWN sake, only for a=6a^2 pattern check).",
+  "a": 1.1377777777777778,
+  "6a": 6.826666666666666,
+  "6a^2_wrong_hypothesis": 7.767229629629629,
+  "P_primes_upto": 2000000,
+  "emax": 60,
+  "rows": [
+    {
+      "eps": 1.0,
+      "cutoff_e^(1/eps)": 2.718281828459045,
+      "Pi4*eps^4": 5.87750194573061,
+      "Pi2*eps^2": 0.8394284518924153,
+      "target_6a": 6.826666666666666,
+      "target_a": 1.1377777777777778,
+      "ratio_Pi4eps4_over_6a": 0.8609621990816324,
+      "ratio_Pi2eps2_over_a": 0.7377789127960681
+    },
+    {
+      "eps": 0.5,
+      "cutoff_e^(1/eps)": 7.38905609893065,
+      "Pi4*eps^4": 6.042277942941786,
+      "Pi2*eps^2": 0.955862928682632,
+      "target_6a": 6.826666666666666,
+      "target_a": 1.1377777777777778,
+      "ratio_Pi4eps4_over_6a": 0.8850993080481133,
+      "ratio_Pi2eps2_over_a": 0.8401139021624695
+    },
+    {
+      "eps": 0.25,
+      "cutoff_e^(1/eps)": 54.598150033144236,
+      "Pi4*eps^4": 3.288542354881538,
+      "Pi2*eps^2": 0.9171575889731843,
+      "target_6a": 6.826666666666666,
+      "target_a": 1.1377777777777778,
+      "ratio_Pi4eps4_over_6a": 0.48172007151585033,
+      "ratio_Pi2eps2_over_a": 0.8060955371834628
+    },
+    {
+      "eps": 0.125,
+      "cutoff_e^(1/eps)": 2980.9579870417283,
+      "Pi4*eps^4": 0.7495147166317178,
+      "Pi2*eps^2": 0.5863228749342967,
+      "target_6a": 6.826666666666666,
+      "target_a": 1.1377777777777778,
+      "ratio_Pi4eps4_over_6a": 0.10979219481909928,
+      "ratio_Pi2eps2_over_a": 0.5153228392977217
+    },
+    {
+      "eps": 0.0625,
+      "cutoff_e^(1/eps)": 8886110.520507872,
+      "Pi4*eps^4": 0.09348569250925073,
+      "Pi2*eps^2": 0.25257230505915423,
+      "target_6a": 6.826666666666666,
+      "target_a": 1.1377777777777778,
+      "ratio_Pi4eps4_over_6a": 0.013694193238659776,
+      "ratio_Pi2eps2_over_a": 0.22198737749339728
+    }
+  ],
+  "interpretation": "As eps shrinks (while e^(1/eps) stays within the prime cutoff P so the truncated sum still resolves the asymptotic), Pi4*eps^4 should approach 6a=6.8267, not 6a^2=7.7672. Pi2*eps^2 is shown alongside as a control: it should approach a=1.1378 (already used and confirmed elsewhere in the project for kappa1/pi0), confirming the sieve/summation method itself is sound.",
+  "seconds": 0.16043996810913086
+}

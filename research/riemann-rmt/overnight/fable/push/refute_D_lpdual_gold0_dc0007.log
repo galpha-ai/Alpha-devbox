@@ -1,0 +1,8 @@
+gold=False ducheck=0.0007 it=0 W=0.020279 ncons=2001 minR=-0.16842 nviol=1620 [20s]
+gold=False ducheck=0.0007 it=1 W=0.020604 ncons=3501 minR=-0.07907 nviol=676 [43s]
+gold=False ducheck=0.0007 it=2 W=0.020699 ncons=4177 minR=-0.05121 nviol=284 [66s]
+gold=False ducheck=0.0007 it=3 W=0.020699 ncons=4461 minR=-0.00368 nviol=27 [98s]
+gold=False ducheck=0.0007 it=4 W=0.020700 ncons=4488 minR=-0.00915 nviol=141 [138s]
+gold=False ducheck=0.0007 it=5 W=0.020700 ncons=4629 minR=-0.00599 nviol=59 [176s]
+gold=False ducheck=0.0007 it=6 W=0.020700 ncons=4665 minR=-0.00386 nviol=15 [206s]
+gold=False ducheck=0.0007 it=7 W=0.020699 ncons=4680 minR=-0.00075 nviol=7 [246s]

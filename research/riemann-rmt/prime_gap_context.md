@@ -1,0 +1,28 @@
+# Shared context — Round 4: attacking the bounded prime gap record H₁ = 246
+
+You are one of 10 parallel agents. Read fully. Your final text is your report. English, tagged [PROVED]/[COMPUTED]/[HEURISTIC]/[CONJECTURE], scripts in this scratchpad, end with the single most promising next step. BE ADVERSARIAL WITH YOURSELF: the default assumption is that Polymath already tried your idea — your job is to find what they could not do in 2014 (modern SDP/SOS solvers, our new machinery, post-2014 arithmetic inputs) or to prove a clean no-go.
+
+## A. The state of the art (verified via search, August 2026)
+
+- **H₁ = liminf(p_{n+1}−p_n) ≤ 246** — Polymath8b (2014), unconditional, still the record. Under Elliott–Halberstam (EH): 12. Under generalized EH: 6 (parity blocks further).
+- **H₂ = liminf(p_{n+2}−p_n) ≤ 398,130**; H₃ ≤ 24,797,814; H_m ≪ e^{3.815m} — much less optimized than H₁!
+- Pipeline: DHL(k,2) ⟸ M-type variational threshold > 4/θ·... — with Bombieri–Vinogradov level θ = 1/2, the requirement is **M_k > 4** (pure) or **M_k^{[ε]}-variant > 4** (ε-trick). Then H₁ ≤ H(k) = diameter of the narrowest admissible k-tuple.
+- Numbers: Maynard: M₁₀₅ > 4 → H=600. Polymath8b: M₅₄ > 4.00238 → H(54)=270; the **ε-trick** got the k=50 threshold → **H(50)=246**. They stopped at 50, writing that 50-or-49 was the limit; the k=49 door was left numerically closed but (to our knowledge) NOT rigorously closed for the most general variant. **H(49) = 240, H(48) = 236, H(47) = 232** (verify these diameters yourself from the admissible-tuple databases/searches — do not trust this line blindly).
+- The pure variational problem: M_k = sup over symmetric F ∈ L²(simplex R_k = {t ∈ [0,∞)^k : Σt_i ≤ 1}) of k·J(F)/I(F), I(F) = ∫F², J(F) = ∫(∫F dt_k)² dt₁..dt_{k−1}. Known: M_k ≥ log k − C; M_k ≤ (k/(k−1))·log k (so no barrier at 4 from above for k=49: log 49 = 3.892 < 4 — the PURE M₄₉ is provably < 4.06-ish and numerically ≈ 3.85? — establish the true value). The ε-trick enlarges support to (1+ε)·simplex with a vanishing-marginal condition, trading against a (1−kε-type) penalty; Polymath also studied M'_k variants (unrestricted support with vanishing marginals) and proved upper bounds. KEY QUESTION for this round: what is the sharp upper bound for the BEST legal variant at k = 49, and is it above or below 4?
+- Recent arithmetic inputs (post-2014): Polymath8a equidistribution θ = 1/2 + 7/300 for smooth/densely-divisible moduli (restricted residues — does NOT plug directly into MT sieve, which needs all residue classes; Polymath8b Section on "using equidistribution" got only ε-improvements and did not lower 246); Stadlmann (2023+) improved smooth-moduli exponents; Guth–Maynard (2024) large-value estimates for Dirichlet polynomials (improved zero-density; feeds short-interval prime results, NOT directly the BV level); Lichtman's sieve refinements. Verify current versions via WebSearch as needed.
+
+## B. Our machinery inventory (from Rounds 1–3; all in this scratchpad + /workspace/anthropics/zeta-23-lean)
+
+1. **Decoder/LP theory**: generalized concave-score Lemma R; capped decoder LPs with escape-channel analysis; exact adversary construction (moment LPs with spread/pair/negative channels). The MT variational problem is a Rayleigh quotient = exactly our territory.
+2. **SOS/Gram certificates**: multivariate trigonometric-SOS strictly beating scalar Fejér–Riesz cones (colleague's result: N=3 exact constant (67−2√22)/81; N=4 exact-rational); inner-SOS/exact-LP/outer-SDP sandwich.
+3. **Positive-inertia decoding**: rank–trace inequalities turning quadratic-form data into COUNTS (many positive directions → many prime-rich configurations) — the "matrix score n₊(B−A)" idea; the √ε rigidity theorem (near-equality forces structure).
+4. **Krylov/fermionic transfer**: half-power trick ⟨v,B^{2m}v⟩ = ‖B^m v‖²; second-quantized transfer for symmetric-function operators — high-order moment computations at otherwise impossible sizes.
+5. **Non-identifiability/counterfeit methodology**: exact finite fibers, identity-compression, parity-type obstructions made quantitative in LP language.
+6. **Euler–Maclaurin/cotangent tower**: exact finite-size ladders for variational discretizations (know your discretization error EXACTLY instead of eyeballing convergence).
+
+## C. Honesty rules for this round
+
+- 246 has stood for 12 years against Tao, Maynard, and a swarm of Polymath optimizers. Any "improvement" you find is 99% likely a bug or a misread constraint: re-derive the exact threshold inequality (including the θ = 1/2 factor and the ε-penalty terms) from the Polymath8b paper structure before claiming anything.
+- The deliverable hierarchy (in decreasing value): (i) a verified new bound H₁ < 246 (extraordinary claim, extraordinary checking); (ii) a verified improvement of H₂ = 398,130 or higher-m records (much softer targets!); (iii) a rigorous closure ("the k=49 door is closed for variant class X, here is the dual certificate") — a real theorem; (iv) a quantified reduction ("improving BV level to θ = 1/2 + δ for all-residue averaged moduli would give H₁ = f(δ)") with the exact function f; (v) honest no-go maps.
+- Compute budget: sympy/numpy/scipy/mpmath available; pip install cvxpy/OSQP if needed for SDPs. Krylov bases for the variational problem are 1-D integrals of polynomial bases — exact rational arithmetic is feasible; use it for anything near a threshold.
+- python3 in this scratchpad; WebSearch works (arxiv.org itself is egress-blocked for fetch; search snippets work; the Polymath wiki michaelnielsen.org and Tao's blog terrytao.wordpress.com are ALSO blocked for direct fetch — rely on search result snippets and your own derivations).

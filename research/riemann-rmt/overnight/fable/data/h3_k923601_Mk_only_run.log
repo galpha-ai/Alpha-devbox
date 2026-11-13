@@ -1,0 +1,28 @@
+[exact] k=923601 K=923600 pieces=399 T=88248.45639033375
+[exact] c2=0.08188684439095002 mu=0.8704264899252355 var=1199.6154722695203 rho3=15304667.675408453
+[exact] G(T)^2/c2 = 12.25304450422832  (crude, un-truncated ceiling of this g)
+[exact] layer done in 0.14s
+[python-flint arb (ball arithmetic)] certificate M_923601 >= 12.006666706750045697159697557467  (formula value <= 12.006666706750045697159697557468)
+[python-flint arb (ball arithmetic)] margin over 12: 0.006666706750045697159697557467   PASS=True   time 1.44s
+[python-flint arb (ball arithmetic)] strategies: {'CH(B=1T,lam=10^(6/8)/T)': 355, 'CH(B=1T,lam=10^(5/8)/T)': 31, 'CH(B=1T,lam=10^(4/8)/T)': 1, 'BE_elem': 12}
+[python-flint arb (ball arithmetic)]   variant C_BE=1187/2500: lo=12.00866582363784140435 PASS=True
+[python-flint arb (ball arithmetic)]   variant C_BE=14/25: lo=12.00666670675004569715 PASS=True
+[python-flint arb (ball arithmetic)]   variant C_BE=441/625: lo=12.00453350522877703822 PASS=True
+[python-flint arb (ball arithmetic)]   variant C_BE=1583/2000: lo=12.00375619153454706957 PASS=True
+[python-flint arb (ball arithmetic)]   variant C_BE=319/400: lo=12.00370782962370046444 PASS=True
+[python-flint arb (ball arithmetic)]   variant Chernoff_only_no_BE: lo=12.00263034990571191492 PASS=True
+[python-flint arb (ball arithmetic)]   variant C_BE=0.56_with_rigorous_erfc_Phibar: lo=12.00790223064635907222 PASS=True
+[mpmath.iv (interval arithmetic) + 2^-150 guard band] certificate M_923601 >= 12.006666706750045697159697557467  (formula value <= 12.006666706750045697159697557468)
+[mpmath.iv (interval arithmetic) + 2^-150 guard band] margin over 12: 0.006666706750045697159697557467   PASS=True   time 23.22s
+[mpmath.iv (interval arithmetic) + 2^-150 guard band] strategies: {'CH(B=1T,lam=10^(6/8)/T)': 355, 'CH(B=1T,lam=10^(5/8)/T)': 31, 'CH(B=1T,lam=10^(4/8)/T)': 1, 'BE_elem': 12}
+[mpmath.iv (interval arithmetic) + 2^-150 guard band]   variant C_BE=1187/2500: lo=12.00866582363784140435 PASS=True
+[mpmath.iv (interval arithmetic) + 2^-150 guard band]   variant C_BE=14/25: lo=12.00666670675004569715 PASS=True
+[mpmath.iv (interval arithmetic) + 2^-150 guard band]   variant C_BE=441/625: lo=12.00453350522877703822 PASS=True
+[mpmath.iv (interval arithmetic) + 2^-150 guard band]   variant C_BE=1583/2000: lo=12.00375619153454706957 PASS=True
+[mpmath.iv (interval arithmetic) + 2^-150 guard band]   variant C_BE=319/400: lo=12.00370782962370046444 PASS=True
+[mpmath.iv (interval arithmetic) + 2^-150 guard band]   variant Chernoff_only_no_BE: lo=12.00263034990571191492 PASS=True
+wrote h3_k923601_interval_cert_Mk_only.json   total time 25.1s
+
+real	0m25.257s
+user	0m25.213s
+sys	0m0.056s

@@ -1,0 +1,9 @@
+name = "RiemannImpostors"
+defaultTargets = ["RiemannImpostors"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+
+[[lean_lib]]
+name = "RiemannImpostors"

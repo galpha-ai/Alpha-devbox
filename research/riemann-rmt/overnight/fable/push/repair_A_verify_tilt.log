@@ -1,0 +1,22 @@
+== TILT: block4even, phi_N(v) = 2N sin(a) cos(b)/cos(a+b), a = v/2N, b = pi/2N
+   phi_N = v + (v**3/12 + pi*v**2/4)/N^2 + (v**5/120 + pi*v**4/24 + pi**2*v**3/16 + pi**3*v**2/48)/N^4 + O(N^-6)      [deliverable had v^3/12 - pi v^2/4: wrong sign of the tilt]
+   numeric N=100: N^2(phi_N(1.0) - v - v^3/12N^2) = +0.78554   vs +pi v^2/4 = 0.78540
+   numeric N=100: N^2(phi_N(2.0) - v - v^3/12N^2) = +3.14258   vs +pi v^2/4 = 3.14159
+   numeric N=1000: N^2(phi_N(1.0) - v - v^3/12N^2) = +0.78540   vs +pi v^2/4 = 0.78540
+   numeric N=1000: N^2(phi_N(2.0) - v - v^3/12N^2) = +3.14160   vs +pi v^2/4 = 3.14159
+   e^(tau/4) q^N_tau(0) = eps*C1(tau) + eps^2*C2(tau) + ...,  C1 = -pi*tau*(tau - 2)/4,  C2 = -pi*tau*(-2*tau**3 + 24*tau**2 - 24*tau + pi**2*tau - 2*pi**2)/48
+   C1(2-sigma) = -pi*sigma**2/4 + pi*sigma/2,   C2(2) = -4*pi/3 = -4.188790   [refuter: -4pi/3 = -4.188790]
+   u^2 coefficient of e^(tau/4) r~_tau at tau=2: beta_2 = -pi/4  (= -pi/4)
+   fold of A u - u^3/12 + C: A^3 = (9/16) C^2;  with C(sigma_c) = (pi/2)(4/3) eps^2 - (4pi/3) eps^2 = -(2pi/3) eps^2:
+   A_c = (pi^2/4)^(1/3) eps^(4/3) = 1.351284 eps^(4/3);  tau_N = 2 - (4/3) eps - 2 A_c = 2 - 4/(3N^2) - 2.702568 N^(-8/3)
+   eps^(7/3) corrections at the fold: 4 A B = 4 A (-pi/4 eps) = -pi eps A ;  delta C = (pi/2) eps delta, delta = 2A  -> +pi eps A : they cancel,
+   so the scaled residual should converge at rate N^(-4/3) (refuter observed a factor 2.53 per doubling; 2^(4/3) = 2.520).
+   N=64: tau_N = 1.999632821311, u* = +0.008317   (refuter: 1.99963282131129, u* = +0.00832)
+     tau=1.9900000: N^2 q_tau^N(0) = +0.008895  (corrected leading terms +0.008882; deliverable's -(pi/2) e^(-tau/4) sigma = -0.009551)   zeros in |u|<0.3: [-0.2416 -0.0007  0.24  ]
+     tau=1.9950000: N^2 q_tau^N(0) = +0.004142  (corrected leading terms +0.004137; deliverable's -(pi/2) e^(-tau/4) sigma = -0.004770)   zeros in |u|<0.3: [-0.1682 -0.0007  0.1666]
+     tau=1.9990000: N^2 q_tau^N(0) = +0.000332  (corrected leading terms +0.000332; deliverable's -(pi/2) e^(-tau/4) sigma = -0.000953)   zeros in |u|<0.3: [-0.0645 -0.0004  0.0626]
+     tau=1.9995000: N^2 q_tau^N(0) = -0.000145  (corrected leading terms -0.000144; deliverable's -(pi/2) e^(-tau/4) sigma = -0.000476)   zeros in |u|<0.3: [-0.0338  0.0007  0.0308]
+     tau=1.9996000: N^2 q_tau^N(0) = -0.000240  (corrected leading terms -0.000239; deliverable's -(pi/2) e^(-tau/4) sigma = -0.000381)   zeros in |u|<0.3: [-0.0234  0.0027  0.0184]
+     tau=1.9996300: N^2 q_tau^N(0) = -0.000269  (corrected leading terms -0.000268; deliverable's -(pi/2) e^(-tau/4) sigma = -0.000353)   zeros in |u|<0.3: [-0.0193  0.0062  0.0109]
+     tau=1.9996318: N^2 q_tau^N(0) = -0.000270  (corrected leading terms -0.000270; deliverable's -(pi/2) e^(-tau/4) sigma = -0.000351)   zeros in |u|<0.3: [-0.0191  0.007   0.0098]
+EXIT 0

@@ -1,0 +1,119 @@
+== Section 1/2: force identity, discriminant derivative, concavity (mpmath 40 digits)
+  N= 3 trial 0: |A-(Q-C_N)|/A=2.8e-16  |F'+A|/A=2.7e-16  |F''+A'|/A'=1.5e-16  (max| |z|-1 |=0.0e+00, A=26.7, A'=735.8)
+  N= 3 trial 1: |A-(Q-C_N)|/A=0.0e+00  |F'+A|/A=0.0e+00  |F''+A'|/A'=2.3e-16  (max| |z|-1 |=0.0e+00, A=6.539, A'=62.9)
+  N= 3 trial 2: |A-(Q-C_N)|/A=1.1e-16  |F'+A|/A=4.6e-16  |F''+A'|/A'=7.2e-16  (max| |z|-1 |=0.0e+00, A=0.7276, A'=3.078)
+  N= 4 trial 0: |A-(Q-C_N)|/A=2.4e-16  |F'+A|/A=0.0e+00  |F''+A'|/A'=3.5e-16  (max| |z|-1 |=0.0e+00, A=15.01, A'=120.7)
+  N= 4 trial 1: |A-(Q-C_N)|/A=4.2e-16  |F'+A|/A=2.1e-16  |F''+A'|/A'=4.3e-16  (max| |z|-1 |=0.0e+00, A=8.59, A'=131.6)
+  N= 4 trial 2: |A-(Q-C_N)|/A=7.2e-16  |F'+A|/A=0.0e+00  |F''+A'|/A'=3.6e-16  (max| |z|-1 |=0.0e+00, A=5.013, A'=39.39)
+  N= 5 trial 0: |A-(Q-C_N)|/A=1.4e-16  |F'+A|/A=2.1e-15  |F''+A'|/A'=4.2e-15  (max| |z|-1 |=0.0e+00, A=25.26, A'=700.3)
+  N= 5 trial 1: |A-(Q-C_N)|/A=1.8e-16  |F'+A|/A=5.0e-16  |F''+A'|/A'=5.8e-16  (max| |z|-1 |=0.0e+00, A=171.7, A'=1.262e+04)
+  N= 5 trial 2: |A-(Q-C_N)|/A=2.2e-16  |F'+A|/A=1.5e-15  |F''+A'|/A'=2.2e-15  (max| |z|-1 |=0.0e+00, A=16.5, A'=461.7)
+  N= 7 trial 0: |A-(Q-C_N)|/A=0.0e+00  |F'+A|/A=3.0e-16  |F''+A'|/A'=1.4e-15  (max| |z|-1 |=0.0e+00, A=381.6, A'=4.253e+04)
+  N= 7 trial 1: |A-(Q-C_N)|/A=2.0e-16  |F'+A|/A=2.9e-15  |F''+A'|/A'=6.1e-15  (max| |z|-1 |=0.0e+00, A=311.6, A'=7.422e+04)
+  N= 7 trial 2: |A-(Q-C_N)|/A=6.2e-16  |F'+A|/A=0.0e+00  |F''+A'|/A'=3.0e-16  (max| |z|-1 |=0.0e+00, A=142.7, A'=1.197e+04)
+  N=10 trial 0: |A-(Q-C_N)|/A=4.1e-16  |F'+A|/A=0.0e+00  |F''+A'|/A'=2.9e-16  (max| |z|-1 |=0.0e+00, A=1182, A'=4.043e+05)
+  N=10 trial 1: |A-(Q-C_N)|/A=2.8e-16  |F'+A|/A=2.7e-15  |F''+A'|/A'=6.5e-15  (max| |z|-1 |=0.0e+00, A=436.5, A'=1.255e+05)
+  N=10 trial 2: |A-(Q-C_N)|/A=2.1e-16  |F'+A|/A=9.6e-16  |F''+A'|/A'=3.1e-15  (max| |z|-1 |=0.0e+00, A=2371, A'=8.728e+05)
+  N=14 trial 0: |A-(Q-C_N)|/A=1.6e-16  |F'+A|/A=6.3e-16  |F''+A'|/A'=4.0e-15  (max| |z|-1 |=0.0e+00, A=1445, A'=4.118e+05)
+  N=14 trial 1: |A-(Q-C_N)|/A=1.4e-16  |F'+A|/A=1.8e-15  |F''+A'|/A'=6.4e-15  (max| |z|-1 |=0.0e+00, A=3707, A'=4.546e+06)
+  N=14 trial 2: |A-(Q-C_N)|/A=4.6e-16  |F'+A|/A=4.2e-16  |F''+A'|/A'=1.2e-15  (max| |z|-1 |=0.0e+00, A=2186, A'=2.416e+06)
+  worst relative errors: identity 7.2e-16, first derivative 2.9e-15, second derivative 6.5e-15
+== Section 3: expectation identities
+  ACUE N= 4: sum w = 1.000000000000000, E[Q]/C_N = 1.500000000000000, E[sum V^2]/(C_N/2) = 1.000000000000000  (orbits 10)
+  ACUE N= 5: sum w = 1.000000000000000, E[Q]/C_N = 1.500000000000000, E[sum V^2]/(C_N/2) = 1.000000000000000  (orbits 26)
+  ACUE N= 6: sum w = 1.000000000000000, E[Q]/C_N = 1.500000000000000, E[sum V^2]/(C_N/2) = 1.000000000000000  (orbits 80)
+  ACUE N= 7: sum w = 1.000000000000000, E[Q]/C_N = 1.500000000000000, E[sum V^2]/(C_N/2) = 1.000000000000001  (orbits 246)
+  ACUE N= 8: sum w = 1.000000000000000, E[Q]/C_N = 1.500000000000000, E[sum V^2]/(C_N/2) = 1.000000000000000  (orbits 810)
+  ACUE N= 9: sum w = 0.999999999999998, E[Q]/C_N = 1.500000000000001, E[sum V^2]/(C_N/2) = 1.000000000000001  (orbits 2704)
+  ACUE N=10: sum w = 1.000000000000000, E[Q]/C_N = 1.500000000000000, E[sum V^2]/(C_N/2) = 1.000000000000000  (orbits 9252)
+  ACUE N=11: sum w = 0.999999999999998, E[Q]/C_N = 1.500000000000000, E[sum V^2]/(C_N/2) = 1.000000000000000  (orbits 32066)
+  ACUE N=12: sum w = 1.000000000000000, E[Q]/C_N = 1.500000000000000, E[sum V^2]/(C_N/2) = 1.000000000000000  (orbits 112720)
+  CUE  N= 2: E_CUE Q / (2 C_N) = 1.0   (exact quadrature of the pair correlation)
+  CUE  N= 3: E_CUE Q / (2 C_N) = 1.0   (exact quadrature of the pair correlation)
+  CUE  N= 5: E_CUE Q / (2 C_N) = 1.0   (exact quadrature of the pair correlation)
+  CUE  N= 8: E_CUE Q / (2 C_N) = 1.0   (exact quadrature of the pair correlation)
+  CUE  N=13: E_CUE Q / (2 C_N) = 1.0   (exact quadrature of the pair correlation)
+  CUE  N=21: E_CUE Q / (2 C_N) = 1.0   (exact quadrature of the pair correlation)
+  lattice sums M= 5: sum csc^2 = 8.0000000000 vs (M^2-1)/3 = 8.0000000000;  sum csc^4 = 19.2000000000 vs (M^2-1)(M^2+11)/45 = 19.2000000000
+  lattice sums M= 8: sum csc^2 = 21.0000000000 vs (M^2-1)/3 = 21.0000000000;  sum csc^4 = 105.0000000000 vs (M^2-1)(M^2+11)/45 = 105.0000000000
+  lattice sums M=13: sum csc^2 = 56.0000000000 vs (M^2-1)/3 = 56.0000000000;  sum csc^4 = 672.0000000000 vs (M^2-1)(M^2+11)/45 = 672.0000000000
+  lattice sums M=24: sum csc^2 = 191.6666666667 vs (M^2-1)/3 = 191.6666666667;  sum csc^4 = 7500.5555555555 vs (M^2-1)(M^2+11)/45 = 7500.5555555556
+  ACUE lattice kernel sum N= 4: (1/2N) sum_d (N^2 - S_N^2) csc^2 / (3 C_N/2) = 1.000000000000
+  ACUE lattice kernel sum N= 7: (1/2N) sum_d (N^2 - S_N^2) csc^2 / (3 C_N/2) = 1.000000000000
+  ACUE lattice kernel sum N=12: (1/2N) sum_d (N^2 - S_N^2) csc^2 / (3 C_N/2) = 1.000000000000
+  ACUE lattice kernel sum N=25: (1/2N) sum_d (N^2 - S_N^2) csc^2 / (3 C_N/2) = 1.000000000000
+== Section 4: exponential-polynomial structure of disc(P_s)
+  N=3: 5 monomials; every monomial has exponent of e^s equal to sum_j e_j j(N-j) = N^2(N-1) - q_m, isobaric weight N(N-1): True; max exponent 8 (bound N^2(N-1)/2 = 9)
+  disc(P_s), N=3: E**8*a1**2*a2**2 - 4*E**6*(a0*a2**3 + a1**3) + 18*E**4*a0*a1*a2 - 27*a0**2
+     N=3 random P: sum_j j(N-j) a_j d log disc/d a_j = -3.138658268623-3.6e-16i,  C_N - Q = -3.138658268623
+     N=3 random P: sum_j j(N-j) a_j d log disc/d a_j = -10.279290867572+2.6e-15i,  C_N - Q = -10.279290867572
+  N=4: 16 monomials; every monomial has exponent of e^s equal to sum_j e_j j(N-j) = N^2(N-1) - q_m, isobaric weight N(N-1): True; max exponent 20 (bound N^2(N-1)/2 = 24)
+     N=4 random P: sum_j j(N-j) a_j d log disc/d a_j = -95.008869608504-1.3e-12i,  C_N - Q = -95.008869608501
+     N=4 random P: sum_j j(N-j) a_j d log disc/d a_j = -102.491322303102+1.1e-12i,  C_N - Q = -102.491322303109
+== Section 5: Riccati lower bound on ACUE data and the (N^2/2) conjecture
+  N= 4: min D/[(1/C_N)log(1+C_N/A_0)] = 1.4496 (max 4.5);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0546  (N^2 D_min=1.3863)
+  N= 5: min D/[(1/C_N)log(1+C_N/A_0)] = 1.6194 (max 6.3);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0564  (N^2 D_min=1.3726)
+  N= 6: min D/[(1/C_N)log(1+C_N/A_0)] = 1.7782 (max 8.2);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0571  (N^2 D_min=1.3531)
+  N= 7: min D/[(1/C_N)log(1+C_N/A_0)] = 1.9296 (max 10.1);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0573  (N^2 D_min=1.3426)
+  N= 8: min D/[(1/C_N)log(1+C_N/A_0)] = 2.0754 (max 12.1);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0575  (N^2 D_min=1.3304)
+  N= 9: min D/[(1/C_N)log(1+C_N/A_0)] = 2.2168 (max 14.0);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0575  (N^2 D_min=1.3229)
+  N=10: min D/[(1/C_N)log(1+C_N/A_0)] = 2.3545 (max 16.0);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0576  (N^2 D_min=1.3146)
+  N=11: min D/[(1/C_N)log(1+C_N/A_0)] = 2.4891 (max 18.0);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0576  (N^2 D_min=1.3091)
+  N=12: min D/[(1/C_N)log(1+C_N/A_0)] = 2.6209 (max 20.0);  min D/[(2/N^2)log(1+N^2/(2A_0))] = 1.0576  (N^2 D_min=1.3032)
+  sharp Riccati constant kappa_N = sup (A'-A^2)/A  [proved <= C_N; the pointwise (N^2/2) bound is FALSE]:
+    N= 3: random search max    5.0000; close pair + optimised background    5.0000;  doubled-clock value (N^2+4N-6)/3 =   5.0000 (numeric   5.0000);  N^2/2 =    4.5;  C_N =     8.0
+    N= 4: random search max    9.2309; close pair + optimised background    9.2822;  doubled-clock value (N^2+4N-6)/3 =   8.6667 (numeric   8.6667);  N^2/2 =    8.0;  C_N =    20.0
+    N= 5: random search max   14.6303; close pair + optimised background   14.8466;  doubled-clock value (N^2+4N-6)/3 =  13.0000 (numeric  13.0000);  N^2/2 =   12.5;  C_N =    40.0
+    N= 6: random search max   18.4456; close pair + optimised background   21.6932;  doubled-clock value (N^2+4N-6)/3 =  18.0000 (numeric  18.0000);  N^2/2 =   18.0;  C_N =    70.0
+    N= 8: random search max   31.0220; close pair + optimised background   39.2330;  doubled-clock value (N^2+4N-6)/3 =  30.0000 (numeric  30.0000);  N^2/2 =   32.0;  C_N =   168.0
+    N=12: random search max   68.2822; close pair + optimised background   89.6991;  doubled-clock value (N^2+4N-6)/3 =  62.0000 (numeric  62.0000);  N^2/2 =   72.0;  C_N =   572.0
+== Section 6: the 3-block local limit
+  midpoint family N= 5: max |log disc_num - log disc_exact| = 1.3e-14;  D_num = 0.127706405516, log(N/(N-2))/(N-1) = 0.127706405941, N^2 D = 3.192660
+  midpoint family N= 7: max |log disc_num - log disc_exact| = 3.7e-14;  D_num = 0.056078705841, log(N/(N-2))/(N-1) = 0.056078706104, N^2 D = 2.747857
+  midpoint family N=11: max |log disc_num - log disc_exact| = 3.2e-14;  D_num = 0.020067068622, log(N/(N-2))/(N-1) = 0.020067069546, N^2 D = 2.428115
+  midpoint family N=16: max |log disc_num - log disc_exact| = 1.9e-13;  D_num = 0.008902092643, log(N/(N-2))/(N-1) = 0.008902092842, N^2 D = 2.278936
+  local limit, midpoint family: Delta F(tau) N-body vs tau - log 2tau + 2 log|w cos(w/2) - tau sin(w/2)|
+    N= 32: exact-finite-N Delta F = [-0.247114 -0.542834 -1.3613   -2.809196 -4.549318]
+    N= 64: exact-finite-N Delta F = [-0.259876 -0.572138 -1.446149 -3.045061 -5.126421]
+    N=128: exact-finite-N Delta F = [-0.266372 -0.587103 -1.490046 -3.171981 -5.467642]
+    N=256: exact-finite-N Delta F = [-0.26965  -0.594665 -1.512375 -3.237931 -5.655294]
+    Richardson 2*F(256)-F(128)   = [-0.272927 -0.602227 -1.534705 -3.30388  -5.842947]
+    local closed form         = [-0.272946 -0.60228  -1.534965 -3.305646 -5.85639 ]
+    local force energy a(tau) = -dDeltaF/dtau, by root sum: [ 1.192878  1.45618   2.408173  5.356006 14.322812]
+    ... by differentiating the closed form: [ 1.192929  1.45623   2.408223  5.356056 14.322863]
+    ... analytic derivative a_local_closed: [ 1.192929  1.45623   2.408223  5.356056 14.322863]
+    a(0) by root sum = 0.999949 (predicted 1);  a(tau)(2-tau) near tau=2: 2.9930, 2.9993 (predicted 3)
+    N-body ODE N=96: tau = [0.   0.25 0.5  0.75 1.   1.25 1.5 ]
+       Delta F (ODE)   = [ 0.       -0.264198 -0.582091 -0.974362 -1.475301 -2.147972 -3.128956]
+       Delta F (exact) = [ 0.       -0.264198 -0.582091 -0.974362 -1.475301 -2.147972 -3.128956]
+       A/N^2 (ODE)     = [0.968967 1.153365 1.403187 1.756966 2.290219 3.173772 4.893374]
+       a(tau) local    = [0.999949 1.192878 1.45618  1.832705 2.408173 3.382597 5.356006]
+  ACUE family [1,1,2,...,2,4,2,...,2]: Delta F = Delta F_block + Delta F_hole + o(1)?
+    N=63: tau = [0.  0.5 1.  1.5]
+      Delta F (ACUE 3-block+hole, ODE) = [ 0.      -0.77456 -1.89183 -3.86103]
+      Delta F_block (closed form)       = [ 0.      -0.60228 -1.53496 -3.30565]
+      Delta F_hole  (pure hole, ODE)    = [ 0.      -0.16452 -0.34114 -0.53096]
+      block + hole                      = [ 0.     -0.7668 -1.8761 -3.8366]
+      A_0/N^2 = 1.33300 (block 1 + hole 1/3 = 1.33333);  hole alone A_0/N^2 = 0.31763
+    N=127: tau = [0.  0.5 1.  1.5]
+      Delta F (ACUE 3-block+hole, ODE) = [ 0.      -0.77464 -1.89183 -3.86042]
+      Delta F_block (closed form)       = [ 0.      -0.60228 -1.53496 -3.30565]
+      Delta F_hole  (pure hole, ODE)    = [ 0.      -0.16846 -0.34903 -0.54281]
+      block + hole                      = [ 0.      -0.77074 -1.88399 -3.84845]
+      A_0/N^2 = 1.33325 (block 1 + hole 1/3 = 1.33333);  hole alone A_0/N^2 = 0.32550
+== Section 7: supplementary checks
+  (a) midpoint family N=3..40: max |D_num/D_exact - 1| = 3.8e-04  (D_exact = log(N/(N-2))/(N-1))
+  (b) N=4: (A'-A^2)/A at gap 1e-4 = -35.409601, close-pair limit formula = -35.409602
+  (b) N=6: (A'-A^2)/A at gap 1e-4 = -362.195116, close-pair limit formula = -362.195192
+  (b) N=9: (A'-A^2)/A at gap 1e-4 = -2643.745116, close-pair limit formula = -2643.749042
+  (c) ACUE N=12, orbits binned by log|disc P_0| (8 quantile bands): [F0 range] -> N^2 D min / max
+      [ -23.92,  12.23] -> 1.3032 / 2.0000
+      [  12.23,  15.59] -> 1.3154 / 1.9869
+      [  15.59,  17.65] -> 1.3203 / 1.9780
+      [  17.65,  19.29] -> 1.3223 / 1.9722
+      [  19.29,  20.69] -> 1.3277 / 1.9552
+      [  20.69,  22.04] -> 1.3300 / 1.9595
+      [  22.04,  23.55] -> 1.3347 / 1.9437
+      [  23.55,  28.92] -> 1.3377 / 1.9902
+      Pearson corr(F0, N^2 D) = -0.271; clock value F0 = N log N = 29.82
+total time 9.2s
