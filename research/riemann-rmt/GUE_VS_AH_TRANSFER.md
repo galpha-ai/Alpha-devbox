@@ -10,7 +10,7 @@
 4. The content of the finite theorems lives on the other axis, *inside* the alternative world: the depth law of lattice processes (floor π²/8, exact constants 2 and C*, the domain wall) and the N = 11 fact that it is not a function of the gap law.
 5. Montgomery's band |α| < 1 is exactly the Nyquist band of the half-lattice. On the half-lattice the structure measure is 2-periodic, so Montgomery's theorem already forces the *entire* pair correlation of every simple-point alternative to be F_AH, band-edge atoms included (Proposition 4, the infinite-volume form of the Nyquist conservation law). Impostors differ from AH only in third and higher correlations outside the band.
 6. The explicit (N − 3)-parameter impostor family (tilts by functions of det U²) is a holonomy effect: its coupling to local patterns of width three vanishes to machine precision and its width-four coupling decays geometrically in N. In the infinite-volume limit the whole family *is* the AH process.
-7. Whether the AH process is the unique stationary half-lattice process with the sine process's band-limited correlations of all orders is the right open question in Tao's framework. Linear programming over the positive fibre at N = 6, 7, 8 shows that every occupation pattern of three consecutive sites is forced exactly, patterns out to two mean spacings are pinned to within 2·10⁻³, and the depth law is free over an interval of width 0.2: impostors are locally AH, and what the fibre frees is global first-passage information (§5).
+7. Whether the AH process is the unique stationary half-lattice process with the sine process's band-limited correlations of all orders is the right open question in Tao's framework. Linear programming over the positive fibre at N = 6, 7, 8, 9 shows that every occupation pattern of three consecutive sites is forced exactly, patterns out to two mean spacings are pinned to within 2·10⁻³, and the depth law is free over an interval of width 0.2 that grows with N: impostors are locally AH, and what the fibre frees is global first-passage information (§5).
 8. Theorem A is the finite form of the Csordas–Smith–Varga Lehmer-pair bound, and "only the clock survives the collapsing flow forever" is the finite form of Newman's conjecture Λ ≥ 0 in the Rodgers–Tao local-equilibrium picture (Remark 6).
 
 ## 1. Dictionary
@@ -85,22 +85,22 @@ Thus every simple-point impostor on the half-lattice has the pair correlation of
 
 **(b) The right question.** Is the AH process the unique stationary process on the half-lattice with intensity one whose correlation functions agree with the sine process's inside the Rudnick–Sarnak band at every order? Proposition 4 settles order two. For order three and beyond, the finite evidence is the range of local statistics over the positive moment fibre, computed by linear programming over rotation-invariant laws on the ACUE support:
 
-| N | 6 | 7 | 8 |
-|---|---|---|---|
-| orbits / constraint rank | 80 / 70 | 246 / 166 | 810 / 407 |
-| width-3 patterns: max range | 0 | 0 | 0 |
-| width-4 patterns: max range | 4·10⁻⁵ | 7·10⁻⁵ | 9·10⁻⁵ |
-| width-5 patterns: max range (ACUE value ≈ 0.11) | 6.5·10⁻⁴ | 1.1·10⁻³ | 1.5·10⁻³ |
-| E\|p_N\|²/N | forced = 1 | forced = 1 | forced = 1 |
-| P(N²D > 1.6): ACUE value | 0.170 | 0.131 | 0.099 |
-| P(N²D > 1.6): fibre range | [0.114, 0.282] | [0.066, 0.245] | [0.021, 0.227] |
-| P(N²D > 1.8): fibre range | [0.087, 0.219] | [0.052, 0.211] | [0.012, 0.200] |
+| N | 6 | 7 | 8 | 9 |
+|---|---|---|---|---|
+| orbits / constraint rank | 80 / 70 | 246 / 166 | 810 / 407 | 2704 / 900 |
+| width-3 patterns: max range | 0 | 0 | 0 | 0 |
+| width-4 patterns: max range | 4·10⁻⁵ | 7·10⁻⁵ | 9·10⁻⁵ | 1.2·10⁻⁴ |
+| width-5 patterns: max range (ACUE value ≈ 0.11) | 6.5·10⁻⁴ | 1.1·10⁻³ | 1.5·10⁻³ | running |
+| Nyquist row E∣p_N∣²/N | forced = 1 | forced = 1 | forced = 1 | 1 (LP running) |
+| P(N²D > 1.6): ACUE value | 0.170 | 0.131 | 0.099 | 0.075 |
+| P(N²D > 1.6): fibre range | [0.114, 0.282] | [0.066, 0.245] | [0.021, 0.227] | [0.002, 0.218] |
+| P(N²D > 1.8): fibre range | [0.087, 0.219] | [0.052, 0.211] | [0.012, 0.200] | [0.0005, 0.195] |
 
-(`overnight/fable/scripts/fibre_lp.py`: variables are the masses of the rotation orbits, constraints the balanced moments of degree ≤ N reduced to an orthonormal row basis, constraint residual of the ACUE point ≤ 10⁻¹⁵; "max range" is the largest width of [min, max] over all occupation patterns of w consecutive sites. Runs at N = 9 and 10 were started and are reported in the log when finished.)
+(`overnight/fable/scripts/fibre_lp.py`: variables are the masses of the rotation orbits, constraints the balanced moments of degree ≤ N reduced to an orthonormal row basis, constraint residual of the ACUE point ≤ 10⁻¹⁵; "max range" is the largest width of [min, max] over all occupation patterns of w consecutive sites. At N = 9 the dual simplex needed about five minutes per LP, so the sweeps were rerun with the interior-point method (`fibre_lp_survival.py`, `fibre_lp_patterns.py`; at N = 8 it reproduces the simplex values to five digits, and one pattern that it could not solve fell back to the simplex); the width-5 sweep and the Nyquist-row check at N = 9 were still running when this was written and are reported in `fibre_lp_N9_patterns.log` and `fibre_lp_N9_survival.log` as they finish. N = 10, with 9252 orbits, was not attempted.)
 
-Three things stand out. Every occupation pattern on three consecutive sites is *forced* on the whole positive fibre, to 10⁻¹⁵, which together with Proposition 4 suggests a Nyquist-type identity for three-point patterns that we have not written down. Patterns of width four and five, that is three-point and higher correlations out to two mean spacings, are pinned to within 10⁻⁴ and 2·10⁻³, with a slow and decelerating growth in N. The survival probabilities, by contrast, range over an interval of width 0.2 that grows with N. In words: **the impostors are locally AH, and what the fibre frees is global, first-passage information**. The depth is exactly such a global functional, which is why it separates impostors from ACUE (the N = 11 theorem) while every local pattern cannot.
+Three things stand out. Every occupation pattern on three consecutive sites is *forced* on the whole positive fibre, to 10⁻¹⁵, which together with Proposition 4 suggests a Nyquist-type identity for three-point patterns that we have not written down. Patterns of width four and five, that is three-point and higher correlations out to two mean spacings, are pinned to within 1.2·10⁻⁴ and 2·10⁻³, with slow, roughly linear growth in N (width four: 4, 7, 9, 12 in units of 10⁻⁵ for N = 6 to 9). The survival probabilities, by contrast, range over an interval of width 0.17 to 0.22 that grows with N; at N = 9 the fibre contains a law under which the event N²D > 1.6, of ACUE probability 0.075, has probability 0.002. In words: **the impostors are locally AH, and what the fibre frees is global, first-passage information**. The depth is exactly such a global functional, which is why it separates impostors from ACUE (the N = 11 theorem) while every local pattern cannot.
 
-For Tao's question this cuts both ways. If the small local ranges tend to zero as N → ∞, the AH process is the unique local limit of the fibre and is canonical; then the whole finite fibre, like the det-tilt family, is a finite-size effect and the depth's freedom on it concerns global structure that no stationary limit sees. If the ranges stabilise at a positive value, there exist stationary half-lattice processes other than AH with the sine process's band-limited correlations at every order, differing from AH in three-point correlations at distance two or more. The N ≤ 8 data cannot decide this; it does decide that any such difference is at most a few parts in a thousand at the scale of two mean spacings.
+For Tao's question this cuts both ways. If the small local ranges tend to zero as N → ∞, the AH process is the unique local limit of the fibre and is canonical; then the whole finite fibre, like the det-tilt family, is a finite-size effect and the depth's freedom on it concerns global structure that no stationary limit sees. If the ranges stabilise at a positive value, there exist stationary half-lattice processes other than AH with the sine process's band-limited correlations at every order, differing from AH in three-point correlations at distance two or more. The N ≤ 9 data cannot decide this; it does decide that any such difference is at most a few parts in a thousand at the scale of two mean spacings.
 
 The N = 11 construction (addendum to §4 of `NEW_RESULTS.md`) shows that the depth law is a free coordinate of the finite fibre even after the full pair-displacement and sorted-gap laws are fixed. Its periodic lift gives examples at every N = 11r with vanishing mass differences, which is consistent with uniqueness in the limit and does not prove it.
 
@@ -114,4 +114,4 @@ The N = 11 construction (addendum to §4 of `NEW_RESULTS.md`) shows that the dep
 
 ## 7. Files
 
-`overnight/fable/scripts/dimer_limit.py`, `dettilt_local.py`, `fibre_lp.py`, `cue_depth_mc.py` with logs. Claims tagged [P] are proved in `NEW_RESULTS.md` or above; the proof sketch of Theorem 2(ii) is complete except for the displacement bookkeeping; all numerical values are exact enumerations or ball-arithmetic certifications except the Monte Carlo of §5 and the LP values, which are floating-point linear programming with the constraint residual reported.
+`overnight/fable/scripts/dimer_limit.py`, `dettilt_local.py`, `fibre_lp.py`, `fibre_lp_survival.py`, `fibre_lp_patterns.py`, `cue_depth_mc.py` with logs. Claims tagged [P] are proved in `NEW_RESULTS.md` or above; the proof sketch of Theorem 2(ii) is complete except for the displacement bookkeeping; all numerical values are exact enumerations or ball-arithmetic certifications except the Monte Carlo of §5 and the LP values, which are floating-point linear programming with the constraint residual reported.
