@@ -56,9 +56,12 @@ def solve(f, sign, tag):
         print(f"      [{tag} {method} sign {sign:+d}: {time.time()-t0:.1f}s status {res.status} residual {resid:.1e}]", flush=True)
         if res.status == 0: return sign*res.fun
     return float('nan')
+import os
+ONLY = set(os.environ.get('PATTERNS', '').split(',')) - {''}   # optional: restrict the sweep to these patterns (e.g. after a cut run)
 for width in WIDTHS:
     worst = (-1.0, None, None)
     for pat in itertools.product([0,1], repeat=width):
+        if ONLY and ''.join(map(str, pat)) not in ONLY: continue
         f = np.array([np.mean([all(((x in Sx) == bool(pat[i])) for i, x in enumerate(range(width))) for Sx in orbits[r]]) for r in reps])
         if (acue@f) < 1e-9: continue
         tag = ''.join(map(str, pat))
