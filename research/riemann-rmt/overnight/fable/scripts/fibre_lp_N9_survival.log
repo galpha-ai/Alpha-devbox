@@ -12,3 +12,4 @@ N=9: orbits 2704, constraint rank 900, ACUE residual 1.0e-15, setup 6s
       [highs-ipm sign +1: 106.1s status 0 residual 6.5e-14 min(x) -5.5e-10]
       [highs-ipm sign -1: 75.7s status 0 residual 4.3e-14 min(x) -9.7e-10]
    P(N^2 D > 1.6)           ACUE 0.07457   fibre range [0.00202, 0.21766]  width 0.21564
+      [highs-ipm sign +1: 51.5s status 0 residual 7.2e-14 min(x) -4.7e-11]
