@@ -1,0 +1,9 @@
+N=8: E[#gaps=1]/N = 0.294733   (discrete-sine limit 1/2-2/pi^2 = 0.297358);  X uniform? max|P(X=x)-1/N| = 1.39e-17
+   width 3: max_k,pattern |E[e^(2 pi i k X/N) | pattern]| = 3.8602e-16  at k,pattern=(6, (1, 1, 0))
+   width 4: max_k,pattern |E[e^(2 pi i k X/N) | pattern]| = 1.4334e-05  at k,pattern=(2, (1, 1, 1, 1))
+N=10: E[#gaps=1]/N = 0.295683   (discrete-sine limit 1/2-2/pi^2 = 0.297358);  X uniform? max|P(X=x)-1/N| = 2.78e-17
+   width 3: max_k,pattern |E[e^(2 pi i k X/N) | pattern]| = 7.6242e-16  at k,pattern=(7, (0, 1, 1))
+   width 4: max_k,pattern |E[e^(2 pi i k X/N) | pattern]| = 4.1080e-07  at k,pattern=(8, (0, 0, 0, 0))
+N=12: E[#gaps=1]/N = 0.296196   (discrete-sine limit 1/2-2/pi^2 = 0.297358);  X uniform? max|P(X=x)-1/N| = 1.39e-17
+   width 3: max_k,pattern |E[e^(2 pi i k X/N) | pattern]| = 1.1754e-15  at k,pattern=(8, (0, 0, 0))
+   width 4: max_k,pattern |E[e^(2 pi i k X/N) | pattern]| = 2.2471e-08  at k,pattern=(10, (0, 0, 0, 0))
