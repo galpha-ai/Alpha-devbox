@@ -15,3 +15,4 @@ N=9: orbits 2704, constraint rank 900, ACUE residual 1.0e-15, setup 6s
       [highs-ipm sign +1: 51.5s status 0 residual 7.2e-14 min(x) -4.7e-11]
       [highs-ipm sign -1: 84.1s status 0 residual 6.0e-14 min(x) 0.0e+00]
    P(N^2 D > 1.8)           ACUE 0.06148   fibre range [0.00051, 0.19536]  width 0.19485
+      [stopped by hand after 66 min in the interior-point Nyquist LP at N=9 (objective constant on the feasible set); simplex check in fibre_lp_N9_nyquist.log]

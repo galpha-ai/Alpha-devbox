@@ -4,7 +4,7 @@ row E|p_N|^2/N.  Written for N = 9, where the per-LP cost of the full pattern sw
 dual simplex) exceeded the background time limit after the width-3 sweep had finished.  Each LP is solved with
 the interior-point method first (dense 900 x 2704 system) and falls back to the default HiGHS choice on failure;
 N = 8 is run first as a cross-check against the simplex values reported in fibre_lp.log."""
-import itertools, sys, time, numpy as np
+import itertools, os, sys, time, numpy as np
 from scipy.optimize import linprog
 from math import factorial
 from collections import Counter
@@ -60,8 +60,10 @@ for N in [int(a) for a in sys.argv[1:]] or [8, 9]:
         return w
     acue = np.array([wt(r)*len(orbits[r]) for r in reps]); acue /= acue.sum()
     print(f"N={N}: orbits {len(reps)}, constraint rank {A.shape[0]}, ACUE residual {np.abs(A@acue-b).max():.1e}, setup {time.time()-t_setup:.0f}s", flush=True)
+    METHODS = tuple(os.environ.get('METHODS', 'highs-ipm,highs').split(','))   # optional override, e.g. METHODS=highs
+    STATS = set(os.environ.get('STATS', 'survival,nyquist').split(','))        # optional subset of the statistics
     def solve(f, sign):
-        for method in ('highs-ipm', 'highs'):
+        for method in METHODS:
             t0 = time.time()
             res = linprog(sign*f, A_eq=A, b_eq=b, bounds=(0, None), method=method, options=OPTS)
             resid = np.abs(A@res.x - b).max() if res.status == 0 else float('nan')
@@ -71,7 +73,9 @@ for N in [int(a) for a in sys.argv[1:]] or [8, 9]:
     def frange(f, label):
         lo = solve(f, 1); hi = solve(f, -1)
         print(f"   {label:24s} ACUE {float(acue@f):.5f}   fibre range [{lo:.5f}, {hi:.5f}]  width {hi-lo:.5f}", flush=True)
-    for t in (1.6, 1.8):
-        frange((depth > t).astype(float), f"P(N^2 D > {t})")
-    pN2 = np.array([abs(sum((-1)**x for x in r))**2 for r in reps])/N
-    frange(pN2, "E|p_N|^2 / N")
+    if 'survival' in STATS:
+        for t in (1.6, 1.8):
+            frange((depth > t).astype(float), f"P(N^2 D > {t})")
+    if 'nyquist' in STATS:
+        pN2 = np.array([abs(sum((-1)**x for x in r))**2 for r in reps])/N
+        frange(pN2, "E|p_N|^2 / N")
