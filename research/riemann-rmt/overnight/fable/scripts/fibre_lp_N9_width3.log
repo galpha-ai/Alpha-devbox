@@ -5,3 +5,6 @@ N=9: orbits 2704, constraint rank 900, ACUE residual 1.0e-15
       [001 highs-ipm sign +1: 339.6s status 0 residual 8.4e-14]
       [001 highs-ipm sign -1: 322.7s status 0 residual 8.5e-14]
    pattern 001: ACUE 0.125000  range [0.124998, 0.125002]  width 3.46e-06
+      [010 highs-ipm sign +1: 231.3s status 0 residual 8.5e-14]
+      [010 highs-ipm sign -1: 348.3s status 0 residual 8.5e-14]
+   pattern 010: ACUE 0.227356  range [0.227355, 0.227358]  width 3.46e-06
