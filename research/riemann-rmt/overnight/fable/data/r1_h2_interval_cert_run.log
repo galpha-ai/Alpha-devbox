@@ -1,0 +1,29 @@
+[exact] k=15856 K=15855 pieces=399 T=2430.63
+[exact] c2=0.12120890875281728 mu=0.8111318899343056 var=48.09235138030228 rho3=16801.254240967144
+[exact] G(T)^2/c2 = 8.28670266809925  (crude, un-truncated ceiling of this g)
+[exact] layer done in 0.26s
+[python-flint arb (ball arithmetic)] certificate M_15856 >= 8.013326752751306578613695503115  (formula value <= 8.013326752751306578613695503116)
+[python-flint arb (ball arithmetic)] margin over 8: 0.013326752751306578613695503115   PASS=True   time 1.32s
+[python-flint arb (ball arithmetic)] strategies: {'CH(B=1T,lam=10^(6/8)/T)': 334, 'CH(B=1T,lam=10^(5/8)/T)': 43, 'BE_elem': 22}
+[python-flint arb (ball arithmetic)]   variant C_BE=1187/2500: lo=8.01642038133547810353 PASS=True
+[python-flint arb (ball arithmetic)]   variant C_BE=14/25: lo=8.01332675275130657861 PASS=True
+[python-flint arb (ball arithmetic)]   variant C_BE=441/625: lo=8.00986119079813881516 PASS=True
+[python-flint arb (ball arithmetic)]   variant C_BE=1583/2000: lo=8.00857812100371282259 PASS=True
+[python-flint arb (ball arithmetic)]   variant C_BE=319/400: lo=8.00850042391522292780 PASS=True
+[python-flint arb (ball arithmetic)]   variant Chernoff_only_no_BE: lo=8.00677408008999410774 PASS=True
+[python-flint arb (ball arithmetic)]   variant C_BE=0.56_with_rigorous_erfc_Phibar: lo=8.01593628080580075677 PASS=True
+[mpmath.iv (interval arithmetic) + 2^-150 guard band] certificate M_15856 >= 8.013326752751306578613695503115  (formula value <= 8.013326752751306578613695503116)
+[mpmath.iv (interval arithmetic) + 2^-150 guard band] margin over 8: 0.013326752751306578613695503115   PASS=True   time 31.73s
+[mpmath.iv (interval arithmetic) + 2^-150 guard band] strategies: {'CH(B=1T,lam=10^(6/8)/T)': 334, 'CH(B=1T,lam=10^(5/8)/T)': 43, 'BE_elem': 22}
+[mpmath.iv (interval arithmetic) + 2^-150 guard band]   variant C_BE=1187/2500: lo=8.01642038133547810353 PASS=True
+[mpmath.iv (interval arithmetic) + 2^-150 guard band]   variant C_BE=14/25: lo=8.01332675275130657861 PASS=True
+[mpmath.iv (interval arithmetic) + 2^-150 guard band]   variant C_BE=441/625: lo=8.00986119079813881516 PASS=True
+[mpmath.iv (interval arithmetic) + 2^-150 guard band]   variant C_BE=1583/2000: lo=8.00857812100371282259 PASS=True
+[mpmath.iv (interval arithmetic) + 2^-150 guard band]   variant C_BE=319/400: lo=8.00850042391522292780 PASS=True
+[mpmath.iv (interval arithmetic) + 2^-150 guard band]   variant Chernoff_only_no_BE: lo=8.00677408008999410774 PASS=True
+[tuple] count=15856 sorted/distinct=True diameter=173438 admissible=True (primes tested: 1847, largest 15823)
+wrote h2_k15856_interval_cert.json   total time 35.0s
+
+real	0m35.109s
+user	0m34.976s
+sys	0m0.047s

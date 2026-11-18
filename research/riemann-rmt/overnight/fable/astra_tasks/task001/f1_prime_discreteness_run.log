@@ -1,0 +1,15 @@
+primes to 100000000: 5761455 (6.2s)
+Mertens E (numerical at 1e8, formula): -1.332498764705793 -1.3325822657333648
+trial_f_plus_gS  L=1e3: alpha_semi=0.05247 (M2/I 0.15074, M2/I+A1/logL -0.03145, (a-M2I)*logL -0.6788) beta_semi=0.07129 (M3/I 0.08460) exact alpha/D=0.04474 ratio=0.8526, exact beta/D=0.08207 ratio=1.1512 bin-err=0.0e+00 [1.1s]
+trial_f_plus_gS  L=1e4: alpha_semi=0.06565 (M2/I 0.15074, M2/I+A1/logL 0.01410, (a-M2I)*logL -0.7837) beta_semi=0.07518 (M3/I 0.08460) exact alpha/D=0.05576 ratio=0.8495, exact beta/D=0.08394 ratio=1.1165 bin-err=-4.5e-10 [4.1s]
+trial_f_plus_gS  L=1e5: alpha_semi=0.07593 (M2/I 0.15074, M2/I+A1/logL 0.04143, (a-M2I)*logL -0.8613) beta_semi=0.07772 (M3/I 0.08460) exact alpha/D=0.06527 ratio=0.8596, exact beta/D=0.08513 ratio=1.0953 bin-err=-2.2e-09 [22.2s]
+trial_f_plus_gS  L=1e6: alpha_semi=0.08417 (M2/I 0.15074, M2/I+A1/logL 0.05965, (a-M2I)*logL -0.9197) beta_semi=0.07941 (M3/I 0.08460) exact alpha/D=0.07340 ratio=0.8720, exact beta/D=0.08583 ratio=1.0808 [9.4s]
+trial_f_plus_gS  L=1e7: alpha_semi=0.09088 (M2/I 0.15074, M2/I+A1/logL 0.07266, (a-M2I)*logL -0.9648) beta_semi=0.08058 (M3/I 0.08460)  [13.0s]
+trial_f_plus_gS  L=1e8: alpha_semi=0.09644 (M2/I 0.15074, M2/I+A1/logL 0.08242, (a-M2I)*logL -1.0002) beta_semi=0.08140 (M3/I 0.08460)  [22.8s]
+H_equals_1       L=1e3: alpha_semi=0.05589 (M2/I 0.15705, M2/I+A1/logL -0.03588, (a-M2I)*logL -0.6988) beta_semi=0.04941 (M3/I 0.05959) exact alpha/D=0.05107 ratio=0.9138, exact beta/D=0.05721 ratio=1.1578 bin-err=0.0e+00 [0.1s]
+H_equals_1       L=1e4: alpha_semi=0.06967 (M2/I 0.15705, M2/I+A1/logL 0.01235, (a-M2I)*logL -0.8047) beta_semi=0.05216 (M3/I 0.05959) exact alpha/D=0.06221 ratio=0.8929, exact beta/D=0.05830 ratio=1.1178 bin-err=-1.2e-09 [0.1s]
+H_equals_1       L=1e5: alpha_semi=0.08034 (M2/I 0.15705, M2/I+A1/logL 0.04129, (a-M2I)*logL -0.8831) beta_semi=0.05402 (M3/I 0.05959) exact alpha/D=0.07164 ratio=0.8917, exact beta/D=0.05906 ratio=1.0934 bin-err=-2.7e-09 [0.4s]
+H_equals_1       L=1e6: alpha_semi=0.08882 (M2/I 0.15705, M2/I+A1/logL 0.06058, (a-M2I)*logL -0.9426) beta_semi=0.05530 (M3/I 0.05959) exact alpha/D=0.07964 ratio=0.8967, exact beta/D=0.05957 ratio=1.0772 [0.2s]
+H_equals_1       L=1e7: alpha_semi=0.09569 (M2/I 0.15705, M2/I+A1/logL 0.07436, (a-M2I)*logL -0.9890) beta_semi=0.05620 (M3/I 0.05959)  [0.3s]
+H_equals_1       L=1e8: alpha_semi=0.10136 (M2/I 0.15705, M2/I+A1/logL 0.08470, (a-M2I)*logL -1.0258) beta_semi=0.05685 (M3/I 0.05959)  [1.0s]
+done 88.4s

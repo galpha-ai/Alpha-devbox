@@ -1,0 +1,9 @@
+N= 12 a,b=7,7  N^2 D = 1.3031763552   excess over pi^2/8 = 0.069476   N*(excess) = 0.8337
+N= 16 a,b=9,9  N^2 D = 1.2877881993   excess over pi^2/8 = 0.054088   N*(excess) = 0.8654
+N= 24 a,b=13,13  N^2 D = 1.2711349794   excess over pi^2/8 = 0.037434   N*(excess) = 0.8984
+N= 32 a,b=17,17  N^2 D = 1.2623083739   excess over pi^2/8 = 0.028608   N*(excess) = 0.9155
+N= 48 a,b=25,25  N^2 D = 1.2531351260   excess over pi^2/8 = 0.019435   N*(excess) = 0.9329
+N= 64 a,b=33,33  N^2 D = 1.2484148814   excess over pi^2/8 = 0.014714   N*(excess) = 0.9417
+fit N^2D = c0 + c1/N + c2/N^2 : [ 1.2338166   0.95875269 -1.51832898]   pi^2/8 = 1.2337005501361697
+fit with c0 fixed at pi^2/8: c1, c2 = [ 0.9642038  -1.56948863]  residual max 4.427329247422285e-05
+exit 0

@@ -1,0 +1,2 @@
+N=9: orbits 2704, constraint rank 900, ACUE residual 1.0e-15, setup 42s
+      [simplex check lost to a container restart after about 25 min in its first LP; the row is itself the constraint lam = mu = (N), see fibre_rowspace.log and rowspace_exact.log]

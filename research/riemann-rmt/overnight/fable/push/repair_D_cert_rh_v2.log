@@ -1,0 +1,11 @@
+columns: 5207 (sigmas=(0.008, 0.01, 0.0127, 0.015, 0.02), u<= 2.0 step 0.002); grh=False
+certify_v2 grh=False it=0 LPvalue=0.0153391 nrows=2382 nactive=230 maxviol=9.80e-07 nviol=66 [106s]
+certify_v2 grh=False it=1 LPvalue=0.0153369 nrows=2448 nactive=230 maxviol=1.34e-08 nviol=0 [211s]
+  LP value (B - cost) = 0.015336903
+  residual: max f on fine grid = 1.336e-08; sum over windows of sup (nuhat-K)_+ = 2.163e-07; beyond 60.0: 2.081e-02
+  window penalty (8/3)*sum = 5.549e-02
+  CERTIFIED LOWER BOUND W >= -0.040150556
+  worst windows (b, max f, corr, sup): [(3, '1.34e-08', '1.81e-09', '1.52e-08'), (4, '1.34e-08', '1.39e-09', '1.47e-08'), (16, '1.22e-08', '9.94e-10', '1.32e-08'), (17, '1.22e-08', '9.58e-10', '1.32e-08'), (58, '1.18e-08', '2.40e-11', '1.19e-08'), (59, '1.18e-08', '2.08e-11', '1.19e-08')]
+  column usage: {'G': {'n': 230, 'weight': 0.15011478831142513, 'cost': 0.44075707680321974}, 'P': {'n': 0, 'weight': 0.0, 'cost': 0.0}, 'T': {'n': 0, 'weight': 0.0, 'cost': 0.0}}
+  Gaussian weight by sigma: {0.008: 0.15011095317519485, 0.01: 0.0, 0.0127: 0.0, 0.015: 0.0, 0.02: 3.835136230276473e-06}
+  largest columns: [(np.str_('G'), np.float64(0.196), np.float64(0.008), np.float64(0.00488)), (np.str_('G'), np.float64(0.212), np.float64(0.008), np.float64(0.00479)), (np.str_('G'), np.float64(0.18), np.float64(0.008), np.float64(0.00477)), (np.str_('G'), np.float64(0.102), np.float64(0.008), np.float64(0.00458)), (np.str_('G'), np.float64(0.118), np.float64(0.008), np.float64(0.00456)), (np.str_('G'), np.float64(0.228), np.float64(0.008), np.float64(0.00453)), (np.str_('G'), np.float64(0.164), np.float64(0.008), np.float64(0.00444)), (np.str_('G'), np.float64(0.086), np.float64(0.008), np.float64(0.00444)), (np.str_('G'), np.float64(0.134), np.float64(0.008), np.float64(0.0044)), (np.str_('G'), np.float64(0.15), np.float64(0.008), np.float64(0.00416)), (np.str_('G'), np.float64(0.244), np.float64(0.008), np.float64(0.00413)), (np.str_('G'), np.float64(0.148), np.float64(0.008), np.float64(0.0039)), (np.str_('G'), np.float64(0.166), np.float64(0.008), np.float64(0.00389)), (np.str_('G'), np.float64(0.182), np.float64(0.008), np.float64(0.00364)), (np.str_('G'), np.float64(0.26), np.float64(0.008), np.float64(0.00362))]

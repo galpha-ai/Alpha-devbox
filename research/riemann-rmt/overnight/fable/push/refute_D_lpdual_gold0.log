@@ -1,0 +1,10 @@
+gold=False ducheck=0.002 it=0 W=0.020279 ncons=2001 minR=-0.16701 nviol=635 [17s]
+gold=False ducheck=0.002 it=1 W=0.020696 ncons=2636 minR=-0.06893 nviol=133 [33s]
+gold=False ducheck=0.002 it=2 W=0.020696 ncons=2769 minR=-0.01465 nviol=45 [65s]
+gold=False ducheck=0.002 it=3 W=0.020696 ncons=2814 minR=-0.00004 nviol=1 [85s]
+gold=False ducheck=0.002 it=4 W=0.020696 ncons=2815 minR=-0.00000 nviol=0 [103s]
+gold=False ducheck=0.002 primal obj -0.43538354364972837 dual obj -0.4353835436497273 n active duals 137
+gold=False ducheck=0.002 min per-cell slack (should be >= -tiny): -1.194790794079026e-16
+gold=False ducheck=0.002 pointwise certificate g: min=-0.00085 at alpha=11.9995; fraction of alpha-grid with g<0: 0.4139; int of negative part=-0.000034
+gold=False ducheck=0.002 FINAL W= 0.020695994445039022  Bband= 0.4560939793292318  tailK= -1.4441234464404785e-05
+DONE

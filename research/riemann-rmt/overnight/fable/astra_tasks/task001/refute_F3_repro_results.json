@@ -1,0 +1,39 @@
+{
+  "checks": [
+    {
+      "name": "check1_rerun_small_Ms",
+      "status": "PASS",
+      "detail": "re-ran f3_fock_spectrum.py --Ms 10,15,20,25,30 in 0.7s; max|lambda_max_rerun - lambda_max_reported| over M in {20,25,30} = 4.358e-12 (reproduces the published table to numerical noise if PASS)"
+    },
+    {
+      "name": "check2_dim_counts",
+      "status": "PASS",
+      "detail": "sum_{m<=M} p(m) via sympy vs. report's dim column, for M in [20, 25, 30, 35, 40, 45, 50, 55, 60]: all match"
+    },
+    {
+      "name": "check3_Cg_integral",
+      "status": "PASS",
+      "detail": "quad(g(u)^2/u, 0, 1) = 3.2965552774 (err=3.7e-14) vs report's Cg=3.29656 (g(u)=2 sin(pi u/2)); |diff|=4.72e-06"
+    },
+    {
+      "name": "check4_F2_J_crosscheck",
+      "status": "PASS",
+      "detail": "f2_finite_sum_results.json continuum J=-0.014662375473371 vs report-quoted J=-0.014662375473371 (|diff|=4.02e-16); lambda=2pi^2(J+1/4)=4.645379 vs report's table value 4.645379 (|diff|=4.90e-07)"
+    },
+    {
+      "name": "check5_extrapolations",
+      "status": "PASS",
+      "detail": "3-point fits: all match report to 1e-5; power-law fit (linf,c,p)=(np.float64(4.646544), np.float64(0.532749), np.float64(0.92425)) vs report (4.646544,0.53275,0.9242) [ok]; linear-in-1/M fit linf=4.644859 vs report 4.644859 [ok]"
+    },
+    {
+      "name": "check6_astra_family_table",
+      "status": "PASS",
+      "detail": "lambda=2pi^2(J+1/4) recomputed for all 6 rows of report's \u00a74.4 table: all match to 5e-6"
+    },
+    {
+      "name": "check7_M55_M60_provenance",
+      "status": "NOTE",
+      "detail": "f3_fock_spectrum_results.json contains M=[20, 25, 30, 35, 40, 45, 50] (55/60 present in results: False/False); f3_fock_spectrum_run.log mentions M=55/M=60: False/False. PROVENANCE GAP: the M=55/60 rows quoted in the report table/text are NOT backed by either cited artifact (results.json stops at M=50, run.log stops at M=50). Independent recompute via build_operators(): M=55 dim=2984865 nnz=15877562 maxrss=3392MB (44.3s) vs report's dim=2984865 nnz=15877562 maxrss~3522MB; M=60 dim=6639349 nnz=37013901 maxrss=7544MB (103.7s) vs report's dim=6639349 nnz=37013901 maxrss~7769MB. dim/nnz MATCH exactly (memory figures differ by a few hundred MB, plausibly because the report's single combined run accumulated un-freed memory from the preceding M<=50 iterations in the same process, whereas this check calls build_operators() fresh per M)."
+    }
+  ]
+}

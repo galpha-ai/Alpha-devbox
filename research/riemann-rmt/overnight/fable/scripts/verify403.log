@@ -1,0 +1,18 @@
+N=5: orbits enumerated=26 burnside=26  upper-bound |E|=24
+   prime 31: rows x orbits = (89, 26), modular rank = 24  -> affine dim = 2
+   prime 41: rows x orbits = (89, 26), modular rank = 24  -> affine dim = 2
+N=6: orbits enumerated=80 burnside=80  upper-bound |E|=70
+   prime 37: rows x orbits = (210, 80), modular rank = 70  -> affine dim = 10
+   prime 61: rows x orbits = (210, 80), modular rank = 70  -> affine dim = 10
+N=7: orbits enumerated=246 burnside=246  upper-bound |E|=166
+   prime 29: rows x orbits = (435, 246), modular rank = 166  -> affine dim = 80
+   prime 43: rows x orbits = (435, 246), modular rank = 166  -> affine dim = 80
+N=8: orbits enumerated=810 burnside=810  upper-bound |E|=407
+   prime 97: rows x orbits = (919, 810), modular rank = 407  -> affine dim = 403
+   prime 113: rows x orbits = (919, 810), modular rank = 407  -> affine dim = 403
+N=9: orbits enumerated=2704 burnside=2704  upper-bound |E|=900
+   prime 37: rows x orbits = (1819, 2704), modular rank = 900  -> affine dim = 1804
+   prime 73: rows x orbits = (1819, 2704), modular rank = 900  -> affine dim = 1804
+N=10: orbits enumerated=9252 burnside=9252  upper-bound |E|=1957
+   prime 41: rows x orbits = (3583, 9252), modular rank = 1957  -> affine dim = 7295
+   prime 61: rows x orbits = (3583, 9252), modular rank = 1957  -> affine dim = 7295

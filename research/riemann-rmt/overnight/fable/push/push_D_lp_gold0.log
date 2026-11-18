@@ -1,0 +1,9 @@
+gold=False it=0 W=0.020279 ncons=2001 minR=-0.1668 nviol=623 [14s]
+gold=False it=1 W=0.020696 ncons=2624 minR=-0.0786 nviol=127 [31s]
+gold=False it=2 W=0.020696 ncons=2751 minR=-0.0147 nviol=50 [52s]
+gold=False it=3 W=0.020696 ncons=2801 minR=-0.0030 nviol=7 [69s]
+gold=False it=4 W=0.020696 ncons=2808 minR=-0.0000 nviol=0 [87s]
+gold=False FINAL W= 0.020695993986609283  2int_{a0}^A K F* = -0.43538354410815805  2int_1^{a0} K F* = 0.0
+gold=False largest cell masses (alpha, mass): [(np.float64(1.37), np.float64(0.449)), (np.float64(6.95), np.float64(0.366)), (np.float64(4.175), np.float64(0.36)), (np.float64(2.75), np.float64(0.338)), (np.float64(1.39), np.float64(0.317)), (np.float64(5.575), np.float64(0.287)), (np.float64(8.35), np.float64(0.249)), (np.float64(4.125), np.float64(0.224)), (np.float64(6.45), np.float64(0.209)), (np.float64(7.85), np.float64(0.193)), (np.float64(2.81), np.float64(0.192)), (np.float64(5.525), np.float64(0.191))]
+gold=False F* at 1.05,1.3,1.6,1.9,2.5,3,5,8: [np.float64(0.0), np.float64(0.0), np.float64(0.211), np.float64(0.0), np.float64(0.0), np.float64(1.915), np.float64(1.65), np.float64(0.442)]
+DONE

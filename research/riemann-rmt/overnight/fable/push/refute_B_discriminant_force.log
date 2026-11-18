@@ -1,0 +1,108 @@
+== R1: F' = -A, F'' = -A' through the exponential polynomial (no finite differences)
+  N=3: 5 monomials, max w_m = 8 (bound N^2(N-1)/2 = 9)
+     worst |Re(disc'/disc) + A|/A = 5.7e-16, |Re(disc''/disc - (disc'/disc)^2) + A'|/A' = 1.4e-15, |Im disc'/disc| = 1.9e-35   (s = 0, 0.3D, 0.7D)
+  N=4: 16 monomials, max w_m = 20 (bound N^2(N-1)/2 = 24)
+     worst |Re(disc'/disc) + A|/A = 6.4e-16, |Re(disc''/disc - (disc'/disc)^2) + A'|/A' = 1.5e-15, |Im disc'/disc| = 1.9e-30   (s = 0, 0.3D, 0.7D)
+  N=5: 59 monomials, max w_m = 40 (bound N^2(N-1)/2 = 50)
+     worst |Re(disc'/disc) + A|/A = 8.0e-16, |Re(disc''/disc - (disc'/disc)^2) + A'|/A' = 2.5e-15, |Im disc'/disc| = 2.7e-34   (s = 0, 0.3D, 0.7D)
+   [0s]
+== R2: ODE route: dA/ds = sum_{i<j} c_ij (V_i-V_j)^2 ; d^2E/ds^2 = A'/2 (text: A'/4)
+  N=4: |dA/ds - A'|/A' <= 4.0e-11;  |E'' - A'/2|/(A'/2) <= 4.2e-07;  |E' - A/2|/(A/2) <= 3.9e-11   (so E'' = A'/2, and 'A'/4' in Section 3 is off by 2)
+  N=6: |dA/ds - A'|/A' <= 1.3e-11;  |E'' - A'/2|/(A'/2) <= 4.6e-07;  |E' - A/2|/(A/2) <= 2.1e-11   (so E'' = A'/2, and 'A'/4' in Section 3 is off by 2)
+  N=9: |dA/ds - A'|/A' <= 5.6e-11;  |E'' - A'/2|/(A'/2) <= 1.1e-06;  |E' - A/2|/(A/2) <= 5.3e-11   (so E'' = A'/2, and 'A'/4' in Section 3 is off by 2)
+   [0s]
+== R7: Theorem 6.1's parenthetical: is V_a - V_b >= 2 cot(g/2)?  (Theorem A says <=)
+   s/D=0.000: g=0.30000, V_a-V_b = 10.7870, 2cot(g/2) = 13.2332, difference = -2.4462 (<0), A = 69.32
+   s/D=0.200: g=0.27111, V_a-V_b = 12.4423, 2cot(g/2) = 14.6634, difference = -2.2212 (<0), A = 88.89
+   s/D=0.400: g=0.23728, V_a-V_b = 14.8252, 2cot(g/2) = 16.7784, difference = -1.9532 (<0), A = 121.7
+   s/D=0.599: g=0.19586, V_a-V_b = 18.7373, 2cot(g/2) = 20.3571, difference = -1.6198 (<0), A = 187.7
+   s/D=0.799: g=0.14015, V_a-V_b = 27.3297, 2cot(g/2) = 28.4941, difference = -1.1644 (<0), A = 386
+   s/D=0.999: g=0.01000, V_a-V_b = 400.0187, 2cot(g/2) = 400.1021, difference = -0.0834 (<0), A = 8.002e+04
+   So V_a - V_b < 2cot(g/2) (Theorem A's bracket REDUCES V_a - V_b); A -> infinity anyway because F -> -inf and A is monotone.
+   [1s]
+== R8: near-clock 'sharpness': D / [(1/C_N) log(1 + C_N/A_0)] as A_0 -> 0 (prediction 2(N^2-1)/(3N) for the fastest mode)
+   N=4: eps=1e-02: A_0=6.402e-03, D=0.978022, bound=0.402362, ratio=2.4307  (pred -> 2.5000)
+   N=4: eps=1e-03: A_0=6.400e-05, D=1.553652, bound=0.632618, ratio=2.4559  (pred -> 2.5000)
+   N=4: eps=1e-04: A_0=6.400e-07, D=2.129298, bound=0.862876, ratio=2.4677  (pred -> 2.5000)
+   N=6: eps=1e-02: A_0=4.863e-02, D=0.389634, bound=0.103896, ratio=3.7502  (pred -> 3.8889)
+   N=6: eps=1e-03: A_0=4.860e-04, D=0.645460, bound=0.169683, ratio=3.8039  (pred -> 3.8889)
+   N=6: eps=1e-04: A_0=4.860e-06, D=0.901303, bound=0.235471, ratio=3.8277  (pred -> 3.8889)
+   [1s]
+== R9: exact initial force energies
+   pure hole N=7: A_0 = 10.000000, (N-1)(N-2)/3 = 10.000000
+   pure hole N=9: A_0 = 18.666667, (N-1)(N-2)/3 = 18.666667
+   pure hole N=63: A_0 = 1260.666667, (N-1)(N-2)/3 = 1260.666667
+   pure hole N=127: A_0 = 5250.000000, (N-1)(N-2)/3 = 5250.000000
+   midpoint family N=8: A_0 = 42.000000, N^2-3N+2 = 42
+   midpoint family N=16: A_0 = 210.000000, N^2-3N+2 = 210
+   midpoint family N=96: A_0 = 8930.000000, N^2-3N+2 = 8930
+   ACUE [1,1,2..2,4,2..2] N=7: A_0/N^2 = 1.306122  (block N^2-3N+2 + hole (N-1)(N-2)/3, /N^2 = 0.816327)
+   ACUE [1,1,2..2,4,2..2] N=9: A_0/N^2 = 1.316872  (block N^2-3N+2 + hole (N-1)(N-2)/3, /N^2 = 0.921811)
+   ACUE [1,1,2..2,4,2..2] N=63: A_0/N^2 = 1.332997  (block N^2-3N+2 + hole (N-1)(N-2)/3, /N^2 = 1.270513)
+   ACUE [1,1,2..2,4,2..2] N=127: A_0/N^2 = 1.333251  (block N^2-3N+2 + hole (N-1)(N-2)/3, /N^2 = 1.302003)
+   [1s]
+== R3: Riccati bound and the (N^2/2) inequality
+  ACUE N= 4: min D/Riccati(C_N) = 1.4496 at gaps [1, 2, 2, 3];  min D/Riccati(N^2/2) = 1.0546 at gaps [1, 2, 2, 3]
+  ACUE N= 5: min D/Riccati(C_N) = 1.6194 at gaps [1, 2, 2, 2, 3];  min D/Riccati(N^2/2) = 1.0564 at gaps [1, 2, 2, 2, 3]
+  ACUE N= 6: min D/Riccati(C_N) = 1.7782 at gaps [1, 2, 2, 2, 2, 3];  min D/Riccati(N^2/2) = 1.0571 at gaps [1, 2, 2, 2, 2, 3]
+  ACUE N= 7: min D/Riccati(C_N) = 1.9296 at gaps [1, 3, 2, 2, 2, 2, 2];  min D/Riccati(N^2/2) = 1.0573 at gaps [1, 3, 2, 2, 2, 2, 2]
+  ACUE N= 8: min D/Riccati(C_N) = 2.0754 at gaps [1, 2, 2, 2, 2, 2, 2, 3];  min D/Riccati(N^2/2) = 1.0575 at gaps [1, 2, 2, 2, 2, 2, 2, 3]
+  ACUE N= 9: min D/Riccati(C_N) = 2.2168 at gaps [1, 2, 2, 2, 2, 2, 2, 2, 3];  min D/Riccati(N^2/2) = 1.0575 at gaps [1, 2, 2, 2, 2, 2, 2, 2, 3]
+  ACUE N=10: min D/Riccati(C_N) = 2.3545 at gaps [1, 2, 2, 2, 2, 2, 2, 2, 2, 3];  min D/Riccati(N^2/2) = 1.0576 at gaps [1, 2, 2, 2, 2, 2, 2, 2, 2, 3]
+  ACUE N=11: min D/Riccati(C_N) = 2.4891 at gaps [1, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2];  min D/Riccati(N^2/2) = 1.0576 at gaps [1, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+  ACUE N=12: min D/Riccati(C_N) = 2.6209 at gaps [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3];  min D/Riccati(N^2/2) = 1.0576 at gaps [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3]
+  random configurations (depth by bisection):
+    N=3: min D/Riccati(C_N) = 1.0118;  min D/Riccati(N^2/2) = 0.98100
+    N=4: min D/Riccati(C_N) = 1.0084;  min D/Riccati(N^2/2) = 0.97132
+    N=5: min D/Riccati(C_N) = 1.0271;  min D/Riccati(N^2/2) = 0.98088
+    N=6: min D/Riccati(C_N) = 1.0561;  min D/Riccati(N^2/2) = 1.03938
+    N=7: min D/Riccati(C_N) = 1.0884;  min D/Riccati(N^2/2) = 1.04267
+  N=3 grid over gaps (g1,g2) in (0.05,2pi-0.1)^2 with g3>0.05:
+    min D/Riccati(C_3=8) = 1.00047 at gaps [0.05  3.117 3.117];  min D/Riccati(9/2) = 0.97515 at gaps [2.503 1.277 2.503]
+  N=3 counterexample to D >= (2/N^2) log(1+N^2/(2A_0)): points at +-delta/2 and pi (close-pair G = 5 > N^2/2 = 4.5)
+     predicted D - bound = (delta^4/128)(9/2 - 5) = -delta^4/256
+     delta=0.80: D = 0.085915198184, bound = 0.087290546600, D/bound = 0.98424402, (D-bound)/delta^4 = -0.003358 (pred -1/256 = -0.003906)
+     delta=0.50: D = 0.032096040753, bound = 0.032327195344, D/bound = 0.99284953, (D-bound)/delta^4 = -0.003698 (pred -1/256 = -0.003906)
+     delta=0.30: D = 0.011356930920, bound = 0.011387973682, D/bound = 0.99727408, (D-bound)/delta^4 = -0.003832 (pred -1/256 = -0.003906)
+     delta=0.20: D = 0.005020960593, bound = 0.005027158329, D/bound = 0.99876715, (D-bound)/delta^4 = -0.003874 (pred -1/256 = -0.003906)
+     delta=0.10: D = 0.001251304062, bound = 0.001251693872, D/bound = 0.99968857, (D-bound)/delta^4 = -0.003898 (pred -1/256 = -0.003906)
+  N=4: background G_max = 9.2822 (N^2/2 = 8.0), delta=0.2: D/bound(N^2/2) = 0.9968779, (D-bound)/delta^4 = -0.00986, predicted (k-G)/128 = -0.01002
+  N=4: background G_max = 9.2822 (N^2/2 = 8.0), delta=0.1: D/bound(N^2/2) = 0.9992038, (D-bound)/delta^4 = -0.00998, predicted (k-G)/128 = -0.01002
+  N=5: background G_max = 14.8466 (N^2/2 = 12.5), delta=0.2: D/bound(N^2/2) = 0.9943813, (D-bound)/delta^4 = -0.01788, predicted (k-G)/128 = -0.01833
+  N=5: background G_max = 14.8466 (N^2/2 = 12.5), delta=0.1: D/bound(N^2/2) = 0.9985488, (D-bound)/delta^4 = -0.01822, predicted (k-G)/128 = -0.01833
+  N=6: background G_max = 21.6932 (N^2/2 = 18.0), delta=0.2: D/bound(N^2/2) = 0.9913432, (D-bound)/delta^4 = -0.02781, predicted (k-G)/128 = -0.02885
+  N=6: background G_max = 21.6932 (N^2/2 = 18.0), delta=0.1: D/bound(N^2/2) = 0.9977276, (D-bound)/delta^4 = -0.02860, predicted (k-G)/128 = -0.02885
+   [6s]
+== R5: midpoint family P_s = z^N - lam z^{N-1} + lam z - 1
+  N= 3: max rel. diff |disc| closed form vs Sylvester determinant = 4.1e-49
+  N= 4: max rel. diff |disc| closed form vs Sylvester determinant = 2.5e-49
+  N= 5: max rel. diff |disc| closed form vs Sylvester determinant = 7.1e-49
+  N= 7: max rel. diff |disc| closed form vs Sylvester determinant = 8.9e-50
+  N= 9: max rel. diff |disc| closed form vs Sylvester determinant = 2.6e-48
+  N=12: max rel. diff |disc| closed form vs Sylvester determinant = 9.7e-49
+  first-collision claim: g_lam(x) = 2 cos((N-1)x/2) + (1-lam) sin((N-2)x/2)/sin(x/2) at x_k = 2 pi k/(N-1)
+     max |g_lam(x_k) - (-1)^k (1+lam)|/(1+lam) over N in {3..4000} = 1.1e-13;  g_lam(0) = 2-(lam-1)(N-2) > 0 iff lam < N/(N-2)
+     => for every lam < N/(N-2) the real function g_lam alternates in sign at the N points x_0..x_{N-1} of [0,2pi],
+        so G has N-1 distinct roots on the circle, none equal to 1: no collision before the triple one. [P]
+     HeatDepth N=101: D = 2.000066667176e-04 (pair 100), exact 2.000066670667e-04, rel.diff 1.7e-09, (N-1)^2 D = 2.00006667
+     HeatDepth N=201: D = 5.000041658622e-05 (pair 0), exact 5.000041667292e-05, rel.diff 1.7e-09, (N-1)^2 D = 2.00001666
+   [21s]
+== R6: local closed form Delta F(tau) -- Richardson at N = 512..4096
+  N= 512: Delta F = [ -0.271296  -1.523637  -3.271562  -7.654306 -12.989918]
+  N=1024: Delta F = [ -0.27212   -1.529293  -3.288547  -7.758974 -13.72888 ]   Richardson(2F_N - F_512) - closed form = [1.21e-06 1.64e-05 1.14e-04 3.91e-03 2.45e-01]
+  N=2048: Delta F = [ -0.272533  -1.532127  -3.297082  -7.812756 -14.180572]   Richardson(2F_N - F_1024) - closed form = [3.04e-07 4.11e-06 2.88e-05 1.01e-03 8.06e-02]
+  N=4096: Delta F = [ -0.27274   -1.533545  -3.30136   -7.840024 -14.434895]   Richardson(2F_N - F_2048) - closed form = [7.59e-08 1.03e-06 7.21e-06 2.58e-04 2.37e-02]
+  closed form            = [ -0.272946  -1.534965  -3.305646  -7.867551 -14.712877]
+  N*(closed form - F_N) at N=4096 (should converge to a finite 1/N-coefficient): [-8.463e-01 -5.814e+00 -1.755e+01 -1.127e+02 -1.139e+03]
+   [21s]
+== R4: kappa_N -- closed-form close-pair ratio G maximised over backgrounds; global random search
+  N= 3: max G =    5.0000 = 0.5556 N^2  [(N^2+4N-6)/3 = 5.000, C_N = 8]; random clusters max (A'-A^2)/A =    5.000; maximiser's two nearest background pts at [1.] clock spacings (0s)
+  N= 4: max G =    9.2822 = 0.5801 N^2  [(N^2+4N-6)/3 = 8.667, C_N = 20]; random clusters max (A'-A^2)/A =    9.276; maximiser's two nearest background pts at [1.073 1.073] clock spacings (1s)
+  N= 5: max G =   14.8466 = 0.5939 N^2  [(N^2+4N-6)/3 = 13.000, C_N = 40]; random clusters max (A'-A^2)/A =   14.638; maximiser's two nearest background pts at [1.118 1.118] clock spacings (1s)
+  N= 6: max G =   21.6932 = 0.6026 N^2  [(N^2+4N-6)/3 = 18.000, C_N = 70]; random clusters max (A'-A^2)/A =   18.363; maximiser's two nearest background pts at [1.148 1.148] clock spacings (1s)
+  N= 8: max G =   39.2330 = 0.6130 N^2  [(N^2+4N-6)/3 = 30.000, C_N = 168]; random clusters max (A'-A^2)/A =   19.241; maximiser's two nearest background pts at [1.185 1.185] clock spacings (3s)
+  N=12: max G =   89.6991 = 0.6229 N^2  [(N^2+4N-6)/3 = 62.000, C_N = 572]; random clusters max (A'-A^2)/A =  -98.776; maximiser's two nearest background pts at [1.222 1.222] clock spacings (5s)
+  N=16: max G =  160.6804 = 0.6277 N^2  [(N^2+4N-6)/3 = 104.667, C_N = 1360]; random clusters max (A'-A^2)/A = -1152.559; maximiser's two nearest background pts at [1.241 1.241] clock spacings (15s)
+  N=24: max G =  364.1887 = 0.6323 N^2  [(N^2+4N-6)/3 = 222.000, C_N = 4600]; random clusters max (A'-A^2)/A = -10103.578; maximiser's two nearest background pts at [1.259 1.259] clock spacings (22s)
+  N=32: max G =  649.7514 = 0.6345 N^2  [(N^2+4N-6)/3 = 382.000, C_N = 10912]; random clusters max (A'-A^2)/A = -21893.634; maximiser's two nearest background pts at [1.269 1.269] clock spacings (27s)
+   [75s]

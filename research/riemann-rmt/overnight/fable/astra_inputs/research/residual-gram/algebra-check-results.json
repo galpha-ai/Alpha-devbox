@@ -1,0 +1,47 @@
+[
+  {
+    "name": "coefficient-space saturation completion",
+    "residual": 0.0,
+    "tolerance": 1e-11
+  },
+  {
+    "name": "arithmetic operator sign and normalization identity",
+    "residual": 1.7763568394002505e-15,
+    "tolerance": 1e-11
+  },
+  {
+    "name": "residual recovery equals combined approximator",
+    "residual": 0.0,
+    "tolerance": 1e-11
+  },
+  {
+    "name": "prime-feature forms reduce to original ell=1",
+    "residual": 1.1102230246251565e-15,
+    "tolerance": 1e-10
+  },
+  {
+    "name": "prime-feature forms reduce to original ell=1.1",
+    "residual": 2.192690473634684e-15,
+    "tolerance": 1e-10
+  },
+  {
+    "name": "prime-feature forms reduce to original ell=1.1763",
+    "residual": 1.3877787807814457e-16,
+    "tolerance": 1e-10
+  },
+  {
+    "name": "original vs independent baseline",
+    "residual": 8.881784197001252e-16,
+    "tolerance": 1e-12
+  },
+  {
+    "name": "original vs independent degree14",
+    "residual": 1.7763568394002505e-15,
+    "tolerance": 1e-11
+  },
+  {
+    "name": "original vs independent sign crossing",
+    "residual": 1.6396661806084012e-11,
+    "tolerance": 1e-08
+  }
+]

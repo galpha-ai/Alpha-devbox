@@ -1,0 +1,16 @@
+== ENUMTOL: block4odd N=11, np.roots-based off-circle indicator near the (triple-zero) collision
+   exact: tau_N = 1.9888696692  (first zero of F_N)
+   enumeration orbit 23043: sites [0, 1, 2, 4, 6, 8, 10, 14, 16, 18, 20], stored N^2D = 1.9888690636
+   s = D(1 - 1e- 3): max||r|-1| = 3.06e-11   (enumeration flags 'off circle' when > 1e-7)
+   s = D(1 - 1e- 4): max||r|-1| = 2.82e-10   (enumeration flags 'off circle' when > 1e-7)
+   s = D(1 - 1e- 5): max||r|-1| = 3.05e-09   (enumeration flags 'off circle' when > 1e-7)
+   s = D(1 - 1e- 6): max||r|-1| = 2.81e-08   (enumeration flags 'off circle' when > 1e-7)
+   s = D(1 - 1e- 7): max||r|-1| = 3.03e-07   (enumeration flags 'off circle' when > 1e-7)
+   s = D(1 - 1e- 8): max||r|-1| = 2.95e-06   (enumeration flags 'off circle' when > 1e-7)
+   s = D(1 - 1e- 9): max||r|-1| = 1.19e-05   (enumeration flags 'off circle' when > 1e-7)
+   s = D(1 - 1e-10): max||r|-1| = 1.42e-05   (enumeration flags 'off circle' when > 1e-7)
+   s = D(1 - 1e-12): max||r|-1| = 1.39e-05   (enumeration flags 'off circle' when > 1e-7)
+   enumeration-style bisection: N^2 D = 1.9888690636  vs exact 1.988869669  diff = -6.06e-07   (enumeration file: 1.9888690636)
+   the three roots near angle 0 collide as a triple zero; numpy resolves a triple cluster only to ~eps_mach^(1/3) ~ 1e-5 in |r|,
+   so the 1e-7 threshold fires while the cluster is still open: the enumeration value is a lower bound, low by O(N^4 * 1e-10).
+EXIT 0

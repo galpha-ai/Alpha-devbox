@@ -1,0 +1,23 @@
+== PROP61: a_N(3) < 0 for all N >= 13 (block4odd) / N >= 14 (block33) by an explicit bound; a_N(0) = 1
+   max_{|a|<=1/2} (tan a - a)/a^3 = 0.3704 <= 4/9 = 0.4444  ->  |phi_N(v) - v| <= |v|^3/(9 N^2) on |v| <= N (block4odd)
+   block33: numerical max_N,v N^2|phi_N(v)-v|/|v|^3 = 0.0968 <= c33 = 0.5500 (analytic bound for N >= 14)
+   leading term E[V^2 cos(V/2)] at tau=3: -1.4170997
+   block4odd (N odd): 6 a_N(3) exact | bound 12/N^2 + E[|V|(2N^2+|V|); |V|>N] | first zero of a_N
+      N= 13: 6a_N(3) = -1.4492184  |6a_N(3) - lead| = 0.0321 <= bound 0.07153;  lead + bound = -1.3456 < 0 OK;  a_N(0) = 1.0;  first zero tau = 1.99205379
+      N= 15: 6a_N(3) = -1.4410961  |6a_N(3) - lead| = 0.024 <= bound 0.05334;  lead + bound = -1.3638 < 0 OK;  a_N(0) = 1.0;  first zero tau = 1.994042198
+      N= 17: 6a_N(3) = -1.4357159  |6a_N(3) - lead| = 0.0186 <= bound 0.04152;  lead + bound = -1.3756 < 0 OK;  a_N(0) = 1.0;  first zero tau = 1.995367105
+      N= 21: 6a_N(3) = -1.4292474  |6a_N(3) - lead| = 0.0121 <= bound 0.02721;  lead + bound = -1.3899 < 0 OK;  a_N(0) = 1.0;  first zero tau = 1.996968306
+      N= 25: 6a_N(3) = -1.4256507  |6a_N(3) - lead| = 0.00855 <= bound 0.0192;  lead + bound = -1.3979 < 0 OK;  a_N(0) = 1.0;  first zero tau = 1.997862558
+      N= 31: 6a_N(3) = -1.4226499  |6a_N(3) - lead| = 0.00555 <= bound 0.01249;  lead + bound = -1.4046 < 0 OK;  a_N(0) = 1.0;  first zero tau = 1.99861082
+      N= 41: 6a_N(3) = -1.4202676  |6a_N(3) - lead| = 0.00317 <= bound 0.007139;  lead + bound = -1.41 < 0 OK;  a_N(0) = 1.0;  first zero tau = 1.999206254
+      N= 61: 6a_N(3) = -1.4185292  |6a_N(3) - lead| = 0.00143 <= bound 0.003225;  lead + bound = -1.4139 < 0 OK;  a_N(0) = 1.0;  first zero tau = 1.999641558
+   block33 (N even): 6 a_N(3) exact | bound c33*108/N^2 + E[|V|(N^3+|V|); |V|>N]
+      N= 14: 6a_N(3) = -1.4457938  |6a_N(3) - lead| = 0.0287 <= bound 0.3035;  lead + bound = -1.1136 < 0 OK;  a_N(0) = 1.0;  first zero tau = 1.992890695
+      N= 16: 6a_N(3) = -1.4387752  |6a_N(3) - lead| = 0.0217 <= bound 0.232;  lead + bound = -1.1851 < 0 OK;  a_N(0) = 1.0;  first zero tau = 1.994613078
+      N= 20: 6a_N(3) = -1.4307562  |6a_N(3) - lead| = 0.0137 <= bound 0.1485;  lead + bound = -1.2686 < 0 OK;  a_N(0) = 1.0;  first zero tau = 1.996594051
+      N= 24: 6a_N(3) = -1.4265034  |6a_N(3) - lead| = 0.0094 <= bound 0.1031;  lead + bound = -1.314 < 0 OK;  a_N(0) = 1.0;  first zero tau = 1.997650305
+      N= 32: 6a_N(3) = -1.4223451  |6a_N(3) - lead| = 0.00525 <= bound 0.058;  lead + bound = -1.3591 < 0 OK;  a_N(0) = 1.0;  first zero tau = 1.998686923
+      N= 40: 6a_N(3) = -1.4204438  |6a_N(3) - lead| = 0.00334 <= bound 0.03712;  lead + bound = -1.38 < 0 OK;  a_N(0) = 1.0;  first zero tau = 1.999162172
+      N= 64: 6a_N(3) = -1.4184005  |6a_N(3) - lead| = 0.0013 <= bound 0.0145;  lead + bound = -1.4026 < 0 OK;  a_N(0) = 1.0;  first zero tau = 1.999673795
+   since 12/N^2, c33*108/N^2 and the Gaussian tails decrease in N, the bound holds for every larger N as well.
+EXIT 0

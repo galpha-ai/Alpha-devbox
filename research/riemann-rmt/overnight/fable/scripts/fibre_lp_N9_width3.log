@@ -1,0 +1,26 @@
+N=9: orbits 2704, constraint rank 900, ACUE residual 1.0e-15
+      [000 highs-ipm sign +1: 89.6s status 0 residual 8.7e-14]
+      [000 highs-ipm sign -1: 173.3s status 0 residual 8.5e-14]
+   pattern 000: ACUE 0.022644  range [0.022642, 0.022645]  width 3.46e-06
+      [001 highs-ipm sign +1: 339.6s status 0 residual 8.4e-14]
+      [001 highs-ipm sign -1: 322.7s status 0 residual 8.5e-14]
+   pattern 001: ACUE 0.125000  range [0.124998, 0.125002]  width 3.46e-06
+      [010 highs-ipm sign +1: 231.3s status 0 residual 8.5e-14]
+      [010 highs-ipm sign -1: 348.3s status 0 residual 8.5e-14]
+   pattern 010: ACUE 0.227356  range [0.227355, 0.227358]  width 3.46e-06
+      [011 highs-ipm sign +1: 178.8s status 0 residual 8.6e-14]
+      [011 highs-ipm sign -1: 278.1s status 0 residual 8.5e-14]
+   pattern 011: ACUE 0.125000  range [0.124998, 0.125002]  width 3.46e-06
+      [100 highs-ipm sign +1: 342.1s status 0 residual 8.4e-14]
+      [100 highs-ipm sign -1: 293.4s status 0 residual 8.5e-14]
+   pattern 100: ACUE 0.125000  range [0.124998, 0.125002]  width 3.46e-06
+      [101 highs-ipm sign +1: 349.9s status 0 residual 8.5e-14]
+      [101 highs-ipm sign -1: 369.3s status 0 residual 8.5e-14]
+   pattern 101: ACUE 0.227356  range [0.227355, 0.227358]  width 3.46e-06
+      [110 highs-ipm sign +1: 180.1s status 0 residual 8.6e-14]
+      [110 highs-ipm sign -1: 305.8s status 0 residual 8.5e-14]
+   pattern 110: ACUE 0.125000  range [0.124998, 0.125002]  width 3.46e-06
+      [111 highs-ipm sign +1: 210.6s status 0 residual 8.5e-14]
+      [111 highs-ipm sign -1: 290.3s status 0 residual 8.5e-14]
+   pattern 111: ACUE 0.022644  range [0.022642, 0.022645]  width 3.46e-06
+   width 3: max range over patterns = 3.46e-06  at 011: ACUE 0.12500, range [0.12500, 0.12500]

@@ -1,0 +1,15 @@
+== block7 (robust solver)
+  collision of pair at x=(0.956087,0.956347), extremum x=0.956217
+N=  16  N^2D=2.017714843750  t=2.5s
+  collision of pair at x=(0.639600,0.639601), extremum x=0.639601
+N=  24  N^2D=2.030167157483  t=4.5s
+  collision of pair at x=(0.480234,0.480238), extremum x=0.480236
+N=  32  N^2D=2.033840747155  t=6.7s
+  collision of pair at x=(0.320408,0.320409), extremum x=0.320408
+N=  48  N^2D=2.036278968398  t=6.1s
+  collision of pair at x=(0.240369,0.240379), extremum x=0.240371
+N=  64  N^2D=2.037097994995  t=5.4s
+  collision of pair at x=(0.160219,0.160337), extremum x=0.160279
+N=  96  N^2D=2.037656239788  t=7.0s
+  collision of pair at x=(0.120206,0.120234), extremum x=0.120217
+N= 128  N^2D=2.037870707980  t=8.3s

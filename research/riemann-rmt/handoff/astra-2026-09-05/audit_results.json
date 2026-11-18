@@ -1,0 +1,280 @@
+{
+  "scope": "Bounded independent audit; no zeta or prime-gap proof certified",
+  "checks": [
+    {
+      "name": "Corrected Galerkin angle",
+      "passed": true,
+      "detail": {
+        "max_error": 4.4853010194856324e-14
+      }
+    },
+    {
+      "name": "Galerkin second-order coefficient",
+      "passed": true,
+      "detail": {
+        "n4_residuals": [
+          -0.026505356745117878,
+          -0.026506336372572856,
+          -0.026506581303474646,
+          -0.026506642537702612
+        ],
+        "delta_MT": 0.6725007036794115
+      }
+    },
+    {
+      "name": "Charge filter with negative Fourier convention",
+      "passed": true,
+      "detail": {
+        "max_error": 2.806106882681976e-14
+      }
+    },
+    {
+      "name": "Wilson trace on open box",
+      "passed": true,
+      "detail": {
+        "lhs": 77.67769987482622,
+        "rhs": 77.67769987482622
+      }
+    },
+    {
+      "name": "Counterexample to old background endpoint bound",
+      "passed": true,
+      "detail": {
+        "g": 0.05,
+        "xb": 6.133185307179586,
+        "background": 133.50013203171451,
+        "old_upper_bound": 89.05574322309748,
+        "correct_exact": 133.500132031715
+      }
+    },
+    {
+      "name": "Cayley phase derivative sign",
+      "passed": true,
+      "detail": {
+        "derivative": "2/(lam**2 + 1)"
+      }
+    },
+    {
+      "name": "COM modulation dimension N=4",
+      "passed": true,
+      "detail": {
+        "null_dimension": 0,
+        "modulation_error": [
+          2.0000000000000018,
+          [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              2
+            ]
+          ]
+        ],
+        "normalization_error": 8.881784197001252e-16,
+        "clock_mass": 0.12499999999999997
+      }
+    },
+    {
+      "name": "ACUE clock mass N=4",
+      "passed": true,
+      "detail": {
+        "measured": 0.12499999999999997,
+        "expected": 0.125
+      }
+    },
+    {
+      "name": "Frequency-two COM test N=4",
+      "passed": true,
+      "detail": [
+        2.0000000000000018,
+        [
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            2
+          ]
+        ]
+      ]
+    },
+    {
+      "name": "COM modulation dimension N=5",
+      "passed": true,
+      "detail": {
+        "null_dimension": 2,
+        "modulation_error": [
+          1.5435046655621721e-15,
+          [
+            [
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              1,
+              1,
+              1,
+              1,
+              1
+            ]
+          ]
+        ],
+        "normalization_error": 2.220446049250313e-16,
+        "clock_mass": 0.0625
+      }
+    },
+    {
+      "name": "ACUE clock mass N=5",
+      "passed": true,
+      "detail": {
+        "measured": 0.0625,
+        "expected": 0.0625
+      }
+    },
+    {
+      "name": "Frequency-two COM test N=5",
+      "passed": true,
+      "detail": [
+        1.5435046655621721e-15,
+        [
+          [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        ]
+      ]
+    },
+    {
+      "name": "COM modulation dimension N=6",
+      "passed": true,
+      "detail": {
+        "null_dimension": 3,
+        "modulation_error": [
+          6.96851905716421e-14,
+          [
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ]
+          ]
+        ],
+        "normalization_error": 1.3322676295501878e-15,
+        "clock_mass": 0.031249999999999997
+      }
+    },
+    {
+      "name": "ACUE clock mass N=6",
+      "passed": true,
+      "detail": {
+        "measured": 0.031249999999999997,
+        "expected": 0.03125
+      }
+    },
+    {
+      "name": "Frequency-two COM test N=6",
+      "passed": true,
+      "detail": [
+        6.96851905716421e-14,
+        [
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        ]
+      ]
+    },
+    {
+      "name": "Published 40-tuple admissibility",
+      "passed": true,
+      "detail": {
+        "k": 40,
+        "diameter": 186,
+        "bad_primes": [],
+        "all_primes_up_to_k_checked": true
+      }
+    },
+    {
+      "name": "Historical H2 tuple admissibility",
+      "passed": true,
+      "detail": {
+        "k": 15856,
+        "diameter": 173438,
+        "bad_primes": [],
+        "all_primes_up_to_k_checked": true
+      }
+    },
+    {
+      "name": "Lean audit detects two actual sorry placeholders",
+      "passed": true,
+      "detail": {
+        "actual_sorry_lines": 2
+      }
+    },
+    {
+      "name": "Lean depth_ge omits D in conclusion",
+      "passed": true,
+      "detail": {
+        "conclusion": "δ ^ 2 / 8 ≤ -Real.log (Real.cos (δ / 2))"
+      }
+    },
+    {
+      "name": "Original verification log preserved",
+      "passed": true,
+      "detail": {
+        "PASS": 39,
+        "FAIL": 4,
+        "SKIP": 1
+      }
+    },
+    {
+      "name": "Signed critical price exact comparison",
+      "passed": true,
+      "detail": {
+        "beta_exact": "23051796480/10991046857",
+        "beta_decimal": 2.097324920903119
+      }
+    }
+  ],
+  "elapsed_seconds": 1.0109698750311509,
+  "all_passed": true
+}

@@ -1,0 +1,12 @@
+validate grh=False it=0 value=0.0202291 nrows=1101 nact=551 maxviol=3.26e-08 [40s]
+validate grh=False it=1 value=0.0202291 nrows=1133 nact=522 maxviol=1.11e-08 [85s]
+validate grh=False: dual value 0.0202291  (push_D primal: 0.020696); active u's: [0.08 0.1  0.14 0.16 0.22 0.24 0.28 0.3  0.36 0.38 0.42 0.44 0.48 0.5
+ 0.56 0.6  0.62 0.8  0.82 0.88 0.9  0.94 0.96 1.02 1.04 1.1  1.12 1.16
+ 1.18 1.24 1.26 1.32 1.34 1.54 1.56 1.62 1.64 1.68 1.7  1.76] ...
+validate grh=True it=0 value=0.0280996 nrows=1101 nact=575 maxviol=9.93e-08 [50s]
+validate grh=True it=1 value=0.0280995 nrows=1130 nact=651 maxviol=3.38e-08 [96s]
+validate grh=True it=2 value=0.0280995 nrows=1158 nact=660 maxviol=2.32e-08 [137s]
+validate grh=True it=3 value=0.0280995 nrows=1172 nact=668 maxviol=1.08e-08 [185s]
+validate grh=True: dual value 0.0280995  (push_D primal: 0.023579); active u's: [0.08 0.1  0.14 0.16 0.22 0.24 0.28 0.3  0.34 0.36 0.42 0.44 0.48 0.5
+ 0.56 0.58 0.62 0.64 0.82 0.88 0.9  0.96 0.98 1.02 1.04 1.1  1.12 1.16
+ 1.18 1.24 1.26 1.3  1.48 1.54 1.56 1.62 1.64 1.7  1.72 1.76] ...

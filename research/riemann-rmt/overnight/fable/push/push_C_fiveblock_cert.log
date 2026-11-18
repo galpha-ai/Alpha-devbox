@@ -1,0 +1,13 @@
+tau=0.0: 9 zeros in [-6pi,6pi]; zeros/pi near the block: ['-2.0', '-1.0', '0.0', '1.0', '2.0']; min|h'|=4.9348
+tau=0.25: 9 zeros in [-6pi,6pi]; zeros/pi near the block: ['-1.9297', '-0.97439', '0.0', '0.97439', '1.9297']; min|h'|=4.2161
+tau=0.5: 9 zeros in [-6pi,6pi]; zeros/pi near the block: ['-1.853', '-0.94842', '0.0', '0.94842', '1.853']; min|h'|=3.5598
+tau=0.75: 9 zeros in [-6pi,6pi]; zeros/pi near the block: ['-1.769', '-0.9226', '0.0', '0.9226', '1.769']; min|h'|=2.9661
+tau=1.0: 9 zeros in [-6pi,6pi]; zeros/pi near the block: ['-1.6756', '-0.89788', '0.0', '0.89788', '1.6756']; min|h'|=2.4348
+tau=1.25: 9 zeros in [-6pi,6pi]; zeros/pi near the block: ['-1.5701', '-0.87614', '0.0', '0.87614', '1.5701']; min|h'|=1.9661
+tau=1.5: 9 zeros in [-6pi,6pi]; zeros/pi near the block: ['-1.4475', '-0.86145', '0.0', '0.86145', '1.4475']; min|h'|=1.5598
+tau=1.75: 9 zeros in [-6pi,6pi]; zeros/pi near the block: ['-1.2956', '-0.86493', '0.0', '0.86493', '1.2956']; min|h'|=1.1854
+zero counts seen for tau in [0,2): {9} ; min |h'| over all zeros and tau in [0,1.99]: 0.26434
+tau=1.99: zeros/pi near the edge u=0 (v=-pi): ['-1.048259', '-0.9583981']
+tau=1.999: zeros/pi near the edge u=0 (v=-pi): ['-1.014566', '-0.9861007']
+tau=2.0: zeros/pi near the edge u=0 (v=-pi): []
+at tau=2: h(-pi) = 1.1816e-25  h'(-pi) = -3.7613e-26  h''(-pi) = 2.0
