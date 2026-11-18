@@ -108,6 +108,8 @@ The fiber is huge, yet almost nothing observable varies over it. This is the tec
 This is a genuinely finite phenomenon with no continuum analogue: on ℝ, band-limiting *loses* information at high frequencies; on ℤ/2N, aliasing *returns* it. The discrete model is therefore strictly more rigid than the Montgomery problem — a fact quantified in §5.
 
 > **Result 4.2 (Three-point rigidity).** All three-point correlations are constant across the fiber: **[P]** at N = 5 (exact, in ℚ(ζ₁₀)); **[C]** for N = 6, 7, 8 (null-space projection residuals ≤ 6×10⁻¹⁴, versus O(1) four-point projections). No aliasing argument covers three points; empirically the Diaconis–Shahshahani identities and rotation invariance conspire — at N = 5, 88 constraints crush the 3-point statistics onto the row space. A conceptual proof is open **[Q]**.
+>
+> **Correction (18 November 2026, Fable).** Exact three-point rigidity fails from N = 9 on. The eight occupation-pattern vectors of three consecutive sites are not in the row space of the balanced-moment constraints at N = 9 and N = 10: adjoining any one of them raises the rank modulo 37 and 73 (N = 9) and modulo 41 (N = 10) above the exact ranks 900 and 1957 (`overnight/fable/scripts/rowspace_exact.py`), while for N = 6, 7, 8 membership holds modulo two primes each. By two-point rigidity the free direction is unique and alternating, δP(abc) = (−1)^{a+b+c} t, the connected three-point correlation of consecutive sites; positivity confines it to width 3.5·10⁻⁶ at N = 9 (`fibre_lp_N9_width3.log`). Result 4.2 is thus a statement for N ≤ 8, and the three-point conclusions drawn from it below hold exactly only there.
 
 > **Result 4.3 (First freedom at four points). [P for N = 5, C for N ≤ 9]** Four-point correlations genuinely vary: at N = 5 the first distinguishable pattern is the word `0000` (four consecutive empty sites), and the pattern `01010101` has fiber range [−0.0263, +0.0255] around its ACUE value 0.04434. The LP-extremal gap of the word `01010101` over the fiber grows monotonically:
 >
@@ -115,7 +117,7 @@ This is a genuinely finite phenomenon with no continuum analogue: on ℝ, band-l
 >
 > the hand-built N = 9 certificate of [13] (0.014738) attains 97% of the LP optimum, and their density-capped search box is far smaller than the fiber's actual extent.
 
-**Consequence for Lagarias–Rodgers.** Combining Theorem 4.1, Result 4.2, and Thm 6.2 of [13]: *any* second point process produced by the finite-to-infinite transfer agrees with the AH/ACUE process in **all** one-, two-, and three-point correlations — at every frequency, not only band-limited ones. If the Lagarias–Rodgers uniqueness question has a negative answer, non-uniqueness is a **four-point phenomenon**. This sharply narrows where to look, and explains why no two-point (spectral/pair-correlation) technique can ever detect it.
+**Consequence for Lagarias–Rodgers.** Combining Theorem 4.1, Result 4.2, and Thm 6.2 of [13]: *any* second point process produced by the finite-to-infinite transfer agrees with the AH/ACUE process in **all** one-, two-, and three-point correlations — at every frequency, not only band-limited ones (for N ≤ 8; from N = 9 on the three-point agreement is only approximate, to 10⁻⁵, see the correction to Result 4.2). If the Lagarias–Rodgers uniqueness question has a negative answer, non-uniqueness is a **four-point phenomenon**. This sharply narrows where to look, and explains why no two-point (spectral/pair-correlation) technique can ever detect it.
 
 ---
 
@@ -198,7 +200,7 @@ Relative to the literature, the surveyed program contributes, in our view, five 
 
 1. **A theorem-level explanation of a constant.** The identification 0.6725007… = value of a bandwidth-one LP, with the proof of [9] as its dual certificate, converts "the best known constant" into "the exact value of a named obstruction." Constants with this status are rare (compare 1/3 and Levinson's method, where no matching adversary is known).
 
-2. **Exact finite rigidity theorems.** Two-point rigidity by aliasing (Thm 4.1) is, to our knowledge, the first *exact* rigidity statement for ACUE moment fibers, and the three-point rigidity / four-point freedom dichotomy is new; it localizes Lagarias–Rodgers non-uniqueness at four points.
+2. **Exact finite rigidity theorems.** Two-point rigidity by aliasing (Thm 4.1) is, to our knowledge, the first *exact* rigidity statement for ACUE moment fibers, and the three-point rigidity / four-point freedom dichotomy is new; it localizes Lagarias–Rodgers non-uniqueness at four points (exactly for N ≤ 8 only: see the correction to Result 4.2).
 
 3. **AH demoted from obstruction to bystander.** Theorem 6.1's strict 0.0301 gap corrects a widely repeated heuristic: the pair-correlation ceiling is *not* "because AH might be true." The extremal adversary is a near-integer, non-lattice configuration.
 
@@ -212,7 +214,7 @@ We emphasize scope: results tagged [C] rest on reproducible computation (exact w
 
 ## 10. Open problems
 
-1. Prove three-point rigidity (Result 4.2) for all N, ideally by exhibiting the algebraic identity behind the numerical conspiracies **[Q]**.
+1. Explain why three-point rigidity (Result 4.2) holds exactly for N ≤ 8 and fails from N = 9 on, and bound the three-point freedom for N ≥ 9 (3.5·10⁻⁶ at N = 9 by LP) **[Q]**.
 2. Question 8.1 (uniform gaps ⇒ Lagarias–Rodgers non-uniqueness).
 3. Determine whether any window-plus-positivity certificate can exceed 0.6725007 within bandwidth one, i.e., close the 0.0094 slack from above (our evidence says no **[H]**).
 4. Find an arithmetic source of F(α), α > 1: even F(α) ≥ c > 0 on (1, 1+ε) unconditionally would beat the ceiling; quantify the constant gained as a function of (c, ε) via the LP (the machinery of §5 computes this).
